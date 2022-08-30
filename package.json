@@ -1,0 +1,40 @@
+{
+  "name": "one-nexum-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blaksleyn/One-Nexum-Back.git"
+  },
+  "author": "IESC HUB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blaksleyn/One-Nexum-Back/issues"
+  },
+  "homepage": "https://github.com/blaksleyn/One-Nexum-Back#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.7.8",
+    "nodemon": "^2.0.19",
+    "pg": "^8.8.0",
+    "sequelize": "^6.21.4",
+    "passport": "^0.5.2",
+    "passport-google-oauth": "^2.0.0",
+    "passport-google-oidc": "^0.1.0"
+  }
+}
