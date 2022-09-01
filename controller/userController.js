@@ -5,12 +5,24 @@ const bcrypt = require("bcrypt");
 const generateRandomPassword = require("../utilities/generateRandomPassword");
 const { sendEmail } = require("../utilities/sendEmail");
 require("dotenv").config();
+function validarEmail(valor) {
+  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3,4})+$/.test(valor)) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 const createUser = async (req, res, next) => {
-  const { username, password, email } = req.body;
+  const { name, lastname, password, email } = req.body;
 
-  if (!username || !email || !password) {
+  if (!name || !lastname || !email || !password) {
     return res.status(500).json({ message: "All fields are required" });
+  }
+  if (validarEmail(email) !== true) {
+    return res
+      .status(500)
+      .json({ message: "La dirección de email es incorrecta." });
   }
   try {
     let user1 = await User.findOne({ where: { email } });
@@ -20,17 +32,11 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "Ya existe un usuario con este email" });
     }
-    let userr = await User.findOne({ where: { username } });
-    // Si el username ya está registrado, devuelvo un error
-    if (userr) {
-      return res
-        .status(500)
-        .json({ message: "Ya existe un usuario con este username" });
-    }
 
     // Creamos el nuevo usuario y lo guardamos en la DB
     const user = await User.create({
-      username,
+      name,
+      lastname,
       email,
       password,
     });
@@ -60,18 +66,22 @@ const createUser = async (req, res, next) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res.status(400).json({
       message: "Se requiere un usuario o contraseña valido",
     });
   }
-
+  if (validarEmail(email) !== true) {
+    return res
+      .status(500)
+      .json({ message: "La dirección de email es incorrecta." });
+  }
   try {
     let user = await User.findOne({
       where: {
-        username: username,
+        email: email,
       },
     });
     if (!user) {
