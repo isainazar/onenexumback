@@ -6,23 +6,45 @@ const generateRandomPassword = require("../utilities/generateRandomPassword");
 const { sendEmail } = require("../utilities/sendEmail");
 require("dotenv").config();
 function validarEmail(valor) {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3,4})+$/.test(valor)) {
-    return true;
+  if (
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      valor
+    )
+  ) {
+    return "This email is corect";
   } else {
-    return false;
+    return "This email is incorrect";
   }
 }
 
 const createUser = async (req, res, next) => {
-  const { name, lastname, password, email } = req.body;
+  const {
+    name,
+    lastname,
+    password,
+    email,
+    date_birth,
+    country,
+    region,
+    gender,
+    user_type,
+  } = req.body;
 
-  if (!name || !lastname || !email || !password) {
+  if (
+    !name ||
+    !lastname ||
+    !email ||
+    !password ||
+    !country ||
+    !region ||
+    !gender ||
+    !date_birth
+  ) {
     return res.status(500).json({ message: "All fields are required" });
   }
-  if (validarEmail(email) !== true) {
-    return res
-      .status(500)
-      .json({ message: "La dirección de email es incorrecta." });
+
+  if (validarEmail(email) === "This email is incorrect") {
+    return res.status(501).json({ message: "This mail doesn't exists" });
   }
   try {
     let user1 = await User.findOne({ where: { email } });
@@ -39,6 +61,11 @@ const createUser = async (req, res, next) => {
       lastname,
       email,
       password,
+      date_birth,
+      country,
+      region,
+      gender,
+      user_type,
     });
 
     // generamos el payload/body para generar el token
@@ -60,8 +87,9 @@ const createUser = async (req, res, next) => {
       }
     );
   } catch (err) {
-    console.log(err);
-    next({});
+    return res
+      .status(500)
+      .json({ message: "Elije un genero valido", error: err });
   }
 };
 
@@ -73,11 +101,7 @@ const login = async (req, res) => {
       message: "Se requiere un usuario o contraseña valido",
     });
   }
-  if (validarEmail(email) !== true) {
-    return res
-      .status(500)
-      .json({ message: "La dirección de email es incorrecta." });
-  }
+
   try {
     let user = await User.findOne({
       where: {
@@ -199,9 +223,9 @@ const forgotPassword = async (req, res, next) => {
 };
 const resetPassword = async (req, res) => {
   const { oldPassword, newPassword, email } = req.body;
-  /* if (!oldPassword || !newPassword || !email) {
+  if (!oldPassword || !newPassword || !email) {
     return res.status(500).json({ message: "Todos los campos son requeridos" });
-  } */
+  }
   if (newPassword === oldPassword) {
     return res.status(404).json({
       message: "Las contraseñas deben ser diferentes",
@@ -255,9 +279,149 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const updateGender = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const { gender } = req.body;
+
+    const usuarioGender = await User.update(
+      {
+        gender,
+      },
+      {
+        where: {
+          id_user,
+        },
+      }
+    );
+    if (!usuarioGender) {
+      return res.satus(404).json({ message: "User Couldn't be changed" });
+    }
+    return res.status(200).json({ message: "User change correctly" });
+  } catch (err) {
+    // console.log(err)
+    return res.status(400).json(err);
+  }
+};
+const updateRelationship = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const { relationship } = req.body;
+
+    const usuarioRelationship = await User.update(
+      {
+        relationship,
+      },
+      {
+        where: {
+          id_user,
+        },
+      }
+    );
+    if (!usuarioRelationship) {
+      return res.satus(404).json({ message: "User Couldn't be changed" });
+    }
+    return res.status(200).json({ message: "User change correctly" });
+  } catch (err) {
+    // console.log(err)
+    return res.status(400).json(err);
+  }
+};
+const updateOcupation = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const { ocupation } = req.body;
+
+    const usuarioOcupation = await User.update(
+      {
+        ocupation,
+      },
+      {
+        where: {
+          id_user,
+        },
+      }
+    );
+    if (!usuarioOcupation) {
+      return res.satus(404).json({ message: "User Couldn't be changed" });
+    }
+    return res.status(200).json({ message: "User change correctly" });
+  } catch (err) {
+    // console.log(err)
+    return res.status(400).json(err);
+  }
+};
+const updateUnemployed = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+    const { unemployed } = req.body;
+
+    const usuarioUnemployed = await User.update(
+      {
+        unemployed,
+      },
+      {
+        where: {
+          id_user,
+        },
+      }
+    );
+    if (!usuarioUnemployed) {
+      return res.satus(404).json({ message: "User Couldn't be changed" });
+    }
+    return res.status(200).json({ message: "User change correctly" });
+  } catch (err) {
+    // console.log(err)
+    return res.status(400).json(err);
+  }
+};
+const loginWithGoogle = async (req, res, next) => {
+  const { email, name, lastname } = req.body;
+
+  const password = await bcrypt.hash(process.env.PASSWORD_GLOBAL_GOOGLE, 10);
+
+  try {
+    const [user, created] = await User.findOrCreate({
+      where: {
+        email,
+      },
+      defaults: {
+        name,
+        lastname,
+        password,
+      },
+    });
+
+    if (user || created) {
+      const payload = {
+        user: { id: user.dataValues.id_user },
+      };
+      jwt.sign(
+        payload,
+        JWT_SECRET,
+        {
+          expiresIn: "3d",
+        },
+        (err, token) => {
+          if (err) throw err;
+          return res.json({ token });
+        }
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 module.exports = {
   login,
   createUser,
   resetPassword,
   forgotPassword,
+  updateGender,
+  updateRelationship,
+  updateOcupation,
+  updateUnemployed,
+  loginWithGoogle,
 };

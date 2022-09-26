@@ -3,9 +3,14 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
+const passport = require("passport");
+require("./passport")(passport);
+const session = require("express-session");
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
+const verifyRouter = require("./routes/verifyRoutes");
+const contactRouter = require("./routes/contactRoutes");
 
 var app = express();
 
@@ -32,10 +37,26 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cookieParser());
+app.use(session({ secret: process.env.APP_NEXUM }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get("/auth/google", passport.authenticate("google"));
+app.get(
+  "https://localhost:3000/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
+
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/user", userRouter);
+app.use("/api/verify", verifyRouter);
+app.use("/api/contact", contactRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");

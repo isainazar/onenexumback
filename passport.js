@@ -1,4 +1,4 @@
-const { User } = require("./db/index");
+const { User } = require("./DataBase/index");
 require("dotenv").config();
 
 // Autenticacion con Google
@@ -34,7 +34,8 @@ module.exports = function (passport) {
         const userCreated = await User.create({
           providerId: profile.id,
           provider: issuer,
-          username: " ",
+          name: " ",
+          lastname: "",
           email: " ",
           password: " ",
         });
