@@ -11,6 +11,7 @@ const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
 const verifyRouter = require("./routes/verifyRoutes");
 const contactRouter = require("./routes/contactRoutes");
+const dailyRouter = require("./routes/dailyRouter");
 
 var app = express();
 
@@ -57,6 +58,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/user", userRouter);
 app.use("/api/verify", verifyRouter);
 app.use("/api/contact", contactRouter);
+app.use("/api/daily", dailyRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");

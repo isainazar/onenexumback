@@ -83,8 +83,8 @@ module.exports = (sequelize) => {
   const User = sequelize.define("user", user, config);
 
   User.associate = (models) => {
-    User.belongsToMany(models.Dayly, {
-      through: "dayly_by_user",
+    User.belongsToMany(models.Daily, {
+      through: "daily_by_user",
       timestamps: false,
     });
     User.hasOne(models.Checkeo, {

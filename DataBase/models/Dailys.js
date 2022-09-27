@@ -1,37 +1,33 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const dayly = {
-    id_dayly: {
+  const daily = {
+    id_daily: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
     },
-    question: {
+    respuesta: {
       type: DataTypes.ENUM("muy mal", "mal", "regular", "bien", "muy bien"),
-      allowNull: false,
-    },
-    type_dayly: {
-      type: DataTypes.ENUM("1", "2", "3"),
       allowNull: false,
     },
   };
 
   const config = {
-    tableName: "dayly",
+    tableName: "daily",
     timestamps: true,
     paranoid: true,
   };
 
-  const Dayly = sequelize.define("dayly", dayly, config);
+  const Daily = sequelize.define("daily", daily, config);
 
-  Dayly.associate = (models) => {
-    Dayly.belongsToMany(models.User, {
-      through: "dayly_by_user",
+  Daily.associate = (models) => {
+    Daily.belongsToMany(models.User, {
+      through: "daily_by_user",
       timestamps: false,
     });
   };
 
-  return Dayly;
+  return Daily;
 };

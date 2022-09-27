@@ -83,7 +83,9 @@ const createUser = async (req, res, next) => {
       },
       (err, token) => {
         if (err) throw err;
-        res.status(201).json({ token });
+        res
+          .status(201)
+          .json({ token: token, id_user: user.dataValues.id_user });
       }
     );
   } catch (err) {
@@ -139,9 +141,9 @@ const login = async (req, res) => {
       },
       (err, token) => {
         if (err) throw err;
-        return res.status(200).json({
-          token,
-        });
+        return res
+          .status(200)
+          .json({ token: token, id_user: user.dataValues.id_user });
       }
     );
   } catch (err) {
