@@ -67,6 +67,16 @@ const createUser = async (req, res, next) => {
       gender,
       user_type,
     });
+    req.session.id_user = user.id_user;
+    req.session.nombre = name;
+    req.session.lastname = lastname;
+    req.session.email = email;
+    req.session.password = password;
+    req.session.date_birth = date_birth;
+    req.session.country = country;
+    req.session.region = region;
+    req.session.gender = gender;
+    req.session.user_type = user_type;
 
     // generamos el payload/body para generar el token
     const payload = {
@@ -132,7 +142,6 @@ const login = async (req, res) => {
         id: user.dataValues.id_user,
       },
     };
-
     jwt.sign(
       payload,
       JWT_SECRET,
@@ -196,6 +205,8 @@ const forgotPassword = async (req, res, next) => {
           .json({ message: "El usuario no se pudo actualizar" });
       }
       try {
+        req.session.password = temporalPassword;
+
         const mail = await sendEmail(
           "Recuperación de contraseña",
           "",
@@ -265,6 +276,8 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
+      req.session.password = newPassword;
+
       return res.status(200).json({
         message: "Contraseña cambiada con éxito",
       });
@@ -377,44 +390,6 @@ const updateUnemployed = async (req, res) => {
     return res.status(400).json(err);
   }
 };
-const loginWithGoogle = async (req, res, next) => {
-  const { email, name, lastname } = req.body;
-
-  const password = await bcrypt.hash(process.env.PASSWORD_GLOBAL_GOOGLE, 10);
-
-  try {
-    const [user, created] = await User.findOrCreate({
-      where: {
-        email,
-      },
-      defaults: {
-        name,
-        lastname,
-        password,
-      },
-    });
-
-    if (user || created) {
-      const payload = {
-        user: { id: user.dataValues.id_user },
-      };
-      jwt.sign(
-        payload,
-        JWT_SECRET,
-        {
-          expiresIn: "3d",
-        },
-        (err, token) => {
-          if (err) throw err;
-          return res.json({ token });
-        }
-      );
-    }
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-};
 
 module.exports = {
   login,
@@ -425,5 +400,4 @@ module.exports = {
   updateRelationship,
   updateOcupation,
   updateUnemployed,
-  loginWithGoogle,
 };

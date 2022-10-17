@@ -12,6 +12,8 @@ const userRouter = require("./routes/userRoutes");
 const verifyRouter = require("./routes/verifyRoutes");
 const contactRouter = require("./routes/contactRoutes");
 const dailyRouter = require("./routes/dailyRouter");
+const quizRouter = require("./routes/quizRouter");
+const adminRouter = require("./routes/adminRouter");
 
 var app = express();
 
@@ -38,18 +40,36 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(session({ secret: process.env.APP_NEXUM }));
+app.use(
+  session({
+    secret: process.env.APP_NEXUM,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/auth/google", passport.authenticate("google"));
 app.get(
-  "https://localhost:3000/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/login",
+  "/auth/google",
+
+  passport.authenticate("auth-google", {
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+    session: false,
   })
+);
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("auth-google"),
+  (req, res) => {
+    console.log(req);
+    //req.isAuthenticated() will return true if user is logged in
+    res.redirect("http://localhost:3002/landing");
+  }
 );
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -59,6 +79,19 @@ app.use("/api/user", userRouter);
 app.use("/api/verify", verifyRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/daily", dailyRouter);
+app.use("/api/quiz", quizRouter);
+app.use("/api/admin", adminRouter);
+app.get("/ruta_solo_logueados", (req, res) => {
+  console.log(req.session);
+
+  // Si, por ejemplo, no hay nombre
+  if (!req.session.nombre) {
+    res.end("No tienes permiso. Fuera de aquí");
+  } else {
+    // Ok, el usuario tiene permiso
+    res.end("Hola " + req.session.nombre);
+  }
+});
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");

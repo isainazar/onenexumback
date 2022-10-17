@@ -20,9 +20,9 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM("footer", "quiz"),
       allowNull: false,
     },
-    message: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    checkboxs: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
     },
   };
 

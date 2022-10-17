@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
     },
     lastname: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
@@ -28,10 +28,6 @@ module.exports = (sequelize) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
     },
     date_birth: {
       type: DataTypes.DATE,
@@ -46,11 +42,17 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     gender: {
-      type: DataTypes.ENUM("male", "female", "binary", "other"),
+      type: DataTypes.ENUM("Masculino", "Femenino", "Binario", "Otro"),
       allowNull: true,
     },
     relationship: {
-      type: DataTypes.ENUM("single", "dating", "relationship", "married"),
+      type: DataTypes.ENUM(
+        "Soltero",
+        "Saliendo",
+        "En una relacion",
+        "Casado",
+        "Otro"
+      ),
       allowNull: true,
     },
     ocupation: {
@@ -62,15 +64,18 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     user_type: {
-      type: DataTypes.ENUM("1", "2"),
+      type: DataTypes.ENUM("1", "2", "ADMIN"),
       allowNull: true,
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      default: false,
     },
     provider: {
       type: DataTypes.STRING,
     },
     providerId: {
       type: DataTypes.STRING,
-      unique: true,
     },
   };
 
@@ -83,6 +88,10 @@ module.exports = (sequelize) => {
   const User = sequelize.define("user", user, config);
 
   User.associate = (models) => {
+    User.hasOne(models.Quiz, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
     User.belongsToMany(models.Daily, {
       through: "daily_by_user",
       timestamps: false,

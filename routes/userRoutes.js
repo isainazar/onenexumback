@@ -12,7 +12,6 @@ const {
   updateOcupation,
   updateRelationship,
   updateUnemployed,
-  loginWithGoogle,
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -24,6 +23,5 @@ router.post("/update-gender/:id_user", updateGender);
 router.post("/update-relationship/:id_user", updateRelationship);
 router.post("/update-ocupation/:id_user", updateOcupation);
 router.post("/update-unempolyed/:id_user", updateUnemployed);
-router.post("/loginWithGoogle", loginWithGoogle);
 
 module.exports = router;

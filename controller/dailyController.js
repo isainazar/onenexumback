@@ -1,8 +1,9 @@
 const { User, Daily } = require("../DataBase/index.js");
 
 const postDaily = async (req, res) => {
-  const { respuesta, id_user } = req.body;
-  if (!id_user || !respuesta) {
+  const { respuesta } = req.body;
+  console.log(req.session);
+  if (!respuesta) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   if (
@@ -12,7 +13,7 @@ const postDaily = async (req, res) => {
     respuesta === "bien" ||
     respuesta === "muy bien"
   ) {
-    const user = await User.findByPk(id_user);
+    const user = await User.findByPk(req.session.id_user);
     if (!user) {
       return res.status(403).json({ message: "Usuario inexistente" });
     }
