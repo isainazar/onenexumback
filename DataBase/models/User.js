@@ -69,14 +69,18 @@ module.exports = (sequelize) => {
     },
     status: {
       type: DataTypes.BOOLEAN,
-      default: false,
+      defaultValue: false,
     },
-    provider: {
+    progress: {
+      type: DataTypes.STRING,
+      defaultValue: "0%",
+    },
+    /*   provider: {
       type: DataTypes.STRING,
     },
     providerId: {
       type: DataTypes.STRING,
-    },
+    }, */
   };
 
   const config = {

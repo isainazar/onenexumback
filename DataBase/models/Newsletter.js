@@ -16,10 +16,6 @@ module.exports = (sequelize) => {
         isEmail: true,
       },
     },
-    origen: {
-      type: DataTypes.ENUM("footer", "quiz"),
-      allowNull: false,
-    },
     checkboxs: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,

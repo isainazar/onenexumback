@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
+    respuesta0: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
     respuesta1: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -17,7 +21,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     respuesta3: {
-      type: DataTypes.ARRAY(DataTypes.BOOLEAN),
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     respuesta4: {

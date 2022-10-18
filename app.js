@@ -48,7 +48,7 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
+/* app.use(passport.initialize());
 app.use(passport.session());
 
 app.get(
@@ -70,7 +70,7 @@ app.get(
     //req.isAuthenticated() will return true if user is logged in
     res.redirect("http://localhost:3002/landing");
   }
-);
+); */
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));

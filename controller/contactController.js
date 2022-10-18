@@ -42,8 +42,8 @@ const contactController = async (req, res) => {
   }
 };
 const quizNewsletter = async (req, res) => {
-  const { email, message, origen } = req.body;
-  if (!email || !message || !origen) {
+  const { email, checkboxs } = req.body;
+  if (!email || !checkboxs || !origen) {
     return res.status(500).json({ message: "All fields are required" });
   }
   if (validarEmail(email) === "This email is incorrect") {
@@ -60,7 +60,6 @@ const quizNewsletter = async (req, res) => {
     const createNewsletter = await Newsletter.create({
       email,
       message,
-      origen,
     });
     if (createNewsletter) {
       let html2 = `<div> <h3>Gracias por unirte e nuestro NewsLetter!</h3>
@@ -83,49 +82,8 @@ const quizNewsletter = async (req, res) => {
     });
   }
 };
-const footerNewsletter = async (req, res) => {
-  const { email, origen } = req.body;
-  if (!email || !origen) {
-    return res.status(500).json({ message: "All fields are required" });
-  }
-  if (validarEmail(email) === "This email is incorrect") {
-    return res.status(501).json({ message: "This mail doesn't exists" });
-  }
-  try {
-    let userN = await Newsletter.findOne({ where: { email } });
-    // Si el correo ya está registrado, devuelvo un error
-    if (userN) {
-      return res.status(500).json({
-        message: "Este email ya esta registrado en nuestro Newsletter",
-      });
-    }
-    const createNewsletter = await Newsletter.create({
-      email,
-      origen,
-    });
-    if (createNewsletter) {
-      let html2 = `<div> <h3>Gracias por unirte e nuestro NewsLetter!</h3>
-         <p> Aqui recibiras la mejor informacion sobre todas nuestras ofertas!!!</p>
-           <p>Gracias, el equipo de One Nexum</p>
-      </div>`;
-      await sendEmail(`Newsletter One Nexum`, "", false, email, html2);
-      return res.status(200).json({
-        message: "Fuiste agregado a nuestro newsletter correctamente",
-      });
-    } else {
-      return res.status(400).json({
-        message: "No pudiste ser agregado a nuestro newsletter",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al intentar acceder a nuestro newsletter",
-    });
-  }
-};
 
 module.exports = {
   contactController,
   quizNewsletter,
-  footerNewsletter,
 };
