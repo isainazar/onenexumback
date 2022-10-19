@@ -14,6 +14,8 @@ const contactRouter = require("./routes/contactRoutes");
 const dailyRouter = require("./routes/dailyRouter");
 const quizRouter = require("./routes/quizRouter");
 const adminRouter = require("./routes/adminRouter");
+const progressRouter = require("./routes/progressRoutes");
+const stripeRouter = require("./routes/stripeRouter");
 
 var app = express();
 
@@ -81,6 +83,9 @@ app.use("/api/contact", contactRouter);
 app.use("/api/daily", dailyRouter);
 app.use("/api/quiz", quizRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/progress", progressRouter);
+app.use("/api/stripe", stripeRouter);
+
 app.get("/ruta_solo_logueados", (req, res) => {
   console.log(req.session);
 

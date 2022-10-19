@@ -3,7 +3,7 @@ const { User, Daily, Quiz } = require("../DataBase/index.js");
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      where: [{ status: "active" }],
+      where: { status: true },
       include: [
         {
           association: "dailies",

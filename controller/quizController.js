@@ -2,6 +2,7 @@ const { Quiz, User } = require("../DataBase/index.js");
 
 const postQuiz = async (req, res) => {
   const {
+    respuesta0,
     respuesta1,
     respuesta2,
     respuesta3,
@@ -12,6 +13,7 @@ const postQuiz = async (req, res) => {
     id_user,
   } = req.body;
   if (
+    respuesta0 === undefined ||
     respuesta1 === undefined ||
     respuesta2 === undefined ||
     respuesta3 === undefined ||
@@ -29,6 +31,7 @@ const postQuiz = async (req, res) => {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   const nuevaQuiz = await Quiz.create({
+    respuesta0,
     respuesta1,
     respuesta2,
     respuesta3,

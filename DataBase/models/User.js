@@ -72,8 +72,8 @@ module.exports = (sequelize) => {
       defaultValue: false,
     },
     progress: {
-      type: DataTypes.STRING,
-      defaultValue: "0%",
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     /*   provider: {
       type: DataTypes.STRING,
