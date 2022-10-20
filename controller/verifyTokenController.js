@@ -19,7 +19,24 @@ const verifyToken = async (req, res) => {
     });
   }
 };
+const verifyStatus = async (req, res) => {
+  let statusValid = true;
+  const { status } = req.session;
+  if (status === false) {
+    tokenIsValid = false;
+  }
+
+  if (tokenIsValid && status === true) {
+    return res.status(200).send(tokenIsValid);
+  } else {
+    return res.status(403).json({
+      status: 403,
+      message: "Tu usuario tiene un status false",
+    });
+  }
+};
 
 module.exports = {
   verifyToken,
+  verifyStatus,
 };

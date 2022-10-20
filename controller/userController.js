@@ -38,8 +38,7 @@ const createUser = async (req, res, next) => {
     !country ||
     !region ||
     !gender ||
-    !date_birth ||
-    !user_type
+    !date_birth
   ) {
     return res.status(500).json({ message: "All fields are required" });
   }

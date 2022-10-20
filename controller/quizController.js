@@ -10,8 +10,8 @@ const postQuiz = async (req, res) => {
     respuesta5,
     respuesta6,
     respuesta7,
+    id_user,
   } = req.body;
-  const { id_user } = req.session;
   if (
     respuesta0 === undefined ||
     respuesta1 === undefined ||
@@ -23,7 +23,7 @@ const postQuiz = async (req, res) => {
     respuesta7 === undefined ||
     !id_user
   ) {
-    return res.status(403).json({ message: "Falta informacion" });
+    return res.status(404).json({ message: "Falta informacion" });
   }
 
   const user = await User.findByPk(id_user);
