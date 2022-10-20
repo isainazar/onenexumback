@@ -71,6 +71,10 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    terminos: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     progress: {
       type: DataTypes.INTEGER,
       defaultValue: 0,

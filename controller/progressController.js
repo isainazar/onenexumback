@@ -1,95 +1,47 @@
 const { User } = require("../DataBase/index.js");
 
-const progress5 = async (req, res) => {
+const progress = async (req, res) => {
   console.log(req.session);
   const { id_user } = req.session;
-  const usuario = await User.findByPk(id_user);
-  if (usuario.dataValues.progress > 5) {
-    req.session.progress = `${usuario.dataValues.progress}%`;
-    return res
-      .status(400)
-      .json({ message: "El progreso actual es mayor al 5%" });
+  const { progress } = req.session;
+  const { page } = req.body;
+  if (!id_user || !page || progress === undefined) {
+    return res.status(500).json({ message: "Se requieren todos los campos" });
   }
-  const usuarioCambiado = await User.update(
-    {
-      progress: 5,
-    },
-    {
-      where: {
-        id_user,
-      },
+  if (Number.isInteger(page)) {
+    const pages = 23;
+    const resultado = Math.round((page * 100) / pages);
+    if (progress > resultado) {
+      return res.status(400).json({
+        message: "No se actualizo el progreso porque actualmente es mayor",
+      });
     }
-  );
-  if (usuarioCambiado) {
-    req.session.progress = "5%";
-    return res.status(200).json({ message: "Usuario cambiado correctamente" });
+
+    const nuevoUsuario = await User.update(
+      {
+        progress: resultado,
+      },
+      {
+        where: {
+          id_user,
+        },
+      }
+    );
+    if (nuevoUsuario) {
+      req.session.progress = resultado;
+      return res.status(200).json({ message: "Progeso actualizado con exito" });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Progreso no se ha podido actualizar" });
+    }
   } else {
     return res
       .status(404)
-      .json({ message: "Error al intentar cambiar el usuario" });
-  }
-};
-const progress7 = async (req, res) => {
-  console.log(req.session);
-  const { id_user } = req.session;
-  const usuario = await User.findByPk(id_user);
-  if (usuario.dataValues.progress > 7) {
-    req.session.progress = `${usuario.dataValues.progress}%`;
-    return res
-      .status(400)
-      .json({ message: "El progreso actual es mayor al 7%" });
-  }
-  const usuarioCambiado = await User.update(
-    {
-      progress: 7,
-    },
-    {
-      where: {
-        id_user,
-      },
-    }
-  );
-  if (usuarioCambiado) {
-    req.session.progress = "7%";
-    return res.status(200).json({ message: "Usuario cambiado correctamente" });
-  } else {
-    return res
-      .status(404)
-      .json({ message: "Error al intentar cambiar el usuario" });
-  }
-};
-const progress10 = async (req, res) => {
-  console.log(req.session);
-  const { id_user } = req.session;
-  const usuario = await User.findByPk(id_user);
-  if (usuario.dataValues.progress > 10) {
-    req.session.progress = `${usuario.dataValues.progress}%`;
-    return res
-      .status(400)
-      .json({ message: "El progreso actual es mayor al 10%" });
-  }
-  const usuarioCambiado = await User.update(
-    {
-      progress: 10,
-    },
-    {
-      where: {
-        id_user,
-      },
-    }
-  );
-  if (usuarioCambiado) {
-    req.session.progress = "10%";
-    return res.status(200).json({ message: "Usuario cambiado correctamente" });
-  } else {
-    return res
-      .status(404)
-      .json({ message: "Error al intentar cambiar el usuario" });
+      .json({ message: "El numero de pagina no es entero" });
   }
 };
 
 module.exports = {
-  progress5,
-  progress7,
-  progress10,
+  progress,
 };

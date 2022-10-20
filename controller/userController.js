@@ -28,7 +28,6 @@ const createUser = async (req, res, next) => {
     region,
     gender,
     user_type,
-    status,
   } = req.body;
 
   if (
@@ -39,7 +38,8 @@ const createUser = async (req, res, next) => {
     !country ||
     !region ||
     !gender ||
-    !date_birth
+    !date_birth ||
+    !user_type
   ) {
     return res.status(500).json({ message: "All fields are required" });
   }
@@ -67,7 +67,6 @@ const createUser = async (req, res, next) => {
       region,
       gender,
       user_type,
-      status,
     });
     req.session.id_user = user.id_user;
     req.session.nombre = name;
@@ -79,6 +78,8 @@ const createUser = async (req, res, next) => {
     req.session.region = region;
     req.session.gender = gender;
     req.session.user_type = user_type;
+    req.session.status = false;
+    req.session.progress = 0;
 
     // generamos el payload/body para generar el token
     const payload = {
@@ -295,101 +296,26 @@ const resetPassword = async (req, res) => {
     });
   }
 };
+const updateTerminos = async (req, res) => {
+  console.log(req.session);
+  const { id_user } = req.session;
 
-const updateGender = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-    const { gender } = req.body;
-
-    const usuarioGender = await User.update(
-      {
-        gender,
+  const usuarioCambiado = await User.update(
+    {
+      terminos: true,
+    },
+    {
+      where: {
+        id_user,
       },
-      {
-        where: {
-          id_user,
-        },
-      }
-    );
-    if (!usuarioGender) {
-      return res.satus(404).json({ message: "User Couldn't be changed" });
     }
-    return res.status(200).json({ message: "User change correctly" });
-  } catch (err) {
-    // console.log(err)
-    return res.status(400).json(err);
-  }
-};
-const updateRelationship = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-    const { relationship } = req.body;
-
-    const usuarioRelationship = await User.update(
-      {
-        relationship,
-      },
-      {
-        where: {
-          id_user,
-        },
-      }
-    );
-    if (!usuarioRelationship) {
-      return res.satus(404).json({ message: "User Couldn't be changed" });
-    }
-    return res.status(200).json({ message: "User change correctly" });
-  } catch (err) {
-    // console.log(err)
-    return res.status(400).json(err);
-  }
-};
-const updateOcupation = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-    const { ocupation } = req.body;
-
-    const usuarioOcupation = await User.update(
-      {
-        ocupation,
-      },
-      {
-        where: {
-          id_user,
-        },
-      }
-    );
-    if (!usuarioOcupation) {
-      return res.satus(404).json({ message: "User Couldn't be changed" });
-    }
-    return res.status(200).json({ message: "User change correctly" });
-  } catch (err) {
-    // console.log(err)
-    return res.status(400).json(err);
-  }
-};
-const updateUnemployed = async (req, res) => {
-  try {
-    const { id_user } = req.params;
-    const { unemployed } = req.body;
-
-    const usuarioUnemployed = await User.update(
-      {
-        unemployed,
-      },
-      {
-        where: {
-          id_user,
-        },
-      }
-    );
-    if (!usuarioUnemployed) {
-      return res.satus(404).json({ message: "User Couldn't be changed" });
-    }
-    return res.status(200).json({ message: "User change correctly" });
-  } catch (err) {
-    // console.log(err)
-    return res.status(400).json(err);
+  );
+  if (usuarioCambiado) {
+    return res.status(200).json({ message: "Usuario cambiado correctamente" });
+  } else {
+    return res
+      .status(404)
+      .json({ message: "Error al intentar cambiar el usuario" });
   }
 };
 
@@ -398,8 +324,5 @@ module.exports = {
   createUser,
   resetPassword,
   forgotPassword,
-  updateGender,
-  updateRelationship,
-  updateOcupation,
-  updateUnemployed,
+  updateTerminos,
 };

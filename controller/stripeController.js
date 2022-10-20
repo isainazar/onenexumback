@@ -29,6 +29,8 @@ const paymentStripe = async (req, res) => {
             }
           );
           if (newUser) {
+            req.session.status = true;
+
             res.send({
               title: "success",
               message: "Successful payments",
@@ -45,9 +47,7 @@ const paymentStripe = async (req, res) => {
       } catch (error) {
         res.send({
           title: "Error!",
-          message:
-            error.payment_intent.last_payment_error.message ||
-            "An error has occurred",
+          message: "An error has occurred",
           status: "400",
         });
       }

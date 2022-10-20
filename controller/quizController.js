@@ -10,8 +10,8 @@ const postQuiz = async (req, res) => {
     respuesta5,
     respuesta6,
     respuesta7,
-    id_user,
   } = req.body;
+  const { id_user } = req.session;
   if (
     respuesta0 === undefined ||
     respuesta1 === undefined ||

@@ -5,6 +5,6 @@ const { paymentStripe } = require("../controller/stripeController");
 
 const router = Router();
 
-router.post("/paymentStripe", auth, paymentStripe);
+router.post("/", auth, paymentStripe);
 
 module.exports = router;
