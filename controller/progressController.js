@@ -2,8 +2,7 @@ const { User } = require("../DataBase/index.js");
 
 const progress = async (req, res) => {
   console.log(req.session);
-  const { id_user } = req.session;
-  const { progress } = req.session;
+  const { id_user, progress } = req.session;
   const { page } = req.body;
   if (!id_user || !page || progress === undefined) {
     return res.status(500).json({ message: "Se requieren todos los campos" });

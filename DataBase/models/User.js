@@ -12,10 +12,18 @@ module.exports = (sequelize) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue("name", hashSync(value, 10));
+      },
+      get() {},
     },
     lastname: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue("lastname", hashSync(value, 10));
+      },
+      get() {},
     },
     password: {
       type: DataTypes.STRING,
@@ -28,6 +36,10 @@ module.exports = (sequelize) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue("email", hashSync(value, 10));
+      },
+      get() {},
     },
     date_birth: {
       type: DataTypes.DATE,
@@ -99,6 +111,10 @@ module.exports = (sequelize) => {
     User.hasOne(models.Quiz, {
       sourceKey: "id_user",
       foreignKey: "id_user",
+    });
+    User.belongsToMany(models.Login, {
+      through: "login_by_user",
+      timestamps: false,
     });
     User.belongsToMany(models.Daily, {
       through: "daily_by_user",

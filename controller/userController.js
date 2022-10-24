@@ -1,4 +1,4 @@
-const { User } = require("../DataBase/index.js");
+const { User, Login } = require("../DataBase/index.js");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
@@ -78,6 +78,7 @@ const createUser = async (req, res, next) => {
     req.session.gender = gender;
     req.session.user_type = user_type;
     req.session.status = false;
+    req.session.terminos = false;
     req.session.progress = 0;
 
     // generamos el payload/body para generar el token
@@ -91,7 +92,7 @@ const createUser = async (req, res, next) => {
       payload,
       JWT_SECRET,
       {
-        expiresIn: "7d",
+        expiresIn: "1d",
       },
       (err, token) => {
         if (err) throw err;
@@ -117,7 +118,8 @@ const login = async (req, res) => {
   }
 
   try {
-    let user = await User.findOne({
+    const emailFinal = bcrypt.compareSync();
+    const user = await User.findOne({
       where: {
         email: email,
       },
@@ -138,6 +140,29 @@ const login = async (req, res) => {
         message: "Contraseña invalida",
       });
     }
+    const newLogin = await Login.create({
+      id_user: user.dataValues.id_user,
+    });
+
+    const newLoginDef = await Promise.all(await newLogin.addUser(user));
+    if (!newLogin || !newLoginDef) {
+      return res.status(400).json({
+        message: "No se pudo guardar el login",
+      });
+    }
+    req.session.id_user = user.dataValues.id_user;
+    req.session.nombre = user.dataValues.name;
+    req.session.lastname = user.dataValues.lastname;
+    req.session.email = user.dataValues.email;
+    req.session.password = user.dataValues.password;
+    req.session.date_birth = user.dataValues.date_birth;
+    req.session.country = user.dataValues.country;
+    req.session.region = user.dataValues.region;
+    req.session.gender = user.dataValues.gender;
+    req.session.user_type = user.dataValues.user_type;
+    req.session.status = user.dataValues.status;
+    req.session.progress = user.dataValues.progress;
+    req.session.terminos = user.dataValues.terminos;
 
     const payload = {
       user: {
@@ -148,7 +173,7 @@ const login = async (req, res) => {
       payload,
       JWT_SECRET,
       {
-        expiresIn: "7d",
+        expiresIn: "1d",
       },
       (err, token) => {
         if (err) throw err;
@@ -298,7 +323,9 @@ const resetPassword = async (req, res) => {
 const updateTerminos = async (req, res) => {
   console.log(req.session);
   const { id_user } = req.session;
-
+  if (!id_user) {
+    return res.status(500).json({ message: "Faltan campos" });
+  }
   const usuarioCambiado = await User.update(
     {
       terminos: true,
@@ -310,6 +337,7 @@ const updateTerminos = async (req, res) => {
     }
   );
   if (usuarioCambiado) {
+    req.session.terminos = true;
     return res.status(200).json({ message: "Usuario cambiado correctamente" });
   } else {
     return res

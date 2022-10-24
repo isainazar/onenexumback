@@ -6,6 +6,6 @@ const {
 var router = express.Router();
 
 router.post("/", verifyToken);
-router.post("/", verifyStatus);
+router.post("/status&tyc", verifyStatus);
 
 module.exports = router;

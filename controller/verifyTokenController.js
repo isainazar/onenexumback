@@ -20,18 +20,25 @@ const verifyToken = async (req, res) => {
   }
 };
 const verifyStatus = async (req, res) => {
-  let statusValid = true;
-  const { status } = req.session;
-  if (status === false) {
-    tokenIsValid = false;
+  const { status, terminos } = req.session;
+  if (terminos === false) {
+    return res.status(403).json({
+      status: 403,
+      message: "Usuario invalido. No acepto los terminos y condiciones",
+    });
   }
-
-  if (tokenIsValid && status === true) {
-    return res.status(200).send(tokenIsValid);
+  if (status === false) {
+    return res.status(403).json({
+      status: 403,
+      message: "Usuario invalido. No pago ",
+    });
+  }
+  if (terminos === true && status === true) {
+    return res.status(200).send(true);
   } else {
     return res.status(403).json({
       status: 403,
-      message: "Tu usuario tiene un status false",
+      message: "Error al crear validar el usuario",
     });
   }
 };

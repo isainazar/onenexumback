@@ -8,10 +8,6 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
-    respuesta0: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
     respuesta1: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

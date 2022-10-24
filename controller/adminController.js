@@ -11,7 +11,12 @@ const getAllUsers = async (req, res) => {
             attributes: [],
           },
         },
-
+        {
+          association: "logins",
+          through: {
+            attributes: [],
+          },
+        },
         {
           model: Quiz,
         },
@@ -43,7 +48,12 @@ const getUserById = async (req, res) => {
             attributes: [],
           },
         },
-
+        {
+          association: "logins",
+          through: {
+            attributes: [],
+          },
+        },
         {
           model: Quiz,
         },
