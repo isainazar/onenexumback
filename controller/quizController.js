@@ -2,23 +2,23 @@ const { Quiz, User } = require("../DataBase/index.js");
 
 const postQuiz = async (req, res) => {
   const {
+    respuesta0,
     respuesta1,
     respuesta2,
     respuesta3,
     respuesta4,
     respuesta5,
     respuesta6,
-    respuesta7,
     id_user,
   } = req.body;
   if (
+    respuesta0 === undefined ||
     respuesta1 === undefined ||
     respuesta2 === undefined ||
     respuesta3 === undefined ||
     respuesta4 === undefined ||
     respuesta5 === undefined ||
     respuesta6 === undefined ||
-    respuesta7 === undefined ||
     !id_user
   ) {
     return res.status(404).json({ message: "Falta informacion" });
@@ -29,13 +29,13 @@ const postQuiz = async (req, res) => {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   const nuevaQuiz = await Quiz.create({
+    respuesta0,
     respuesta1,
     respuesta2,
     respuesta3,
     respuesta4,
     respuesta5,
     respuesta6,
-    respuesta7,
     id_user,
   });
 

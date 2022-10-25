@@ -70,5 +70,5 @@ const getUserById = async (req, res) => {
       .json({ message: "Error al cone ctarse a la base de datos" });
   }
 };
-
-module.exports = { getAllUsers, getUserById };
+const clicksPaymentButton = async (req, res) => {};
+module.exports = { getAllUsers, getUserById, clicksPaymentButton };
