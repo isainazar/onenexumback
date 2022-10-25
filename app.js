@@ -6,6 +6,7 @@ var cors = require("cors");
 const passport = require("passport");
 require("./passport")(passport);
 const session = require("express-session");
+var cookieSession = require("cookie-session");
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
@@ -41,7 +42,7 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
-
+app.set("trust proxy", 1); // trust first proxy
 app.use(
   session({
     secret: process.env.APP_NEXUM,
@@ -49,7 +50,13 @@ app.use(
     saveUninitialized: true,
   })
 );
-
+app.use(
+  cookieSession({
+    name: "session",
+    secret: process.env.COOKIE_SECRET2,
+    // Cookie Options
+  })
+);
 /* app.use(passport.initialize());
 app.use(passport.session());
 
