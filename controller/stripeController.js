@@ -73,7 +73,7 @@ const paymentStripe = async (req, res) => {
     cancel_url: `http://localhost:3002/quizz`,
   });
   console.log(session);
-  return res.redirect(303, session.url);
+  return res.json({ url: session.url });
 };
 
 module.exports = {
