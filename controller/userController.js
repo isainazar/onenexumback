@@ -120,7 +120,6 @@ const login = async (req, res) => {
   }
 
   try {
-    const emailFinal = bcrypt.compareSync();
     const user = await User.findOne({
       where: {
         email: email,
