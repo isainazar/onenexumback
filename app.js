@@ -20,7 +20,13 @@ const stripeRouter = require("./routes/stripeRouter");
 
 var app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(
@@ -33,7 +39,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version"
+    "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -42,21 +48,27 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
-app.set("trust proxy", 1); // trust first proxy
+/* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
     secret: process.env.APP_NEXUM,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "lax",
+      secure: false,
+    },
   })
 );
-app.use(
+/* app.use(
   cookieSession({
     name: "session",
     secret: process.env.COOKIE_SECRET2,
+    keys: ["key1", "key2"],
     // Cookie Options
   })
-);
+); */
+
 /* app.use(passport.initialize());
 app.use(passport.session());
 

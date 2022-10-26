@@ -28,7 +28,6 @@ const createUser = async (req, res, next) => {
     region,
     gender,
     user_type,
-    status,
   } = req.body;
 
   if (
@@ -67,7 +66,6 @@ const createUser = async (req, res, next) => {
       region,
       gender,
       user_type,
-      status,
     });
     req.session.id_user = user.id_user;
     req.session.nombre = name;
