@@ -1,6 +1,7 @@
 const { Quiz, User } = require("../DataBase/index.js");
 
 const postQuiz = async (req, res) => {
+  const { id_user } = req.session;
   const {
     respuesta0,
     respuesta1,
@@ -9,7 +10,6 @@ const postQuiz = async (req, res) => {
     respuesta4,
     respuesta5,
     respuesta6,
-    id_user,
   } = req.body;
   if (
     respuesta0 === undefined ||

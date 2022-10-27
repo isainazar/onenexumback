@@ -1,6 +1,7 @@
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 var logger = require("morgan");
 var cors = require("cors");
 const passport = require("passport");
@@ -22,11 +23,14 @@ var app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3002",
+    methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
 );
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(
@@ -36,7 +40,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3002");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
@@ -51,12 +55,14 @@ app.use((req, res, next) => {
 /* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
+    key: "id_user",
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
     cookie: {
+      httpOnly: true,
+      secure: true,
       sameSite: "lax",
-      secure: false,
     },
   })
 );
@@ -65,6 +71,7 @@ app.use(
     name: "session",
     secret: process.env.COOKIE_SECRET2,
     keys: ["key1", "key2"],
+
     // Cookie Options
   })
 ); */
@@ -93,7 +100,6 @@ app.get(
   }
 ); */
 
-app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/user", userRouter);
@@ -109,11 +115,11 @@ app.get("/ruta_solo_logueados", (req, res) => {
   console.log(req.session);
 
   // Si, por ejemplo, no hay nombre
-  if (!req.session.nombre) {
+  if (!req.cookies.name) {
     res.end("No tienes permiso. Fuera de aquí");
   } else {
     // Ok, el usuario tiene permiso
-    res.end("Hola " + req.session.nombre);
+    res.end("Hola " + req.cookies.name);
   }
 });
 

@@ -1,8 +1,9 @@
 const { User, Daily } = require("../DataBase/index.js");
 
 const postDaily = async (req, res) => {
-  const { respuesta } = req.body;
   const { id_user } = req.session;
+  const { respuesta } = req.body;
+
   console.log(req.session);
   if (!respuesta) {
     return res.status(403).json({ message: "Falta informacion" });

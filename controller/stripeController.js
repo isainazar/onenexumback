@@ -6,10 +6,12 @@ const { User } = require("../DataBase/index");
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
 
 const paymentStripe = async (req, res) => {
+  console.log(req.session);
   const { id_user } = req.session;
   if (!id_user) {
     return res.status(500).json({ message: "field required" });
   }
+  const id_userr = JSON.parse(id_user);
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {

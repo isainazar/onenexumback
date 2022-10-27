@@ -80,7 +80,20 @@ const createUser = async (req, res, next) => {
     req.session.status = false;
     req.session.terminos = false;
     req.session.progress = 0;
-
+    /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
+    res.cookie("id_user", user.id_user, options);
+    res.cookie("name", name, options);
+    res.cookie("lastname", lastname, options);
+    res.cookie("email", email, options);
+    res.cookie("date_birth", date_birth, options);
+    res.cookie("country", country, options);
+    res.cookie("region", region, options);
+    res.cookie("gender", gender, options);
+    res.cookie("user_type", user_type, options);
+    res.cookie("status", false, options);
+    res.cookie("terminos", false, options);
+    res.cookie("progress", 0, options); */
+    console.log(req.session);
     // generamos el payload/body para generar el token
     const payload = {
       user: {
@@ -162,6 +175,20 @@ const login = async (req, res) => {
     req.session.status = user.dataValues.status;
     req.session.progress = user.dataValues.progress;
     req.session.terminos = user.dataValues.terminos;
+    /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
+
+    res.cookie("id_user", user.dataValues.id_user, options);
+    res.cookie("name", user.dataValues.name, options);
+    res.cookie("lastname", user.dataValues.lastname, options);
+    res.cookie("email", user.dataValues.email, options);
+    res.cookie("date_birth", user.dataValues.date_birth, options);
+    res.cookie("country", user.dataValues.country, options);
+    res.cookie("region", user.dataValues.region, options);
+    res.cookie("gender", user.dataValues.gender, options);
+    res.cookie("user_type", user.dataValues.user_type, options);
+    res.cookie("status", user.dataValues.status, options);
+    res.cookie("terminos", user.dataValues.terminos, options);
+    res.cookie("progress", user.dataValues.progress, options); */
 
     const payload = {
       user: {
