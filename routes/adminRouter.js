@@ -7,6 +7,6 @@ const auth = require("../utilities/auth");
 const { getAllUsers, getUserById } = require("../controller/adminController");
 
 router.get("/getUsers", auth, authAdmin, getAllUsers);
-router.get("/getUsers/:id_user", auth, authAdmin, getUserById);
+router.get("/getUser", auth, authAdmin, getUserById);
 
 module.exports = router;

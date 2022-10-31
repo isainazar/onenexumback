@@ -1,4 +1,9 @@
 const { User, Login } = require("../DataBase/index.js");
+const Stripe = require("stripe");
+const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
+const PRICE_ID = process.env.PRICE_ID;
+const stripe = new Stripe(KEY_PRIVATE_STRIPE);
+
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
@@ -67,19 +72,18 @@ const createUser = async (req, res, next) => {
       gender,
       user_type,
     });
-    req.session.id_user = user.id_user;
-    req.session.nombre = name;
-    req.session.lastname = lastname;
-    req.session.email = email;
-    req.session.password = password;
-    req.session.date_birth = date_birth;
-    req.session.country = country;
-    req.session.region = region;
-    req.session.gender = gender;
-    req.session.user_type = user_type;
-    req.session.status = false;
-    req.session.terminos = false;
-    req.session.progress = 0;
+    /* req.cookies.id_user = user.id_user;
+    req.cookies.nombre = name;
+    req.cookies.email = email;
+    req.cookies.password = password;
+    req.cookies.date_birth = date_birth;
+    req.cookies.country = country;
+    req.cookies.region = region;
+    req.cookies.gender = gender;
+    req.cookies.user_type = user_type;
+    req.cookies.status = false;
+    req.cookies.terminos = false;
+    req.cookies.progress = 0; */
     /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
     res.cookie("id_user", user.id_user, options);
     res.cookie("name", name, options);
@@ -93,7 +97,7 @@ const createUser = async (req, res, next) => {
     res.cookie("status", false, options);
     res.cookie("terminos", false, options);
     res.cookie("progress", 0, options); */
-    console.log(req.session);
+    /*  console.log(req.cookies); */
     // generamos el payload/body para generar el token
     const payload = {
       user: {
@@ -122,7 +126,7 @@ const createUser = async (req, res, next) => {
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, idPayment } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -152,7 +156,61 @@ const login = async (req, res) => {
         message: "Contraseña invalida",
       });
     }
-    const newLogin = await Login.create({
+    if (user.dataValues.firstLogin === true) {
+      const session = await stripe.checkout.sessions.retrieve(idPayment);
+      if (session.payment_status === "paid") {
+        const usuarioCambiado = await User.update(
+          {
+            status: true,
+            firstLogin: false,
+          },
+          {
+            where: {
+              id_user: user.dataValues.id_user,
+            },
+          }
+        );
+        if (usuarioCambiado) {
+          try {
+            const payload = {
+              user: {
+                id: user.dataValues.id_user,
+              },
+            };
+            jwt.sign(
+              payload,
+              JWT_SECRET,
+              {
+                expiresIn: "1d",
+              },
+              (err, token) => {
+                if (err) throw err;
+                return res.status(200).json({
+                  token: token,
+                  id_user: user.dataValues.id_user,
+                  type: user.dataValues.user_type,
+                });
+              }
+            );
+          } catch (error) {
+            return res.status(500).json({
+              message:
+                "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+              error: err,
+            });
+          }
+        } else {
+          return res.status(401).json({
+            message: "No se ha podido actualizar el usuario",
+          });
+        }
+      } else {
+        return res.status(400).json({
+          message: "Tu compra no ha sido exitosa",
+        });
+      }
+    }
+    /*   const newLogin = await Login.create({
       id_user: user.dataValues.id_user,
     });
 
@@ -161,8 +219,8 @@ const login = async (req, res) => {
       return res.status(400).json({
         message: "No se pudo guardar el login",
       });
-    }
-    req.session.id_user = user.dataValues.id_user;
+    } */
+    /*  req.session.id_user = user.dataValues.id_user;
     req.session.nombre = user.dataValues.name;
     req.session.lastname = user.dataValues.lastname;
     req.session.email = user.dataValues.email;
@@ -174,7 +232,7 @@ const login = async (req, res) => {
     req.session.user_type = user.dataValues.user_type;
     req.session.status = user.dataValues.status;
     req.session.progress = user.dataValues.progress;
-    req.session.terminos = user.dataValues.terminos;
+    req.session.terminos = user.dataValues.terminos; */
     /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
 
     res.cookie("id_user", user.dataValues.id_user, options);
@@ -188,8 +246,8 @@ const login = async (req, res) => {
     res.cookie("user_type", user.dataValues.user_type, options);
     res.cookie("status", user.dataValues.status, options);
     res.cookie("terminos", user.dataValues.terminos, options);
-    res.cookie("progress", user.dataValues.progress, options); */
-
+    res.cookie("progress", user.dataValues.progress, options);
+ */
     const payload = {
       user: {
         id: user.dataValues.id_user,
@@ -203,9 +261,11 @@ const login = async (req, res) => {
       },
       (err, token) => {
         if (err) throw err;
-        return res
-          .status(200)
-          .json({ token: token, id_user: user.dataValues.id_user });
+        return res.status(200).json({
+          token: token,
+          id_user: user.dataValues.id_user,
+          type: user.dataValues.user_type,
+        });
       }
     );
   } catch (err) {
@@ -258,7 +318,7 @@ const forgotPassword = async (req, res, next) => {
           .json({ message: "El usuario no se pudo actualizar" });
       }
       try {
-        req.session.password = temporalPassword;
+        /* req.session.password = temporalPassword; */
 
         const mail = await sendEmail(
           "Recuperación de contraseña",
@@ -329,7 +389,7 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
-      req.session.password = newPassword;
+      /* req.session.password = newPassword; */
 
       return res.status(200).json({
         message: "Contraseña cambiada con éxito",
@@ -347,8 +407,7 @@ const resetPassword = async (req, res) => {
   }
 };
 const updateTerminos = async (req, res) => {
-  console.log(req.session);
-  const { id_user } = req.session;
+  const { id_user } = req.body;
   if (!id_user) {
     return res.status(500).json({ message: "Faltan campos" });
   }

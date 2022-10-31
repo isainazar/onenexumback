@@ -43,7 +43,7 @@ const contactController = async (req, res) => {
 };
 const quizNewsletter = async (req, res) => {
   const { email, checkboxs } = req.body;
-  if (!email || !checkboxs || !origen) {
+  if (!email || !checkboxs) {
     return res.status(500).json({ message: "All fields are required" });
   }
   if (validarEmail(email) === "This email is incorrect") {

@@ -79,6 +79,10 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    firstLogin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
     /*   provider: {
       type: DataTypes.STRING,
     },

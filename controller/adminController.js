@@ -32,7 +32,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const id_user = req.params.id_user;
+    const id_user = req.body.id_user;
     if (!id_user) {
       return res.status(501).json({ message: "Falta informacion" });
     }
@@ -70,5 +70,5 @@ const getUserById = async (req, res) => {
       .json({ message: "Error al cone ctarse a la base de datos" });
   }
 };
-const clicksPaymentButton = async (req, res) => {};
-module.exports = { getAllUsers, getUserById, clicksPaymentButton };
+
+module.exports = { getAllUsers, getUserById };

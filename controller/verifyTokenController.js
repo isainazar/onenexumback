@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { User } = require("../DataBase/index.js");
 const { JWT_SECRET } = process.env;
 
 const verifyToken = async (req, res) => {
@@ -20,20 +21,33 @@ const verifyToken = async (req, res) => {
   }
 };
 const verifyStatus = async (req, res) => {
-  const { status, terminos } = req.session;
-  if (terminos === false) {
+  const { id_user } = req.body;
+  if (!id_user) {
+    return res.status(403).json({
+      status: 501,
+      message: "Falta el id_user",
+    });
+  }
+  const user = await User.findByPk(id_user);
+  if (!user) {
+    return res.status(403).json({
+      status: 404,
+      message: "No existe este usuario",
+    });
+  }
+  if (user.dataValues.terminos === false) {
     return res.status(403).json({
       status: 403,
       message: "Usuario invalido. No acepto los terminos y condiciones",
     });
   }
-  if (status === false) {
+  if (user.dataValues.status === false) {
     return res.status(403).json({
       status: 403,
       message: "Usuario invalido. No pago ",
     });
   }
-  if (terminos === true && status === true) {
+  if (user.dataValues.terminos === true && user.dataValues.status === true) {
     return res.status(200).send(true);
   } else {
     return res.status(403).json({

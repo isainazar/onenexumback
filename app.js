@@ -22,11 +22,11 @@ const stripeRouter = require("./routes/stripeRouter");
 var app = express();
 
 app.use(
-  cors({
+  cors(/* {
     origin: "http://localhost:3002",
     methods: ["GET", "POST", "PUT"],
     credentials: true,
-  })
+  } */)
 );
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -40,7 +40,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3002");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
   next();
 });
 /* app.set("trust proxy", 1);  */ // trust first proxy
-app.use(
+/* app.use(
   session({
     key: "id_user",
     secret: process.env.APP_NEXUM,
@@ -65,7 +65,7 @@ app.use(
       sameSite: "lax",
     },
   })
-);
+); */
 /* app.use(
   cookieSession({
     name: "session",
@@ -112,7 +112,7 @@ app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
 
 app.get("/ruta_solo_logueados", (req, res) => {
-  console.log(req.session);
+  console.log(req);
 
   // Si, por ejemplo, no hay nombre
   if (!req.cookies.name) {
