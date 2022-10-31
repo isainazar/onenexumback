@@ -204,7 +204,7 @@ const login = async (req, res) => {
           });
         }
       } else {
-        return res.status(400).json({
+        return res.status(402).json({
           message: "Tu compra no ha sido exitosa",
         });
       }
@@ -406,6 +406,7 @@ const resetPassword = async (req, res) => {
 };
 const updateTerminos = async (req, res) => {
   const { id_user } = req.body;
+  console.log(id_user);
   if (!id_user) {
     return res.status(500).json({ message: "Faltan campos" });
   }
@@ -420,7 +421,7 @@ const updateTerminos = async (req, res) => {
     }
   );
   if (usuarioCambiado) {
-    //req.session.terminos = true;
+    req.session.terminos = true;
     return res.status(200).json({ message: "Usuario cambiado correctamente" });
   } else {
     return res
