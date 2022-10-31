@@ -1,7 +1,6 @@
 const { User, Login } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
-const PRICE_ID = process.env.PRICE_ID;
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
 
 const jwt = require("jsonwebtoken");
@@ -43,7 +42,8 @@ const createUser = async (req, res, next) => {
     !country ||
     !region ||
     !gender ||
-    !date_birth
+    !date_birth ||
+    !user_type
   ) {
     return res.status(500).json({ message: "All fields are required" });
   }
@@ -188,7 +188,6 @@ const login = async (req, res) => {
                 return res.status(200).json({
                   token: token,
                   id_user: user.dataValues.id_user,
-                  type: user.dataValues.user_type,
                 });
               }
             );
@@ -264,7 +263,6 @@ const login = async (req, res) => {
         return res.status(200).json({
           token: token,
           id_user: user.dataValues.id_user,
-          type: user.dataValues.user_type,
         });
       }
     );
@@ -422,7 +420,7 @@ const updateTerminos = async (req, res) => {
     }
   );
   if (usuarioCambiado) {
-    req.session.terminos = true;
+    //req.session.terminos = true;
     return res.status(200).json({ message: "Usuario cambiado correctamente" });
   } else {
     return res
