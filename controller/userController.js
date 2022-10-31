@@ -421,7 +421,7 @@ const updateTerminos = async (req, res) => {
     }
   );
   if (usuarioCambiado) {
-    req.session.terminos = true;
+    //req.session.terminos = true;
     return res.status(200).json({ message: "Usuario cambiado correctamente" });
   } else {
     return res
