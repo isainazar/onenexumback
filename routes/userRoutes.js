@@ -14,7 +14,7 @@ const {
 /* GET users listing. */
 router.post("/login", login);
 router.post("/sing-in", createUser);
-router.put("/reset-password", auth, resetPassword);
+router.put("/reset-password", resetPassword);
 router.post("/forgot-password", forgotPassword);
 router.put("/terminos", auth, updateTerminos);
 

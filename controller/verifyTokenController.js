@@ -52,7 +52,7 @@ const verifyStatus = async (req, res) => {
   } else {
     return res.status(403).json({
       status: 403,
-      message: "Error al crear validar el usuario",
+      message: "Error al validar el usuario",
     });
   }
 };

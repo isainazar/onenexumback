@@ -1,9 +1,15 @@
-const { User, Daily, Quiz } = require("../DataBase/index.js");
+const {
+  User,
+  Daily,
+  Quiz,
+  Encrypted,
+  Newsletter,
+} = require("../DataBase/index.js");
+const { encrypt, decrypt } = require("../utilities/cifrado");
 
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      where: { status: true },
       include: [
         {
           association: "dailies",
@@ -20,10 +26,77 @@ const getAllUsers = async (req, res) => {
         {
           model: Quiz,
         },
+        {
+          model: Encrypted,
+        },
       ],
     });
     if (users.length !== 0) {
-      return res.status(200).json(users);
+      // console.log(users);
+
+      const usuarios = users.map((u) => {
+        const textNombre = {
+          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataName,
+          iv: u.dataValues.encrypted.dataValues.ivName,
+        };
+        const textApellido = {
+          encryptedData:
+            u.dataValues.encrypted.dataValues.encryptedDataLastname,
+          iv: u.dataValues.encrypted.dataValues.ivLastname,
+        };
+        const textDate = {
+          encryptedData:
+            u.dataValues.encrypted.dataValues.encryptedDataDatebirth,
+          iv: u.dataValues.encrypted.dataValues.ivDatebirth,
+        };
+        const textCountry = {
+          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataCountry,
+          iv: u.dataValues.encrypted.dataValues.ivCountry,
+        };
+        const textRegion = {
+          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataRegion,
+          iv: u.dataValues.encrypted.dataValues.ivRegion,
+        };
+        const textGender = {
+          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataGender,
+          iv: u.dataValues.encrypted.dataValues.ivGender,
+        };
+
+        const nombre = decrypt(textNombre);
+        const apellido = decrypt(textApellido);
+        const date = decrypt(textDate);
+        const countryy = decrypt(textCountry);
+        const regionn = decrypt(textRegion);
+        const genderr = decrypt(textGender);
+
+        const usu = {
+          id_user: u.dataValues.id_user,
+          name: nombre,
+          lastname: apellido,
+          email: u.dataValues.email,
+          date_birth: date,
+          country: countryy,
+          region: regionn,
+          gender: genderr,
+          relationship: u.dataValues.relationship,
+          ocupation: u.dataValues.ocupation,
+          unemployed: u.dataValues.unemployed,
+          user_type: u.dataValues.user_type,
+          status: u.dataValues.status,
+          terminos: u.dataValues.terminos,
+          progress: u.dataValues.progress,
+          firstLogin: u.dataValues.firstLogin,
+          createdAt: u.dataValues.createdAt,
+          updatedAt: u.dataValues.updatedAt,
+          dailies: u.dataValues.dailies,
+          logins: u.dataValues.logins,
+          quiz: u.dataValues.quiz,
+        };
+
+        return usu;
+      });
+
+      return res.status(200).json(usuarios);
     }
   } catch (error) {
     return res.status(500).json({ error: error });
@@ -31,11 +104,11 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
+  const { id_user } = req.params;
+  if (!id_user) {
+    return res.status(501).json({ message: "Falta informacion" });
+  }
   try {
-    const id_user = req.body.id_user;
-    if (!id_user) {
-      return res.status(501).json({ message: "Falta informacion" });
-    }
     const userDb = await User.findOne({
       where: {
         id_user,
@@ -57,18 +130,160 @@ const getUserById = async (req, res) => {
         {
           model: Quiz,
         },
+        {
+          model: Encrypted,
+        },
       ],
     });
     if (userDb) {
-      return res.status(200).json(userDb);
+      const textNombre = {
+        encryptedData: userDb.dataValues.encrypted.dataValues.encryptedDataName,
+        iv: userDb.dataValues.encrypted.dataValues.ivName,
+      };
+      const textApellido = {
+        encryptedData:
+          userDb.dataValues.encrypted.dataValues.encryptedDataLastname,
+        iv: userDb.dataValues.encrypted.dataValues.ivLastname,
+      };
+      const textDate = {
+        encryptedData:
+          userDb.dataValues.encrypted.dataValues.encryptedDataDatebirth,
+        iv: userDb.dataValues.encrypted.dataValues.ivDatebirth,
+      };
+      const textCountry = {
+        encryptedData:
+          userDb.dataValues.encrypted.dataValues.encryptedDataCountry,
+        iv: userDb.dataValues.encrypted.dataValues.ivCountry,
+      };
+      const textRegion = {
+        encryptedData:
+          userDb.dataValues.encrypted.dataValues.encryptedDataRegion,
+        iv: userDb.dataValues.encrypted.dataValues.ivRegion,
+      };
+      const textGender = {
+        encryptedData:
+          userDb.dataValues.encrypted.dataValues.encryptedDataGender,
+        iv: userDb.dataValues.encrypted.dataValues.ivGender,
+      };
+
+      const nombre = decrypt(textNombre);
+      const apellido = decrypt(textApellido);
+      const date = decrypt(textDate);
+      const countryy = decrypt(textCountry);
+      const regionn = decrypt(textRegion);
+      const genderr = decrypt(textGender);
+
+      const usu = {
+        id_user: userDb.dataValues.id_user,
+        name: nombre,
+        lastname: apellido,
+        email: userDb.dataValues.email,
+        date_birth: date,
+        country: countryy,
+        region: regionn,
+        gender: genderr,
+        relationship: userDb.dataValues.relationship,
+        ocupation: userDb.dataValues.ocupation,
+        unemployed: userDb.dataValues.unemployed,
+        user_type: userDb.dataValues.user_type,
+        status: userDb.dataValues.status,
+        terminos: userDb.dataValues.terminos,
+        progress: userDb.dataValues.progress,
+        firstLogin: userDb.dataValues.firstLogin,
+        createdAt: userDb.dataValues.createdAt,
+        updatedAt: userDb.dataValues.updatedAt,
+        dailies: userDb.dataValues.dailies,
+        logins: userDb.dataValues.logins,
+        quiz: userDb.dataValues.quiz,
+      };
+      return res.status(200).json(usu);
     } else {
       return res.status(404).json({ message: "User not found" });
     }
-  } catch (e) {
-    return res
-      .status(500)
-      .json({ message: "Error al cone ctarse a la base de datos" });
+  } catch (error) {
+    return res.status(500).json({ error: error });
   }
 };
+const dailyProgress = async (req, res) => {
+  const { id_user } = req.body;
+  if (!id_user) {
+    return res.status(500).json({ message: "Falta el id" });
+  }
+  try {
+    const user = await User.findByPk(id_user, {
+      include: [
+        {
+          association: "dailies",
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: Encrypted,
+        },
+      ],
+    });
+    if (!user) {
+      return res.status(500).json({ message: "Este usuario no existe" });
+    }
+    if (user.dataValues.dailies.length === 0) {
+      return res.status(500).json({ message: "No hay dailies todavia" });
+    }
+    let primerDaily;
+    if (user.dataValues.dailies[0].dataValues.respuesta === "muy mal") {
+      primerDaily = 20;
+    }
+    if (user.dataValues.dailies[0].dataValues.respuesta === "mal") {
+      primerDaily = 40;
+    }
+    if (user.dataValues.dailies[0].dataValues.respuesta === "regular") {
+      primerDaily = 60;
+    }
+    if (user.dataValues.dailies[0].dataValues.respuesta === "bien") {
+      primerDaily = 80;
+    }
+    if (user.dataValues.dailies[0].dataValues.respuesta === "muy bien") {
+      primerDaily = 100;
+    }
 
-module.exports = { getAllUsers, getUserById };
+    const primerValor = user.dataValues.dailies.shift();
+
+    if (user.dataValues.dailies.length === 0) {
+      return res.status(200).json({
+        message: "Solo hay una daily",
+        data: primerDaily,
+        daily: primerValor,
+      });
+    }
+
+    const userDaily = user.dataValues.dailies.map((el) => {
+      let dailys;
+      if (el.dataValues.respuesta === "muy mal") {
+        dailys = 20;
+      }
+      if (el.dataValues.respuesta === "mal") {
+        dailys = 40;
+      }
+      if (el.dataValues.respuesta === "regular") {
+        dailys = 60;
+      }
+      if (el.dataValues.respuesta === "bien") {
+        dailys = 80;
+      }
+      if (el.dataValues.respuesta === "muy bien") {
+        dailys = 100;
+      }
+      console.log(dailys);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error });
+  }
+};
+const getNewsletter = async (req, res) => {
+  const newsletter = await Newsletter.findAll();
+  if (!newsletter || newsletter.length === 0) {
+    return res.status(500).json({ message: "El newsletter esta vacio" });
+  }
+  return res.status(200).json(newsletter);
+};
+module.exports = { getAllUsers, getUserById, dailyProgress, getNewsletter };

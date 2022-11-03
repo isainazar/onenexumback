@@ -30,7 +30,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     date_birth: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     country: {
@@ -42,7 +42,7 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     gender: {
-      type: DataTypes.ENUM("Masculino", "Femenino", "Binario", "Otro"),
+      type: DataTypes.STRING,
       allowNull: true,
     },
     relationship: {
@@ -104,6 +104,10 @@ module.exports = (sequelize) => {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
+    User.hasOne(models.Encrypted, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
     User.belongsToMany(models.Login, {
       through: "login_by_user",
       timestamps: false,
@@ -111,14 +115,6 @@ module.exports = (sequelize) => {
     User.belongsToMany(models.Daily, {
       through: "daily_by_user",
       timestamps: false,
-    });
-    User.hasOne(models.Checkeo, {
-      sourceKey: "id_user",
-      foreignKey: "id_checkeo",
-    });
-    User.hasOne(models.FeedbackA, {
-      sourceKey: "id_user",
-      foreignKey: "id_feedbackA",
     });
   };
 

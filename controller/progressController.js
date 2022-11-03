@@ -1,13 +1,14 @@
 const { User } = require("../DataBase/index.js");
 
 const progress = async (req, res) => {
-  console.log(req.session);
-
   const { page, id_user } = req.body;
-  if (!id_user || !page || progress === undefined) {
+  if (!id_user || !page) {
     return res.status(500).json({ message: "Se requieren todos los campos" });
   }
   const user = await User.findByPk(id_user);
+  if (!user) {
+    return res.status(401).json({ message: "No existe este usuario" });
+  }
   if (Number.isInteger(page)) {
     const pages = 23;
     const resultado = Math.round((page * 100) / pages);

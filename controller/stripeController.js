@@ -23,7 +23,7 @@ const paymentStripe = async (req, res) => {
     },
     mode: "payment",
     success_url: `http://localhost:3002/login`,
-    cancel_url: `http://localhost:3002/quizz`,
+    cancel_url: `http://localhost:3002/`,
   });
   console.log(session);
   return res.json({ url: session.url, idPayment: session.id });

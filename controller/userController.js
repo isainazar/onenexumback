@@ -1,4 +1,4 @@
-const { User, Login } = require("../DataBase/index.js");
+const { User, Login, Encrypted } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
@@ -8,6 +8,8 @@ const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
 const generateRandomPassword = require("../utilities/generateRandomPassword");
 const { sendEmail } = require("../utilities/sendEmail");
+const { encrypt, decrypt } = require("../utilities/cifrado");
+
 require("dotenv").config();
 function validarEmail(valor) {
   if (
@@ -47,81 +49,115 @@ const createUser = async (req, res, next) => {
   ) {
     return res.status(500).json({ message: "All fields are required" });
   }
-
-  if (validarEmail(email) === "This email is incorrect") {
-    return res.status(501).json({ message: "This mail doesn't exists" });
-  }
-  try {
-    let user1 = await User.findOne({ where: { email } });
-    // Si el correo ya está registrado, devuelvo un error
-    if (user1) {
-      return res
-        .status(500)
-        .json({ message: "Ya existe un usuario con este email" });
+  if (
+    gender === "Masculino" ||
+    gender === "Femenino" ||
+    gender === "Binario" ||
+    gender === "Otro"
+  ) {
+    if (validarEmail(email) === "This email is incorrect") {
+      return res.status(501).json({ message: "This mail doesn't exists" });
     }
-
-    // Creamos el nuevo usuario y lo guardamos en la DB
-    const user = await User.create({
-      name,
-      lastname,
-      email,
-      password,
-      date_birth,
-      country,
-      region,
-      gender,
-      user_type,
-    });
-    /* req.cookies.id_user = user.id_user;
-    req.cookies.nombre = name;
-    req.cookies.email = email;
-    req.cookies.password = password;
-    req.cookies.date_birth = date_birth;
-    req.cookies.country = country;
-    req.cookies.region = region;
-    req.cookies.gender = gender;
-    req.cookies.user_type = user_type;
-    req.cookies.status = false;
-    req.cookies.terminos = false;
-    req.cookies.progress = 0; */
-    /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
-    res.cookie("id_user", user.id_user, options);
-    res.cookie("name", name, options);
-    res.cookie("lastname", lastname, options);
-    res.cookie("email", email, options);
-    res.cookie("date_birth", date_birth, options);
-    res.cookie("country", country, options);
-    res.cookie("region", region, options);
-    res.cookie("gender", gender, options);
-    res.cookie("user_type", user_type, options);
-    res.cookie("status", false, options);
-    res.cookie("terminos", false, options);
-    res.cookie("progress", 0, options); */
-    /*  console.log(req.cookies); */
-    // generamos el payload/body para generar el token
-    const payload = {
-      user: {
-        id: user.dataValues.id_user,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      JWT_SECRET,
-      {
-        expiresIn: "1d",
-      },
-      (err, token) => {
-        if (err) throw err;
-        res
-          .status(201)
-          .json({ token: token, id_user: user.dataValues.id_user });
+    try {
+      let user1 = await User.findOne({ where: { email } });
+      // Si el correo ya está registrado, devuelvo un error
+      if (user1) {
+        return res
+          .status(500)
+          .json({ message: "Ya existe un usuario con este email" });
       }
-    );
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Elije un genero valido", error: err });
+      const date = date_birth.toString();
+      const nombreE = encrypt(name);
+      const apellidoE = encrypt(lastname);
+      const dateE = encrypt(date);
+      const countryE = encrypt(country);
+      const regionE = encrypt(region);
+      const genderE = encrypt(gender);
+
+      // Creamos el nuevo usuario y lo guardamos en la DB
+      const user = await User.create({
+        name: nombreE.encryptedData,
+        lastname: apellidoE.encryptedData,
+        email,
+        password,
+        date_birth: dateE.encryptedData,
+        country: countryE.encryptedData,
+        region: regionE.encryptedData,
+        gender: genderE.encryptedData,
+        user_type,
+      });
+      /* req.cookies.id_user = user.id_user;
+      req.cookies.nombre = name;
+      req.cookies.email = email;
+      req.cookies.password = password;
+      req.cookies.date_birth = date_birth;
+      req.cookies.country = country;
+      req.cookies.region = region;
+      req.cookies.gender = gender;
+      req.cookies.user_type = user_type;
+      req.cookies.status = false;
+      req.cookies.terminos = false;
+      req.cookies.progress = 0; */
+      /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
+      res.cookie("id_user", user.id_user, options);
+      res.cookie("name", name, options);
+      res.cookie("lastname", lastname, options);
+      res.cookie("email", email, options);
+      res.cookie("date_birth", date_birth, options);
+      res.cookie("country", country, options);
+      res.cookie("region", region, options);
+      res.cookie("gender", gender, options);
+      res.cookie("user_type", user_type, options);
+      res.cookie("status", false, options);
+      res.cookie("terminos", false, options);
+      res.cookie("progress", 0, options); */
+      /*  console.log(req.cookies); */
+      // generamos el payload/body para generar el token
+      if (!user) {
+        return res
+          .status(500)
+          .json({ message: "No se pudo crear el usuario en la db" });
+      }
+      await Encrypted.create({
+        encryptedDataName: nombreE.encryptedData,
+        ivName: nombreE.iv,
+        encryptedDataLastname: apellidoE.encryptedData,
+        ivLastname: apellidoE.iv,
+        encryptedDataDatebirth: dateE.encryptedData,
+        ivDatebirth: dateE.iv,
+        encryptedDataCountry: countryE.encryptedData,
+        ivCountry: countryE.iv,
+        encryptedDataRegion: regionE.encryptedData,
+        ivRegion: regionE.iv,
+        encryptedDataGender: genderE.encryptedData,
+        ivGender: genderE.iv,
+        id_user: user.dataValues.id_user,
+      });
+
+      const payload = {
+        user: {
+          id: user.dataValues.id_user,
+        },
+      };
+
+      jwt.sign(
+        payload,
+        JWT_SECRET,
+        {
+          expiresIn: "1d",
+        },
+        (err, token) => {
+          if (err) throw err;
+          res
+            .status(201)
+            .json({ token: token, id_user: user.dataValues.id_user });
+        }
+      );
+    } catch (err) {
+      return res.status(500).json({ error: err });
+    }
+  } else {
+    return res.status(500).json({ message: "Genero invalido" });
   }
 };
 
@@ -172,6 +208,16 @@ const login = async (req, res) => {
         );
         if (usuarioCambiado) {
           try {
+            const newLogin = await Login.create({
+              id_user: user.dataValues.id_user,
+            });
+
+            const newLoginDef = await Promise.all(await newLogin.addUser(user));
+            if (!newLogin || !newLoginDef) {
+              return res.status(400).json({
+                message: "No se pudo guardar el login",
+              });
+            }
             const payload = {
               user: {
                 id: user.dataValues.id_user,
@@ -209,7 +255,7 @@ const login = async (req, res) => {
         });
       }
     }
-    /*   const newLogin = await Login.create({
+    const newLogin = await Login.create({
       id_user: user.dataValues.id_user,
     });
 
@@ -218,7 +264,7 @@ const login = async (req, res) => {
       return res.status(400).json({
         message: "No se pudo guardar el login",
       });
-    } */
+    }
     /*  req.session.id_user = user.dataValues.id_user;
     req.session.nombre = user.dataValues.name;
     req.session.lastname = user.dataValues.lastname;
@@ -290,6 +336,11 @@ const forgotPassword = async (req, res, next) => {
       where: {
         email,
       },
+      include: [
+        {
+          model: Encrypted,
+        },
+      ],
     });
 
     if (!user) {
@@ -317,13 +368,17 @@ const forgotPassword = async (req, res, next) => {
       }
       try {
         /* req.session.password = temporalPassword; */
-
-        const mail = await sendEmail(
+        const textNombre = {
+          encryptedData: user.dataValues.encrypted.dataValues.encryptedDataName,
+          iv: user.dataValues.encrypted.dataValues.ivName,
+        };
+        const nombre = decrypt(textNombre);
+        await sendEmail(
           "Recuperación de contraseña",
           "",
           false,
           user.dataValues.email,
-          `<h2>Contraseña temporal para su usuario en One Nexum</h2><div>Su contraseña temporal es: <code>${temporalPassword}</code><br>Cambiela lo antes posible. Para cambiar su contraseña aprete el sigiuiente link <a href=${process.env.LINK_RESET_PASSWORD}>Apriete aqui</a></div>`
+          `<h2>Contraseña temporal para su usuario en One Nexum</h2><div>${nombre}, su contraseña temporal es: <code>${temporalPassword}</code><br>Cambiela lo antes posible. Para cambiar su contraseña aprete el sigiuiente link <a href=${process.env.LINK_RESET_PASSWORD}>Apriete aqui</a></div>`
         );
         return res.status(200).json({
           message:
@@ -361,6 +416,11 @@ const resetPassword = async (req, res) => {
       where: {
         email: email,
       },
+      include: [
+        {
+          model: Encrypted,
+        },
+      ],
     });
     if (!user) {
       return res.status(400).json({
@@ -387,7 +447,20 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
+      const textNombre = {
+        encryptedData: user.dataValues.encrypted.dataValues.encryptedDataName,
+        iv: user.dataValues.encrypted.dataValues.ivName,
+      };
+      const nombre = decrypt(textNombre);
+
       /* req.session.password = newPassword; */
+      await sendEmail(
+        "Cambio de contraseña",
+        "",
+        false,
+        user.dataValues.email,
+        `<h2>Cambio de contraseña!</h2><div>${nombre}, su contraseña ha sido cambiado con exito.</div>`
+      );
 
       return res.status(200).json({
         message: "Contraseña cambiada con éxito",
