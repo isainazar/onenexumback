@@ -231,19 +231,19 @@ const dailyProgress = async (req, res) => {
     }
     let primerDaily;
     if (user.dataValues.dailies[0].dataValues.respuesta === "muy mal") {
-      primerDaily = 20;
+      primerDaily = -2;
     }
     if (user.dataValues.dailies[0].dataValues.respuesta === "mal") {
-      primerDaily = 40;
+      primerDaily = -1;
     }
     if (user.dataValues.dailies[0].dataValues.respuesta === "regular") {
-      primerDaily = 60;
+      primerDaily = 0;
     }
     if (user.dataValues.dailies[0].dataValues.respuesta === "bien") {
-      primerDaily = 80;
+      primerDaily = 1;
     }
     if (user.dataValues.dailies[0].dataValues.respuesta === "muy bien") {
-      primerDaily = 100;
+      primerDaily = 2;
     }
 
     const primerValor = user.dataValues.dailies.shift();
@@ -258,22 +258,110 @@ const dailyProgress = async (req, res) => {
 
     const userDaily = user.dataValues.dailies.map((el) => {
       let dailys;
-      if (el.dataValues.respuesta === "muy mal") {
-        dailys = 20;
+      if (primerDaily === -2) {
+        if (el.dataValues.respuesta === "muy mal") {
+          dailys = 0;
+        }
+        if (el.dataValues.respuesta === "mal") {
+          dailys = 1;
+        }
+        if (el.dataValues.respuesta === "regular") {
+          dailys = 2;
+        }
+        if (el.dataValues.respuesta === "bien") {
+          dailys = 3;
+        }
+        if (el.dataValues.respuesta === "muy bien") {
+          dailys = 4;
+        }
       }
-      if (el.dataValues.respuesta === "mal") {
-        dailys = 40;
+      if (primerDaily === -1) {
+        if (el.dataValues.respuesta === "muy mal") {
+          dailys = -1;
+        }
+        if (el.dataValues.respuesta === "mal") {
+          dailys = 0;
+        }
+        if (el.dataValues.respuesta === "regular") {
+          dailys = 1;
+        }
+        if (el.dataValues.respuesta === "bien") {
+          dailys = 2;
+        }
+        if (el.dataValues.respuesta === "muy bien") {
+          dailys = 3;
+        }
       }
-      if (el.dataValues.respuesta === "regular") {
-        dailys = 60;
+      if (primerDaily === 0) {
+        if (el.dataValues.respuesta === "muy mal") {
+          dailys = -2;
+        }
+        if (el.dataValues.respuesta === "mal") {
+          dailys = -1;
+        }
+        if (el.dataValues.respuesta === "regular") {
+          dailys = 0;
+        }
+        if (el.dataValues.respuesta === "bien") {
+          dailys = 1;
+        }
+        if (el.dataValues.respuesta === "muy bien") {
+          dailys = 2;
+        }
       }
-      if (el.dataValues.respuesta === "bien") {
-        dailys = 80;
+      if (primerDaily === 1) {
+        if (el.dataValues.respuesta === "muy mal") {
+          dailys = -3;
+        }
+        if (el.dataValues.respuesta === "mal") {
+          dailys = -2;
+        }
+        if (el.dataValues.respuesta === "regular") {
+          dailys = -1;
+        }
+        if (el.dataValues.respuesta === "bien") {
+          dailys = 0;
+        }
+        if (el.dataValues.respuesta === "muy bien") {
+          dailys = 1;
+        }
       }
-      if (el.dataValues.respuesta === "muy bien") {
-        dailys = 100;
+      if (primerDaily === 2) {
+        if (el.dataValues.respuesta === "muy mal") {
+          dailys = -4;
+        }
+        if (el.dataValues.respuesta === "mal") {
+          dailys = -3;
+        }
+        if (el.dataValues.respuesta === "regular") {
+          dailys = -2;
+        }
+        if (el.dataValues.respuesta === "bien") {
+          dailys = -1;
+        }
+        if (el.dataValues.respuesta === "muy bien") {
+          dailys = 0;
+        }
       }
-      console.log(dailys);
+      return dailys;
+    });
+
+    function sumar_array(array_numeros) {
+      var suma = 0;
+
+      array_numeros.forEach(function (numero) {
+        suma += numero;
+      });
+
+      return suma;
+    }
+    const resultado = sumar_array(userDaily);
+    console.log(userDaily);
+    console.log(resultado);
+    return res.status(200).json({
+      primerDaily: primerDaily,
+      resultadoDailies: resultado,
+      dailies: userDaily,
     });
   } catch (error) {
     return res.status(500).json({ error: error });

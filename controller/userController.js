@@ -1,6 +1,7 @@
 const { User, Login, Encrypted } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
+const URL = process.env.URL;
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
 
 const jwt = require("jsonwebtoken");

@@ -1,6 +1,7 @@
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const PRICE_ID = process.env.PRICE_ID;
+const URL = process.env.URL;
 
 const { User } = require("../DataBase/index");
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
@@ -22,8 +23,8 @@ const paymentStripe = async (req, res) => {
       id_user: id_user,
     },
     mode: "payment",
-    success_url: `http://localhost:3002/login`,
-    cancel_url: `http://localhost:3002/`,
+    success_url: `${URL}/login`,
+    cancel_url: `${URL}/landing`,
   });
   console.log(session);
   return res.json({ url: session.url, idPayment: session.id });

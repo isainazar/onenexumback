@@ -8,6 +8,7 @@ const passport = require("passport");
 require("./passport")(passport);
 const session = require("express-session");
 var cookieSession = require("cookie-session");
+const URL = process.env.URL;
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
@@ -22,11 +23,11 @@ const stripeRouter = require("./routes/stripeRouter");
 var app = express();
 
 app.use(
-  cors(/* {
-    origin: "http://localhost:3002",
+  cors({
+    origin: `${URL}`,
     methods: ["GET", "POST", "PUT"],
-    credentials: true,
-  } */)
+    //credentials: true,
+  })
 );
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -140,8 +141,5 @@ conn
       /* await initDB(); */
     });
   });
-
-
-
 
 module.exports = app;
