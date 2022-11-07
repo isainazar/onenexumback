@@ -87,10 +87,12 @@ const createUser = async (req, res, next) => {
         gender: genderE.encryptedData,
         user_type,
       });
-      res.cookie("id_user", user.dataValues.id_user, {
+      res.cookie("id_user", `${user.dataValues.id_user}`, {
         // maxAge: 5000,
         //expires: new Date("01 12 2021"),
-        //secure: true,
+
+        sameSite: "none",
+        secure: true,
         httpOnly: false,
       });
       // generamos el payload/body para generar el token
