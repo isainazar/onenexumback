@@ -113,14 +113,14 @@ app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
 
 app.get("/ruta_solo_logueados", (req, res) => {
-  console.log(req.cookies);
+  console.log(req);
 
   // Si, por ejemplo, no hay nombre
   if (!req.cookies) {
-    res.end("No tienes permiso. Fuera de aquí");
+    res.json(req);
   } else {
     // Ok, el usuario tiene permiso
-    res.end("Hola ");
+    res.end(" ");
   }
 });
 
