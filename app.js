@@ -120,7 +120,7 @@ app.get("/ruta_solo_logueados", (req, res) => {
     res.json(req);
   } else {
     // Ok, el usuario tiene permiso
-    res.end(" ");
+    res.json(req);
   }
 });
 
