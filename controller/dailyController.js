@@ -3,7 +3,7 @@ const { User, Daily } = require("../DataBase/index.js");
 const postDaily = async (req, res) => {
   const { id_user, respuesta } = req.body;
 
-  if (!respuesta) {
+  if (!respuesta || !id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   if (

@@ -5,7 +5,11 @@ const {
   Encrypted,
   Newsletter,
 } = require("../DataBase/index.js");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = process.env;
+const bcrypt = require("bcrypt");
 const { encrypt, decrypt } = require("../utilities/cifrado");
+require("dotenv").config();
 
 const getAllUsers = async (req, res) => {
   try {
@@ -374,4 +378,69 @@ const getNewsletter = async (req, res) => {
   }
   return res.status(200).json(newsletter);
 };
-module.exports = { getAllUsers, getUserById, dailyProgress, getNewsletter };
+const loginAdmin = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      message: "Se requiere un usuario o contraseña valido",
+    });
+  }
+
+  try {
+    const userAdmin = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!userAdmin) {
+      return res.status(400).json({
+        message: "Este usuario no existe",
+      });
+    }
+    if (userAdmin.dataValues.user_type !== "ADMIN") {
+      return res.status(402).json({
+        message: "Este usuario no es administrador",
+      });
+    }
+    const passwordfinal = bcrypt.compareSync(
+      password,
+      userAdmin.dataValues.password
+    );
+
+    if (!passwordfinal) {
+      return res.status(400).json({
+        message: "Contraseña incorrecta",
+      });
+    }
+    const payload = {
+      user: {
+        id: userAdmin.dataValues.id_user,
+      },
+    };
+    jwt.sign(
+      payload,
+      JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+      (err, token) => {
+        if (err) throw err;
+        return res.status(200).json({
+          token: token,
+        });
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({
+      error: error,
+    });
+  }
+};
+module.exports = {
+  getAllUsers,
+  getUserById,
+  dailyProgress,
+  getNewsletter,
+  loginAdmin,
+};

@@ -26,10 +26,10 @@ app.use(
   cors({
     origin: `${URL}`,
     methods: ["GET", "POST", "PUT"],
-    //credentials: true,
+    /* credentials: true, */
   })
 );
-app.use(cookieParser());
+app.use(cookieParser("secret"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(logger("dev"));
@@ -113,14 +113,14 @@ app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
 
 app.get("/ruta_solo_logueados", (req, res) => {
-  console.log(req);
+  console.log(req.cookies);
 
   // Si, por ejemplo, no hay nombre
-  if (!req.cookies.name) {
+  if (!req.cookies) {
     res.end("No tienes permiso. Fuera de aquí");
   } else {
     // Ok, el usuario tiene permiso
-    res.end("Hola " + req.cookies.name);
+    res.end("Hola ");
   }
 });
 

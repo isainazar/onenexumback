@@ -87,32 +87,12 @@ const createUser = async (req, res, next) => {
         gender: genderE.encryptedData,
         user_type,
       });
-      /* req.cookies.id_user = user.id_user;
-      req.cookies.nombre = name;
-      req.cookies.email = email;
-      req.cookies.password = password;
-      req.cookies.date_birth = date_birth;
-      req.cookies.country = country;
-      req.cookies.region = region;
-      req.cookies.gender = gender;
-      req.cookies.user_type = user_type;
-      req.cookies.status = false;
-      req.cookies.terminos = false;
-      req.cookies.progress = 0; */
-      /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
-      res.cookie("id_user", user.id_user, options);
-      res.cookie("name", name, options);
-      res.cookie("lastname", lastname, options);
-      res.cookie("email", email, options);
-      res.cookie("date_birth", date_birth, options);
-      res.cookie("country", country, options);
-      res.cookie("region", region, options);
-      res.cookie("gender", gender, options);
-      res.cookie("user_type", user_type, options);
-      res.cookie("status", false, options);
-      res.cookie("terminos", false, options);
-      res.cookie("progress", 0, options); */
-      /*  console.log(req.cookies); */
+      res.cookie("id_user", user.dataValues.id_user, {
+        /*  maxAge: 5000,
+        expires: new Date("01 12 2021"), */
+        secure: false,
+        httpOnly: true,
+      });
       // generamos el payload/body para generar el token
       if (!user) {
         return res
