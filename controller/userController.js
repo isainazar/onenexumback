@@ -91,7 +91,7 @@ const createUser = async (req, res, next) => {
         // maxAge: 5000,
         //expires: new Date("01 12 2021"),
         //secure: true,
-        httpOnly: true,
+        httpOnly: false,
       });
       // generamos el payload/body para generar el token
       if (!user) {
