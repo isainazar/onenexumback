@@ -117,10 +117,10 @@ app.get("/ruta_solo_logueados", (req, res) => {
 
   // Si, por ejemplo, no hay nombre
   if (!req.cookies) {
-    res.json(req.cookies);
+    res.end(req.cookies.id_user);
   } else {
     // Ok, el usuario tiene permiso
-    res.json(req.cookies);
+    res.end(req.cookies.id_user);
   }
 });
 
