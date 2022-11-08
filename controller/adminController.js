@@ -101,6 +101,8 @@ const getAllUsers = async (req, res) => {
       });
 
       return res.status(200).json(usuarios);
+    } else {
+      return res.status(400).json({ message: "No hay usuarios en la db" });
     }
   } catch (error) {
     return res.status(500).json({ error: error });
