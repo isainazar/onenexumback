@@ -26,11 +26,11 @@ const analyticsRouter = require("./routes/analyticsRouter");
 var app = express();
 
 app.use(
-  cors(/* {
-    origin: `${URL2}`,
+  cors({
+    origin: `${URL}`,
     methods: ["GET", "POST", "PUT"],
-    credentials: true,
-  } */)
+    //credentials: true,
+  })
 );
 app.use(cookieParser("secret"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,7 +44,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", URL);
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
