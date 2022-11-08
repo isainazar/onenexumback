@@ -9,6 +9,8 @@ require("./passport")(passport);
 const session = require("express-session");
 var cookieSession = require("cookie-session");
 const URL = process.env.URL;
+const URL2 = process.env.URL2;
+
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
@@ -19,15 +21,16 @@ const quizRouter = require("./routes/quizRouter");
 const adminRouter = require("./routes/adminRouter");
 const progressRouter = require("./routes/progressRoutes");
 const stripeRouter = require("./routes/stripeRouter");
+const analyticsRouter = require("./routes/analyticsRouter");
 
 var app = express();
 
 app.use(
-  cors({
-    origin: `${URL}`,
+  cors(/* {
+    origin: `${URL2}`,
     methods: ["GET", "POST", "PUT"],
-    /* credentials: true, */
-  })
+    credentials: true,
+  } */)
 );
 app.use(cookieParser("secret"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -111,16 +114,16 @@ app.use("/api/quiz", quizRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
+app.use("/api/analytics", analyticsRouter);
 
 app.get("/ruta_solo_logueados", (req, res) => {
   console.log(req);
-
   // Si, por ejemplo, no hay nombre
   if (!req.cookies) {
-    res.end(req.cookies.id_user);
+    res.json(req.cookies.id_user);
   } else {
     // Ok, el usuario tiene permiso
-    res.end(req.cookies.id_user);
+    res.json(req.cookies.id_user);
   }
 });
 

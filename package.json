@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/blaksleyn/One-Nexum-Back#readme",
   "dependencies": {
+    "@google-analytics/data": "^3.1.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.1",
