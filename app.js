@@ -4,13 +4,13 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var cors = require("cors");
+const initDB = require("./utilities/initDB");
 const passport = require("passport");
 require("./passport")(passport);
 const session = require("express-session");
 var cookieSession = require("cookie-session");
 const URL = process.env.URL;
 const URL2 = process.env.URL2;
-
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
@@ -141,7 +141,7 @@ conn
   .then(() => {
     app.listen(3000, async () => {
       console.log("%s listening at http://localhost:3000");
-      /* await initDB(); */
+      await initDB();
     });
   });
 

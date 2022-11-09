@@ -1,0 +1,13 @@
+[
+  {
+    "id_user": "100",
+    "user_type": "ADMIN",
+    "firstLogin": false,
+    "status": true,
+    "terminos": true,
+    "email": "nano@ieschub.com",
+    "password": "adminNexum",
+    "name": "admin",
+    "lastname": "nexum"
+  }
+]

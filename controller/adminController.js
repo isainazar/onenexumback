@@ -37,7 +37,7 @@ const getAllUsers = async (req, res) => {
     });
 
     if (users.length !== 0) {
-      // console.log(users);
+      //console.log(users);
 
       const usuarios = users.map((u) => {
         const textNombre = {
