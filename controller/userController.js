@@ -77,14 +77,14 @@ const createUser = async (req, res, next) => {
 
       // Creamos el nuevo usuario y lo guardamos en la DB
       const user = await User.create({
-        name: nombreE.encryptedData,
-        lastname: apellidoE.encryptedData,
+        name: nombreE,
+        lastname: apellidoE,
         email,
         password,
-        date_birth: dateE.encryptedData,
-        country: countryE.encryptedData,
-        region: regionE.encryptedData,
-        gender: genderE.encryptedData,
+        date_birth: dateE,
+        country: countryE,
+        region: regionE,
+        gender: genderE,
         user_type,
       });
 
@@ -95,18 +95,18 @@ const createUser = async (req, res, next) => {
           .json({ message: "No se pudo crear el usuario en la db" });
       }
       await Encrypted.create({
-        encryptedDataName: nombreE.encryptedData,
-        ivName: nombreE.iv,
-        encryptedDataLastname: apellidoE.encryptedData,
-        ivLastname: apellidoE.iv,
-        encryptedDataDatebirth: dateE.encryptedData,
-        ivDatebirth: dateE.iv,
-        encryptedDataCountry: countryE.encryptedData,
-        ivCountry: countryE.iv,
-        encryptedDataRegion: regionE.encryptedData,
-        ivRegion: regionE.iv,
-        encryptedDataGender: genderE.encryptedData,
-        ivGender: genderE.iv,
+        encryptedDataName: nombreE,
+
+        encryptedDataLastname: apellidoE,
+
+        encryptedDataDatebirth: dateE,
+
+        encryptedDataCountry: countryE,
+
+        encryptedDataRegion: regionE,
+
+        encryptedDataGender: genderE,
+
         id_user: user.dataValues.id_user,
       });
 
@@ -241,34 +241,7 @@ const login = async (req, res) => {
         message: "No se pudo guardar el login",
       });
     }
-    /*  req.session.id_user = user.dataValues.id_user;
-    req.session.nombre = user.dataValues.name;
-    req.session.lastname = user.dataValues.lastname;
-    req.session.email = user.dataValues.email;
-    req.session.password = user.dataValues.password;
-    req.session.date_birth = user.dataValues.date_birth;
-    req.session.country = user.dataValues.country;
-    req.session.region = user.dataValues.region;
-    req.session.gender = user.dataValues.gender;
-    req.session.user_type = user.dataValues.user_type;
-    req.session.status = user.dataValues.status;
-    req.session.progress = user.dataValues.progress;
-    req.session.terminos = user.dataValues.terminos; */
-    /* const options = { httpOnly: true, secure: true, sameSite: "lax" };
 
-    res.cookie("id_user", user.dataValues.id_user, options);
-    res.cookie("name", user.dataValues.name, options);
-    res.cookie("lastname", user.dataValues.lastname, options);
-    res.cookie("email", user.dataValues.email, options);
-    res.cookie("date_birth", user.dataValues.date_birth, options);
-    res.cookie("country", user.dataValues.country, options);
-    res.cookie("region", user.dataValues.region, options);
-    res.cookie("gender", user.dataValues.gender, options);
-    res.cookie("user_type", user.dataValues.user_type, options);
-    res.cookie("status", user.dataValues.status, options);
-    res.cookie("terminos", user.dataValues.terminos, options);
-    res.cookie("progress", user.dataValues.progress, options);
- */
     const payload = {
       user: {
         id: user.dataValues.id_user,
@@ -343,12 +316,9 @@ const forgotPassword = async (req, res, next) => {
           .json({ message: "El usuario no se pudo actualizar" });
       }
       try {
-        /* req.session.password = temporalPassword; */
-        const textNombre = {
-          encryptedData: user.dataValues.encrypted.dataValues.encryptedDataName,
-          iv: user.dataValues.encrypted.dataValues.ivName,
-        };
-        const nombre = decrypt(textNombre);
+        const nombre = decrypt(
+          user.dataValues.encrypted.dataValues.encryptedDataName
+        );
         await sendEmail(
           "Recuperación de contraseña",
           "",
@@ -423,11 +393,9 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
-      const textNombre = {
-        encryptedData: user.dataValues.encrypted.dataValues.encryptedDataName,
-        iv: user.dataValues.encrypted.dataValues.ivName,
-      };
-      const nombre = decrypt(textNombre);
+      const nombre = decrypt(
+        user.dataValues.encrypted.dataValues.encryptedDataName
+      );
 
       /* req.session.password = newPassword; */
       await sendEmail(
@@ -470,7 +438,6 @@ const updateTerminos = async (req, res) => {
     }
   );
   if (usuarioCambiado) {
-    //req.session.terminos = true;
     return res.status(200).json({ message: "Usuario cambiado correctamente" });
   } else {
     return res

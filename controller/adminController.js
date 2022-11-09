@@ -14,6 +14,9 @@ require("dotenv").config();
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
+      where: {
+        user_type: "1" || "2",
+      },
       include: [
         {
           association: "dailies",
@@ -40,39 +43,24 @@ const getAllUsers = async (req, res) => {
       //console.log(users);
 
       const usuarios = users.map((u) => {
-        const textNombre = {
-          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataName,
-          iv: u.dataValues.encrypted.dataValues.ivName,
-        };
-        const textApellido = {
-          encryptedData:
-            u.dataValues.encrypted.dataValues.encryptedDataLastname,
-          iv: u.dataValues.encrypted.dataValues.ivLastname,
-        };
-        const textDate = {
-          encryptedData:
-            u.dataValues.encrypted.dataValues.encryptedDataDatebirth,
-          iv: u.dataValues.encrypted.dataValues.ivDatebirth,
-        };
-        const textCountry = {
-          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataCountry,
-          iv: u.dataValues.encrypted.dataValues.ivCountry,
-        };
-        const textRegion = {
-          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataRegion,
-          iv: u.dataValues.encrypted.dataValues.ivRegion,
-        };
-        const textGender = {
-          encryptedData: u.dataValues.encrypted.dataValues.encryptedDataGender,
-          iv: u.dataValues.encrypted.dataValues.ivGender,
-        };
-
-        const nombre = decrypt(textNombre);
-        const apellido = decrypt(textApellido);
-        const date = decrypt(textDate);
-        const countryy = decrypt(textCountry);
-        const regionn = decrypt(textRegion);
-        const genderr = decrypt(textGender);
+        const nombre = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataName
+        );
+        const apellido = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataLastname
+        );
+        const date = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataDatebirth
+        );
+        const countryy = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataCountry
+        );
+        const regionn = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataRegion
+        );
+        const genderr = decrypt(
+          u.dataValues.encrypted.dataValues.encryptedDataGender
+        );
 
         const usu = {
           id_user: u.dataValues.id_user,
@@ -143,42 +131,24 @@ const getUserById = async (req, res) => {
       ],
     });
     if (userDb) {
-      const textNombre = {
-        encryptedData: userDb.dataValues.encrypted.dataValues.encryptedDataName,
-        iv: userDb.dataValues.encrypted.dataValues.ivName,
-      };
-      const textApellido = {
-        encryptedData:
-          userDb.dataValues.encrypted.dataValues.encryptedDataLastname,
-        iv: userDb.dataValues.encrypted.dataValues.ivLastname,
-      };
-      const textDate = {
-        encryptedData:
-          userDb.dataValues.encrypted.dataValues.encryptedDataDatebirth,
-        iv: userDb.dataValues.encrypted.dataValues.ivDatebirth,
-      };
-      const textCountry = {
-        encryptedData:
-          userDb.dataValues.encrypted.dataValues.encryptedDataCountry,
-        iv: userDb.dataValues.encrypted.dataValues.ivCountry,
-      };
-      const textRegion = {
-        encryptedData:
-          userDb.dataValues.encrypted.dataValues.encryptedDataRegion,
-        iv: userDb.dataValues.encrypted.dataValues.ivRegion,
-      };
-      const textGender = {
-        encryptedData:
-          userDb.dataValues.encrypted.dataValues.encryptedDataGender,
-        iv: userDb.dataValues.encrypted.dataValues.ivGender,
-      };
-
-      const nombre = decrypt(textNombre);
-      const apellido = decrypt(textApellido);
-      const date = decrypt(textDate);
-      const countryy = decrypt(textCountry);
-      const regionn = decrypt(textRegion);
-      const genderr = decrypt(textGender);
+      const nombre = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataName
+      );
+      const apellido = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataLastname
+      );
+      const date = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataDatebirth
+      );
+      const countryy = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataCountry
+      );
+      const regionn = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataRegion
+      );
+      const genderr = decrypt(
+        userDb.dataValues.encrypted.dataValues.encryptedDataGender
+      );
 
       const usu = {
         id_user: userDb.dataValues.id_user,
