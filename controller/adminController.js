@@ -15,7 +15,7 @@ const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       where: {
-        user_type: "1" || "2",
+        user_type: ["1", "2"],
       },
       include: [
         {
