@@ -11,6 +11,10 @@ const paymentStripe = async (req, res) => {
   if (!id_user) {
     return res.status(500).json({ message: "field required" });
   }
+  const userr = await User.findByPk(id_user);
+  if (!userr) {
+    return res.status(400).json({ message: "Este usuario no existe" });
+  }
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
@@ -27,7 +31,25 @@ const paymentStripe = async (req, res) => {
     cancel_url: `${URL}/landing`,
   });
   console.log(session);
-  return res.json({ url: session.url, idPayment: session.id });
+  if (!session) {
+    return res.status(404).json({ message: "Error al crear pago" });
+  }
+  const usuarioPago = await User.update(
+    {
+      idPayment: session.id,
+    },
+    {
+      where: {
+        id_user: id_user,
+      },
+    }
+  );
+  if (!usuarioPago) {
+    return res
+      .status(500)
+      .json({ message: "El usuareio no se pudo actualizar con exito" });
+  }
+  return res.json({ url: session.url });
 };
 const getPayment = async (req, res) => {
   const { idPayment } = req.body;

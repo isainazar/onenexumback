@@ -138,7 +138,7 @@ const createUser = async (req, res, next) => {
 };
 
 const login = async (req, res) => {
-  const { email, password, idPayment } = req.body;
+  const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -169,7 +169,14 @@ const login = async (req, res) => {
       });
     }
     if (user.dataValues.firstLogin === true) {
-      const session = await stripe.checkout.sessions.retrieve(idPayment);
+      if (!user.dataValues.idPayment) {
+        return res.status(400).json({
+          message: "Este usuario no tiene idPayment",
+        });
+      }
+      const session = await stripe.checkout.sessions.retrieve(
+        user.dataValues.idPayment
+      );
       if (session.payment_status === "paid") {
         const usuarioCambiado = await User.update(
           {

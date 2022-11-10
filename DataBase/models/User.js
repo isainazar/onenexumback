@@ -83,6 +83,10 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    idPayment: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     /*   provider: {
       type: DataTypes.STRING,
     },
