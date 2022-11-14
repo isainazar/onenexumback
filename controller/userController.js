@@ -201,8 +201,8 @@ const login = async (req, res) => {
                 message: "No se pudo guardar el login",
               });
             }
-            req.session.id_user = user.dataValues.id_user;
-            req.session.name = user.dataValues.name;
+            req.session.user = user.dataValues;
+
             const payload = {
               user: {
                 id: user.dataValues.id_user,
@@ -250,8 +250,7 @@ const login = async (req, res) => {
         message: "No se pudo guardar el login",
       });
     }
-    req.session.id_user = user.dataValues.id_user;
-    req.session.name = user.dataValues.name;
+    req.session.user = user.dataValues;
 
     const payload = {
       user: {
