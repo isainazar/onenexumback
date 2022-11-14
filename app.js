@@ -26,13 +26,13 @@ const analyticsRouter = require("./routes/analyticsRouter");
 var app = express();
 
 app.use(
-  cors(/* {
-    origin: `${URL}`,
+  cors({
+    origin: [`${URL}`],
     methods: ["GET", "POST", "PUT"],
-    //credentials: true,
-  } */)
+    credentials: true,
+  })
 );
-app.use(cookieParser("secret"));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(logger("dev"));
@@ -57,19 +57,18 @@ app.use((req, res, next) => {
   next();
 });
 /* app.set("trust proxy", 1);  */ // trust first proxy
-/* app.use(
+app.use(
   session({
-    key: "id_user",
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      httpOnly: true,
+      /*  httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "lax", */
     },
   })
-); */
+);
 /* app.use(
   cookieSession({
     name: "session",
