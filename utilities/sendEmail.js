@@ -13,9 +13,7 @@ const sendEmail = async (
     host: "onenexum.com", // hostname
     port: 465, // port for secure SMTP
     secure: true,
-    tls: {
-      ciphers: "SSLv3",
-    },
+    tls: { rejectUnauthorized: false },
     auth: {
       user: "newsletter@onenexum.com",
       pass: "IESChub2022.!",
