@@ -40,9 +40,9 @@ const runReport = async (req, res) => {
         {
           name: "sessions",
         },
-        {
+        /*  {
           name: "engagedSessions",
-        },
+        }, */
       ],
     });
     console.log(response);
