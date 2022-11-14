@@ -251,7 +251,7 @@ const login = async (req, res) => {
       });
     }
     req.session.user = user.dataValues;
-
+    console.log(req.session);
     const payload = {
       user: {
         id: user.dataValues.id_user,

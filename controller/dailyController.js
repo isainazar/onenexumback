@@ -1,9 +1,10 @@
 const { User, Daily } = require("../DataBase/index.js");
 
 const postDaily = async (req, res) => {
-  const { id_user, respuesta } = req.body;
-
-  if (!respuesta || !id_user) {
+  const { respuesta } = req.body;
+  const { user } = req.session;
+  console.log(user);
+  if (!respuesta || !user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   if (
@@ -13,14 +14,14 @@ const postDaily = async (req, res) => {
     respuesta === "bien" ||
     respuesta === "muy bien"
   ) {
-    const user = await User.findByPk(id_user);
-    if (!user) {
+    const userr = await User.findByPk(user.id_user);
+    if (!userr) {
       return res.status(403).json({ message: "Usuario inexistente" });
     }
     const nuevaDaily = await Daily.create({
       respuesta,
     });
-    const dailyDef = await Promise.all(await nuevaDaily.addUser(user));
+    const dailyDef = await Promise.all(await nuevaDaily.addUser(userr));
     if (dailyDef) {
       return res
         .status(200)

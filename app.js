@@ -27,7 +27,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: [`${URL}`],
+    origin: [`${URL2}`],
     methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
@@ -44,7 +44,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  //res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
@@ -63,9 +63,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      /*  httpOnly: true,
-      secure: true,
-      sameSite: "lax", */
+      httpOnly: false,
+      secure: false,
+      sameSite: "lax",
     },
   })
 );
@@ -116,13 +116,13 @@ app.use("/api/stripe", stripeRouter);
 app.use("/api/analytics", analyticsRouter);
 
 app.get("/ruta_solo_logueados", (req, res) => {
-  console.log(req);
+  console.log(req.session);
   // Si, por ejemplo, no hay nombre
-  if (!req.cookies) {
-    res.json(req.cookies.id_user);
+  if (!req.session) {
+    res.send("no");
   } else {
     // Ok, el usuario tiene permiso
-    res.json(req.cookies.id_user);
+    res.json(req.session.user);
   }
 });
 
