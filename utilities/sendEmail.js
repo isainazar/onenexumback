@@ -12,7 +12,7 @@ const sendEmail = async (
   const transporter = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
     port: 587, // port for secure SMTP
-    secureConnection: false,
+    secureConnection: true,
     tls: {
       ciphers: "SSLv3",
     },
