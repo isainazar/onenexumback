@@ -10,20 +10,20 @@ const sendEmail = async (
   html = false
 ) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", // hostname
-    port: 587, // port for secure SMTP
-    secureConnection: true,
+    host: "onenexum.com", // hostname
+    port: 465, // port for secure SMTP
+    secure: true,
     tls: {
       ciphers: "SSLv3",
     },
     auth: {
-      user: "tobias.blaksley@hotmail.com",
-      pass: "Vildom90",
+      user: "newsletter@onenexum.com",
+      pass: "IESChub2022.!",
     },
   });
   let mailOptions = {
-    from: emailFrom || "tobias.blaksley@hotmail.com", // dirección del remitente
-    to: emailTo || "tobias.blaksley@hotmail.com", // receptor
+    from: emailFrom || "newsletter@onenexum.com", // dirección del remitente
+    to: emailTo || "newsletter@onenexum.com", // receptor
     subject: subject,
   };
   html ? (mailOptions.html = html) : (mailOptions.text = message);
