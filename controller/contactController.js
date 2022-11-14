@@ -57,23 +57,36 @@ const quizNewsletter = async (req, res) => {
         message: "Este email ya esta registrado en nuestro Newsletter",
       });
     }
-    const createNewsletter = await Newsletter.create({
+    let html2 = `<div> <h3>Gracias por unirte e nuestro NewsLetter!</h3>
+    <p> Aqui recibiras la mejor informacion sobre todas nuestras ofertas!!!</p>
+      <p>Gracias, el equipo de One Nexum</p>
+ </div>`;
+    const mail = await sendEmail(
+      `Newsletter One Nexum`,
+      "",
+      false,
       email,
-      checkboxs,
-      name,
-    });
-    if (createNewsletter) {
-      let html2 = `<div> <h3>Gracias por unirte e nuestro NewsLetter!</h3>
-        <p> Aqui recibiras la mejor informacion sobre todas nuestras ofertas!!!</p>
-          <p>Gracias, el equipo de One Nexum</p>
-     </div>`;
-      await sendEmail(`Newsletter One Nexum`, "", false, email, html2);
+      html2
+    );
+
+    if (mail) {
+      const createNewsletter = await Newsletter.create({
+        email,
+        checkboxs,
+        name,
+      });
+      if (!createNewsletter) {
+        return res.status(200).json({
+          message: "El usuario no pudo ser agregado correctamente",
+        });
+      }
       return res.status(200).json({
         message: "Fuiste agregado a nuestro newsletter correctamente",
       });
     } else {
       return res.status(400).json({
-        message: "No pudiste ser agregado a nuestro newsletter",
+        message:
+          "No pudiste ser agregado a nuestro newsletter ya que no se envio el mail",
       });
     }
   } catch (error) {
