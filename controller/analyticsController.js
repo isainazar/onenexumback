@@ -41,7 +41,7 @@ const runReport = async (req, res) => {
           name: "sessions",
         },
         {
-          name: "EngageSessions",
+          name: "engagedSessions",
         },
       ],
     });
