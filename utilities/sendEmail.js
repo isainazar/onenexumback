@@ -10,7 +10,7 @@ const sendEmail = async (
   html = false
 ) => {
   const transporter = nodemailer.createTransport({
-    host: "onenexum.com", // hostname
+    host: "51.159.93.245", // hostname
     port: 465, // port for secure SMTP
     secure: true,
     tls: { rejectUnauthorized: false },
