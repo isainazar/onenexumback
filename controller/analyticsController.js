@@ -45,12 +45,11 @@ const runReport = async (req, res) => {
         }, */
       ],
     });
-    console.log(response);
-    const obj = {};
+    //console.log(response);
+    const obj = [];
     response.rows.forEach((row) => {
-      console.log(row);
-      obj.dimensionValues = row.dimensionValues;
-      obj.metricValues = row.metricValues;
+      //console.log(row);
+      obj.push(row);
     });
     console.log(obj);
     res.status(200).json(obj);
