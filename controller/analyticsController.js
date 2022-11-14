@@ -17,12 +17,12 @@ const runReport = async (req, res) => {
           endDate: "today",
         },
       ],
-      events: [
+      /*  events: [
         {
           name: "login",
         },
-      ],
-      /*  dimensions: [
+      ], */
+      dimensions: [
         {
           name: "city",
         },
@@ -32,7 +32,7 @@ const runReport = async (req, res) => {
         {
           name: "browser",
         },
-      ], */
+      ],
       metrics: [
         {
           name: "active28DayUsers",
