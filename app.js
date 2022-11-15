@@ -27,9 +27,9 @@ var app = express();
 
 app.use(
   cors({
-    origin: `https://test.onenexum.com`,
+    origin: true,
     methods: ["GET", "POST", "PUT"],
-    // credentials: true,
+    credentials: true,
   })
 );
 app.use(cookieParser());
