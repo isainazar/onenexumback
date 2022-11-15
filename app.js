@@ -43,19 +43,19 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  //res.setHeader("Access-Control-Allow-Origin", "*");
+/* app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
   );
-  /*  res.setHeader(
+  res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, DELETE"
-  ); */
+  );
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
-});
+}); */
 /* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
