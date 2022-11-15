@@ -27,7 +27,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: true,
+    origin: `https://test.onenexum.com`,
     methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
@@ -43,7 +43,7 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   // res.setHeader("Access-Control-Allow-Origin", "https://test.onenexum.com");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -55,7 +55,7 @@ app.use((req, res, next) => {
   );
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
-});
+}); */
 /* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
