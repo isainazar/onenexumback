@@ -26,11 +26,11 @@ const analyticsRouter = require("./routes/analyticsRouter");
 var app = express();
 
 app.use(
-  cors(/* {
-    origin: `${URL}`,
+  cors({
+    origin: `https://test.onenexum.com`,
     methods: ["GET", "POST", "PUT"],
     credentials: true,
-  } */)
+  })
 );
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
