@@ -27,8 +27,8 @@ var app = express();
 
 app.use(
   cors({
-    /*   origin: [`${URL}`],
-    methods: ["GET", "POST", "PUT"], */
+    origin: `${URL}`,
+    methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
 );
@@ -49,10 +49,10 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
   );
-  res.setHeader(
+  /*  res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, DELETE"
-  );
+  ); */
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
