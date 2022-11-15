@@ -26,11 +26,11 @@ const analyticsRouter = require("./routes/analyticsRouter");
 var app = express();
 
 app.use(
-  cors({
-    origin: [`${URL}`],
+  cors(/* {
+    origin: `${URL}`,
     methods: ["GET", "POST", "PUT"],
     credentials: true,
-  })
+  } */)
 );
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,7 +43,7 @@ app.use(
   })
 );
 
-/* app.use((req, res, next) => {
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -55,7 +55,7 @@ app.use(
   );
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
-}); */
+});
 /* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
