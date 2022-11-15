@@ -26,10 +26,11 @@ const analyticsRouter = require("./routes/analyticsRouter");
 var app = express();
 
 app.use(
-  cors({
+  cors(/* {
     origin: `https://test.onenexum.com`,
     methods: ["GET", "POST", "PUT"],
-  })
+    credentials: true,
+  } */)
 );
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,8 +43,8 @@ app.use(
   })
 );
 
-/* app.use((req, res, next) => {
-  // res.setHeader("Access-Control-Allow-Origin", "https://test.onenexum.com");
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://test.onenexum.com");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
@@ -54,7 +55,7 @@ app.use(
   );
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
-}); */
+});
 /* app.set("trust proxy", 1);  */ // trust first proxy
 app.use(
   session({
