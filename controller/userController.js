@@ -141,7 +141,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
+    return res.status(505).json({
       message: "Se requiere un usuario o contraseña valido",
     });
   }
@@ -151,9 +151,15 @@ const login = async (req, res) => {
       where: {
         email: email,
       },
+      include: [
+        {
+          model: Encrypted,
+        },
+      ],
     });
+    console.log(user);
     if (!user) {
-      return res.status(400).json({
+      return res.status(405).json({
         message: "Este usuario no existe",
       });
     }
@@ -164,13 +170,13 @@ const login = async (req, res) => {
     );
 
     if (!passwordfinal) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "Contraseña invalida",
       });
     }
     if (user.dataValues.firstLogin === true) {
       if (!user.dataValues.idPayment) {
-        return res.status(400).json({
+        return res.status(401).json({
           message: "Este usuario no tiene idPayment",
         });
       }
@@ -197,11 +203,49 @@ const login = async (req, res) => {
 
             const newLoginDef = await Promise.all(await newLogin.addUser(user));
             if (!newLogin || !newLoginDef) {
-              return res.status(400).json({
+              return res.status(409).json({
                 message: "No se pudo guardar el login",
               });
             }
-            req.session.user = user.dataValues;
+            const nombre = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataName
+            );
+            const apellido = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataLastname
+            );
+            const date = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataDatebirth
+            );
+            const countryy = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataCountry
+            );
+            const regionn = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataRegion
+            );
+            const genderr = decrypt(
+              user.dataValues.encrypted.dataValues.encryptedDataGender
+            );
+            const usu = {
+              id_user: user.dataValues.id_user,
+              name: nombre,
+              lastname: apellido,
+              email: user.dataValues.email,
+              date_birth: date,
+              country: countryy,
+              region: regionn,
+              gender: genderr,
+              relationship: user.dataValues.relationship,
+              ocupation: user.dataValues.ocupation,
+              unemployed: user.dataValues.unemployed,
+              user_type: user.dataValues.user_type,
+              status: user.dataValues.status,
+              terminos: user.dataValues.terminos,
+              progress: user.dataValues.progress,
+              firstLogin: user.dataValues.firstLogin,
+              createdAt: user.dataValues.createdAt,
+              updatedAt: user.dataValues.updatedAt,
+            };
+            req.session.user = usu;
 
             const payload = {
               user: {
@@ -219,18 +263,19 @@ const login = async (req, res) => {
                 return res.status(200).json({
                   token: token,
                   id_user: user.dataValues.id_user,
+                  userLogged: true,
                 });
               }
             );
           } catch (error) {
-            return res.status(500).json({
+            return res.status(502).json({
               message:
                 "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
               error: err,
             });
           }
         } else {
-          return res.status(401).json({
+          return res.status(403).json({
             message: "No se ha podido actualizar el usuario",
           });
         }
@@ -246,11 +291,49 @@ const login = async (req, res) => {
 
     const newLoginDef = await Promise.all(await newLogin.addUser(user));
     if (!newLogin || !newLoginDef) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: "No se pudo guardar el login",
       });
     }
-    req.session.user = user.dataValues;
+    const nombre = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataName
+    );
+    const apellido = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataLastname
+    );
+    const date = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataDatebirth
+    );
+    const countryy = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataCountry
+    );
+    const regionn = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataRegion
+    );
+    const genderr = decrypt(
+      user.dataValues.encrypted.dataValues.encryptedDataGender
+    );
+    const usu = {
+      id_user: user.dataValues.id_user,
+      name: nombre,
+      lastname: apellido,
+      email: user.dataValues.email,
+      date_birth: date,
+      country: countryy,
+      region: regionn,
+      gender: genderr,
+      relationship: user.dataValues.relationship,
+      ocupation: user.dataValues.ocupation,
+      unemployed: user.dataValues.unemployed,
+      user_type: user.dataValues.user_type,
+      status: user.dataValues.status,
+      terminos: user.dataValues.terminos,
+      progress: user.dataValues.progress,
+      firstLogin: user.dataValues.firstLogin,
+      createdAt: user.dataValues.createdAt,
+      updatedAt: user.dataValues.updatedAt,
+    };
+    req.session.user = usu;
     console.log(req.session);
     const payload = {
       user: {
@@ -268,11 +351,12 @@ const login = async (req, res) => {
         return res.status(200).json({
           token: token,
           id_user: user.dataValues.id_user,
+          userLogged: true,
         });
       }
     );
   } catch (err) {
-    return res.status(500).json({
+    return res.status(510).json({
       message:
         "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
       error: err,

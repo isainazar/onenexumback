@@ -1,18 +1,20 @@
 const { User } = require("../DataBase/index.js");
 
 const progress = async (req, res) => {
-  const { page, id_user } = req.body;
-  if (!id_user || !page) {
+  const { page } = req.body;
+  const { user } = req.session;
+  console.log(req.session);
+  if (!user.id_user || !page) {
     return res.status(500).json({ message: "Se requieren todos los campos" });
   }
-  const user = await User.findByPk(id_user);
-  if (!user) {
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
     return res.status(401).json({ message: "No existe este usuario" });
   }
   if (Number.isInteger(page)) {
     const pages = 23;
     const resultado = Math.round((page * 100) / pages);
-    if (user.dataValues.progress > resultado) {
+    if (user.progress > resultado) {
       return res.status(400).json({
         message: "No se actualizo el progreso porque actualmente es mayor",
       });
@@ -24,12 +26,12 @@ const progress = async (req, res) => {
       },
       {
         where: {
-          id_user,
+          id_user: user.id_user,
         },
       }
     );
     if (nuevoUsuario) {
-      /* req.session.progress = resultado; */
+      req.session.user.progress = resultado;
       return res.status(200).json({ message: "Progeso actualizado con exito" });
     } else {
       return res

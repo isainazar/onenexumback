@@ -251,7 +251,6 @@ const loginAdmin = async (req, res) => {
 module.exports = {
   getAllUsers,
   getUserById,
-
   getNewsletter,
   loginAdmin,
 };

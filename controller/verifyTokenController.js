@@ -21,33 +21,33 @@ const verifyToken = async (req, res) => {
   }
 };
 const verifyStatus = async (req, res) => {
-  const { id_user } = req.body;
-  if (!id_user) {
+  const { user } = req.session;
+  if (!user.id_user) {
     return res.status(403).json({
       status: 501,
       message: "Falta el id_user",
     });
   }
-  const user = await User.findByPk(id_user);
+  const userr = await User.findByPk(user.id_user);
   if (!user) {
     return res.status(403).json({
       status: 404,
       message: "No existe este usuario",
     });
   }
-  if (user.dataValues.terminos === false) {
+  if (user.terminos === false) {
     return res.status(403).json({
       status: 403,
       message: "Usuario invalido. No acepto los terminos y condiciones",
     });
   }
-  if (user.dataValues.status === false) {
+  if (user.status === false) {
     return res.status(403).json({
       status: 403,
       message: "Usuario invalido. No pago ",
     });
   }
-  if (user.dataValues.terminos === true && user.dataValues.status === true) {
+  if (user.terminos === true && user.status === true) {
     return res.status(200).send(true);
   } else {
     return res.status(403).json({
