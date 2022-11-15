@@ -29,7 +29,6 @@ app.use(
   cors({
     origin: `https://test.onenexum.com`,
     methods: ["GET", "POST", "PUT"],
-    credentials: true,
   })
 );
 app.use(cookieParser());
