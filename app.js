@@ -140,7 +140,7 @@ app.get("*", (req, res) => {
 
 conn
   .sync({
-    force: true,
+    force: false,
   })
   .then(() => {
     app.listen(3000, async () => {
