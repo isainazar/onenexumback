@@ -23,13 +23,11 @@ const postDaily = async (req, res) => {
     });
     const dailyDef = await Promise.all(await nuevaDaily.addUser(userr));
     if (dailyDef) {
-      return res
-        .status(200)
-        .json({
-          message: "Daily creada correctamente",
-          data: dailyDef,
-          user: user,
-        });
+      return res.status(200).json({
+        message: "Daily creada correctamente",
+        data: dailyDef,
+        user: user,
+      });
     } else {
       return res.status(500).json({ message: "Error al crear la Daily" });
     }
