@@ -29,7 +29,7 @@ const verifyStatus = async (req, res) => {
     });
   }
   const userr = await User.findByPk(user.id_user);
-  if (!user) {
+  if (!userr) {
     return res.status(403).json({
       status: 404,
       message: "No existe este usuario",

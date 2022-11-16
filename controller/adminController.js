@@ -104,9 +104,6 @@ const getUserById = async (req, res) => {
         {
           model: Quiz,
         },
-        {
-          model: Encrypted,
-        },
       ],
     });
     if (userDb) {

@@ -206,10 +206,10 @@ const login = async (req, res) => {
               ocupation: user.dataValues.ocupation,
               unemployed: user.dataValues.unemployed,
               user_type: user.dataValues.user_type,
-              status: user.dataValues.status,
-              terminos: user.dataValues.terminos,
+              status: true,
+              terminos: true,
               progress: user.dataValues.progress,
-              firstLogin: user.dataValues.firstLogin,
+              firstLogin: false,
               createdAt: user.dataValues.createdAt,
               updatedAt: user.dataValues.updatedAt,
             };

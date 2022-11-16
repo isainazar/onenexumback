@@ -12,6 +12,11 @@ const progress = async (req, res) => {
     return res.status(401).json({ message: "No existe este usuario" });
   }
   if (Number.isInteger(page)) {
+    if (page > pages) {
+      return res.status(401).json({
+        message: "La pagina recibida no existe",
+      });
+    }
     const pages = 23;
     const resultado = Math.round((page * 100) / pages);
     if (user.progress > resultado) {
