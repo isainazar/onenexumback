@@ -56,7 +56,7 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
-/* app.set("trust proxy", 1);  */ // trust first proxy
+app.set("trust proxy", 1);
 app.use(
   session({
     secret: process.env.APP_NEXUM,
