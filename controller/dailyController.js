@@ -25,7 +25,11 @@ const postDaily = async (req, res) => {
     if (dailyDef) {
       return res
         .status(200)
-        .json({ message: "Daily creada correctamente", data: dailyDef });
+        .json({
+          message: "Daily creada correctamente",
+          data: dailyDef,
+          user: user,
+        });
     } else {
       return res.status(500).json({ message: "Error al crear la Daily" });
     }
