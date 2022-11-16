@@ -28,7 +28,7 @@ var app = express();
 app.use(
   cors({
     origin: `${URL}`,
-    // methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     // exposedHeaders: ["set-cookie"],
   })
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   // res.setHeader("Access-Control-Allow-Origin", `${URL}`);
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
+    "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-cookie"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -57,6 +57,7 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
+const oneDay = 1000 * 60 * 60 * 24;
 app.set("trust proxy", 1);
 app.use(
   session({
@@ -66,6 +67,7 @@ app.use(
     name: "cookienexum",
     //proxy: false,
     cookie: {
+      maxAge: oneDay,
       httpOnly: true,
       secure: true,
       sameSite: "none",
@@ -122,7 +124,7 @@ app.get("/ruta_solo_logueados", (req, res) => {
   console.log(req.session);
   // Si, por ejemplo, no hay nombre
   if (!req.session) {
-    res.send("no");
+    res.send("no existe");
   } else {
     // Ok, el usuario tiene permiso
     res.json(req.session.user);
@@ -138,7 +140,7 @@ app.get("*", (req, res) => {
 
 conn
   .sync({
-    force: false,
+    force: true,
   })
   .then(() => {
     app.listen(3000, async () => {

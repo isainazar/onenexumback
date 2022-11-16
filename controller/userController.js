@@ -1,4 +1,4 @@
-const { User, Login, Encrypted } = require("../DataBase/index.js");
+const { User, Login } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
@@ -94,21 +94,6 @@ const createUser = async (req, res, next) => {
           .status(500)
           .json({ message: "No se pudo crear el usuario en la db" });
       }
-      await Encrypted.create({
-        encryptedDataName: nombreE,
-
-        encryptedDataLastname: apellidoE,
-
-        encryptedDataDatebirth: dateE,
-
-        encryptedDataCountry: countryE,
-
-        encryptedDataRegion: regionE,
-
-        encryptedDataGender: genderE,
-
-        id_user: user.dataValues.id_user,
-      });
 
       const payload = {
         user: {
@@ -151,11 +136,6 @@ const login = async (req, res) => {
       where: {
         email: email,
       },
-      include: [
-        {
-          model: Encrypted,
-        },
-      ],
     });
     console.log(user);
     if (!user) {
@@ -207,24 +187,12 @@ const login = async (req, res) => {
                 message: "No se pudo guardar el login",
               });
             }
-            const nombre = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataName
-            );
-            const apellido = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataLastname
-            );
-            const date = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataDatebirth
-            );
-            const countryy = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataCountry
-            );
-            const regionn = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataRegion
-            );
-            const genderr = decrypt(
-              user.dataValues.encrypted.dataValues.encryptedDataGender
-            );
+            const nombre = decrypt(user.dataValues.name);
+            const apellido = decrypt(user.dataValues.lastname);
+            const date = decrypt(user.dataValues.date_birth);
+            const countryy = decrypt(user.dataValues.country);
+            const regionn = decrypt(user.dataValues.region);
+            const genderr = decrypt(user.dataValues.gender);
             const usu = {
               id_user: user.dataValues.id_user,
               name: nombre,
@@ -295,24 +263,12 @@ const login = async (req, res) => {
         message: "No se pudo guardar el login",
       });
     }
-    const nombre = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataName
-    );
-    const apellido = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataLastname
-    );
-    const date = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataDatebirth
-    );
-    const countryy = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataCountry
-    );
-    const regionn = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataRegion
-    );
-    const genderr = decrypt(
-      user.dataValues.encrypted.dataValues.encryptedDataGender
-    );
+    const nombre = decrypt(user.dataValues.name);
+    const apellido = decrypt(user.dataValues.lastname);
+    const date = decrypt(user.dataValues.date_birth);
+    const countryy = decrypt(user.dataValues.country);
+    const regionn = decrypt(user.dataValues.region);
+    const genderr = decrypt(user.dataValues.gender);
     const usu = {
       id_user: user.dataValues.id_user,
       name: nombre,
@@ -379,11 +335,6 @@ const forgotPassword = async (req, res, next) => {
       where: {
         email,
       },
-      include: [
-        {
-          model: Encrypted,
-        },
-      ],
     });
 
     if (!user) {
@@ -410,9 +361,7 @@ const forgotPassword = async (req, res, next) => {
           .json({ message: "El usuario no se pudo actualizar" });
       }
       try {
-        const nombre = decrypt(
-          user.dataValues.encrypted.dataValues.encryptedDataName
-        );
+        const nombre = decrypt(user.dataValues.name);
         await sendEmail(
           "Recuperación de contraseña",
           "",
@@ -456,11 +405,6 @@ const resetPassword = async (req, res) => {
       where: {
         email: email,
       },
-      include: [
-        {
-          model: Encrypted,
-        },
-      ],
     });
     if (!user) {
       return res.status(400).json({
@@ -487,9 +431,7 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
-      const nombre = decrypt(
-        user.dataValues.encrypted.dataValues.encryptedDataName
-      );
+      const nombre = decrypt(user.dataValues.name);
 
       /* req.session.password = newPassword; */
       await sendEmail(

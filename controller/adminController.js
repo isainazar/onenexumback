@@ -1,10 +1,4 @@
-const {
-  User,
-  Daily,
-  Quiz,
-  Encrypted,
-  Newsletter,
-} = require("../DataBase/index.js");
+const { User, Daily, Quiz, Newsletter } = require("../DataBase/index.js");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
@@ -33,9 +27,6 @@ const getAllUsers = async (req, res) => {
         {
           model: Quiz,
         },
-        {
-          model: Encrypted,
-        },
       ],
     });
 
@@ -43,24 +34,12 @@ const getAllUsers = async (req, res) => {
       //console.log(users);
 
       const usuarios = users.map((u) => {
-        const nombre = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataName
-        );
-        const apellido = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataLastname
-        );
-        const date = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataDatebirth
-        );
-        const countryy = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataCountry
-        );
-        const regionn = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataRegion
-        );
-        const genderr = decrypt(
-          u.dataValues.encrypted.dataValues.encryptedDataGender
-        );
+        const nombre = decrypt(u.name);
+        const apellido = decrypt(u.lastname);
+        const date = decrypt(u.dataValues.date_birth);
+        const countryy = decrypt(u.dataValues.country);
+        const regionn = decrypt(u.dataValues.region);
+        const genderr = decrypt(u.dataValues.gender);
 
         const usu = {
           id_user: u.dataValues.id_user,
@@ -131,25 +110,12 @@ const getUserById = async (req, res) => {
       ],
     });
     if (userDb) {
-      const nombre = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataName
-      );
-      const apellido = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataLastname
-      );
-      const date = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataDatebirth
-      );
-      const countryy = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataCountry
-      );
-      const regionn = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataRegion
-      );
-      const genderr = decrypt(
-        userDb.dataValues.encrypted.dataValues.encryptedDataGender
-      );
-
+      const nombre = decrypt(userDb.dataValues.name);
+      const apellido = decrypt(userDb.dataValues.lastname);
+      const date = decrypt(userDb.dataValues.date_birth);
+      const countryy = decrypt(userDb.dataValues.country);
+      const regionn = decrypt(userDb.dataValues.region);
+      const genderr = decrypt(userDb.dataValues.gender);
       const usu = {
         id_user: userDb.dataValues.id_user,
         name: nombre,
