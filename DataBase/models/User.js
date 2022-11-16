@@ -108,10 +108,7 @@ module.exports = (sequelize) => {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
-    User.hasOne(models.Encrypted, {
-      sourceKey: "id_user",
-      foreignKey: "id_user",
-    });
+
     User.belongsToMany(models.Login, {
       through: "login_by_user",
       timestamps: false,
