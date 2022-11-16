@@ -62,6 +62,7 @@ app.use(
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
+    proxy: false,
     cookie: {
       httpOnly: true,
       secure: true,
