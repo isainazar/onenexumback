@@ -28,9 +28,9 @@ var app = express();
 app.use(
   cors({
     origin: `${URL}`,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    // methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-    exposedHeaders: ["set-cookie"],
+    // exposedHeaders: ["set-cookie"],
   })
 );
 app.use(cookieParser());
@@ -57,16 +57,17 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
+app.set("trust proxy", 1);
 app.use(
   session({
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
-    proxy: true,
+    //proxy: false,
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
     },
   })
 );
