@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   // res.setHeader("Access-Control-Allow-Origin", `${URL}`);
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie, set-cookie"
+    "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
