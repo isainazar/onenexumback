@@ -63,6 +63,7 @@ app.use(
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
+    name: "cookienexum",
     //proxy: false,
     cookie: {
       httpOnly: true,
