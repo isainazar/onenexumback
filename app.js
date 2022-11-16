@@ -28,7 +28,7 @@ var app = express();
 app.use(
   cors({
     origin: `${URL}`,
-    methods: ["GET", "POST", "PUT", "DELET"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
   // res.setHeader("Access-Control-Allow-Origin", `${URL}`);
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Authorization, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
+    "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-Cookie"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -56,13 +56,13 @@ app.use((req, res, next) => {
   res.setHeader("Allow", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 });
-app.set("trust proxy", 1);
+//app.set("trust proxy", 1);
 app.use(
   session({
     secret: process.env.APP_NEXUM,
     resave: false,
     saveUninitialized: false,
-    proxy: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
       secure: true,
