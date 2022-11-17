@@ -27,7 +27,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: `${URL}`,
+    origin: [`${URL}`, `${URL2}`],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     // exposedHeaders: ["set-cookie"],
