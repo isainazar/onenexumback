@@ -17,11 +17,7 @@ const runReport = async (req, res) => {
           endDate: "today",
         },
       ],
-      /*  events: [
-        {
-          name: "login",
-        },
-      ], */
+
       dimensions: [
         {
           name: "city",
@@ -40,11 +36,14 @@ const runReport = async (req, res) => {
         {
           name: "sessions",
         },
+
         /*  {
           name: "engagedSessions",
         }, */
       ],
     });
+    const login = gtag("event", "login");
+    console.log(login);
     //console.log(response);
     const obj = [];
     response.rows.forEach((row) => {
