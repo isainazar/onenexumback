@@ -24,13 +24,7 @@ const runReport = async (req, res) => {
         },
 
         {
-          name: "city",
-        },
-        {
           name: "country",
-        },
-        {
-          name: "browser",
         },
       ],
       metrics: [
