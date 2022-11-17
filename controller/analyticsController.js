@@ -42,7 +42,7 @@ const runReport = async (req, res) => {
         }, */
       ],
     });
-    const login = gtag("event", "login");
+    const login = gtag("event", "started_quiz");
     console.log(login);
     //console.log(response);
     const obj = [];
