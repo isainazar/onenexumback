@@ -50,7 +50,7 @@ const runReport = async (req, res) => {
       obj.push(row);
     });
     console.log(obj);
-    res.status(200).json(obj, analyticsDataClient);
+    res.status(200).json(obj);
   } catch (error) {
     return res.status(500).json({ error: error });
   }
