@@ -11,6 +11,7 @@ const session = require("express-session");
 var cookieSession = require("cookie-session");
 const URL = process.env.URL;
 const URL2 = process.env.URL2;
+const URL3 = process.env.URL3;
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");
@@ -27,7 +28,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: [`${URL}`, `${URL2}`],
+    origin: [`${URL}`, `${URL2}`,`${URL3}`],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     // exposedHeaders: ["set-cookie"],
