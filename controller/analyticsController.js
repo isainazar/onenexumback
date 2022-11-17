@@ -38,7 +38,7 @@ const runReport = async (req, res) => {
           name: "itemListViewEvents",
         },
         {
-          name: "valordelevento",
+          name: "itemViewEvents",
         },
 
         /*  {
