@@ -3,7 +3,6 @@ const { User, Daily } = require("../DataBase/index.js");
 const postDaily = async (req, res) => {
   const { respuesta } = req.body;
   const { user } = req.session;
-  console.log(user);
   if (!respuesta || !user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
@@ -26,7 +25,6 @@ const postDaily = async (req, res) => {
       return res.status(200).json({
         message: "Daily creada correctamente",
         data: dailyDef,
-        user: user,
       });
     } else {
       return res.status(500).json({ message: "Error al crear la Daily" });
@@ -50,9 +48,6 @@ const dailyProgress = async (req, res) => {
           through: {
             attributes: [],
           },
-        },
-        {
-          model: Encrypted,
         },
       ],
     });
