@@ -20,7 +20,7 @@ const runReport = async (req, res) => {
 
       dimensions: [
         {
-          name: "started_quiz",
+          name: "event_name",
         },
         {
           name: "login",
