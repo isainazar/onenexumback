@@ -17,7 +17,7 @@ const runReport = async (req, res) => {
           endDate: "today",
         },
       ],
-
+      actions: [{ name: "started_quiz" }],
       dimensions: [
         {
           name: "city",
@@ -42,8 +42,7 @@ const runReport = async (req, res) => {
         }, */
       ],
     });
-    const login = gtag("event", "started_quiz");
-    console.log(login);
+
     //console.log(response);
     const obj = [];
     response.rows.forEach((row) => {
