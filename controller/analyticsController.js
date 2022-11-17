@@ -34,24 +34,18 @@ const runReport = async (req, res) => {
         {
           name: "sessions",
         },
-        {
-          name: "eventCount",
-        },
+
         {
           name: "eventCountPerUser",
         },
-        {
-          name: "eventValue",
-        },
+
         {
           name: "eventsPerSession",
         },
         {
           name: "totalUsers",
         },
-        {
-          name: "conversions",
-        },
+
         {
           name: "bounceRate",
         },
