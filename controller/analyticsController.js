@@ -17,7 +17,7 @@ const runReport = async (req, res) => {
           endDate: "today",
         },
       ],
-
+      /* 
       dimensions: [
         {
           name: "eventName",
@@ -26,13 +26,19 @@ const runReport = async (req, res) => {
         {
           name: "country",
         },
-      ],
+      ], */
       metrics: [
         {
           name: "active28DayUsers",
         },
         {
           name: "sessions",
+        },
+        {
+          name: "Recuento de eventos",
+        },
+        {
+          name: "valordelevento",
         },
 
         /*  {
