@@ -17,7 +17,7 @@ const runReport = async (req, res) => {
           endDate: "today",
         },
       ],
-      actions: [{ name: "started_quiz" }],
+
       dimensions: [
         {
           name: "city",
@@ -50,7 +50,7 @@ const runReport = async (req, res) => {
       obj.push(row);
     });
     console.log(obj);
-    res.status(200).json(obj, login);
+    res.status(200).json(obj, analyticsDataClient);
   } catch (error) {
     return res.status(500).json({ error: error });
   }
