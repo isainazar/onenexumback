@@ -70,7 +70,7 @@ const getAllUsers = async (req, res) => {
 
       return res.status(200).json(usuarios);
     } else {
-      return res.status(400).json({ message: "No hay usuarios en la db" });
+      return res.status(204).json({ message: "No hay usuarios en la db" });
     }
   } catch (error) {
     return res.status(500).json({ error: error });
@@ -138,7 +138,7 @@ const getUserById = async (req, res) => {
       };
       return res.status(200).json(usu);
     } else {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(204).json({ message: "User not found" });
     }
   } catch (error) {
     return res.status(500).json({ error: error });

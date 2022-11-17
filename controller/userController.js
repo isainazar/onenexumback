@@ -481,11 +481,18 @@ const updateTerminos = async (req, res) => {
       .json({ message: "Error al intentar cambiar el usuario" });
   }
 };
-
+const getSession = async (req, res) => {
+  // Si, por ejemplo, no hay nombre
+  if (!req.session) {
+    res.status(400).json({ message: "No existe una session en este momento" });
+  }
+  return res.status(200).json(req.session.user);
+};
 module.exports = {
   login,
   createUser,
   resetPassword,
   forgotPassword,
   updateTerminos,
+  getSession,
 };

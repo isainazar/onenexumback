@@ -120,17 +120,6 @@ app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/analytics", analyticsRouter);
 
-app.get("/ruta_solo_logueados", (req, res) => {
-  console.log(req.session);
-  // Si, por ejemplo, no hay nombre
-  if (!req.session) {
-    res.send("no existe");
-  } else {
-    // Ok, el usuario tiene permiso
-    res.json(req.session.user);
-  }
-});
-
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
 });
