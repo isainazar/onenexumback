@@ -8,64 +8,121 @@ const analyticsDataClient = new BetaAnalyticsDataClient();
 
 // Runs a simple report.
 const runReport = async (req, res) => {
-  try {
-    const [response] = await analyticsDataClient.runReport({
-      property: `properties/${PROPERTY_ID}`,
-      dateRanges: [
-        {
-          startDate: "2022-10-31",
-          endDate: "today",
-        },
-      ],
-      /* 
-      dimensions: [
-        {
-          name: "eventName",
-        },
+  const { dimension } = req.body;
+  if (dimension) {
+    try {
+      const [response] = await analyticsDataClient.runReport({
+        property: `properties/${PROPERTY_ID}`,
+        dateRanges: [
+          {
+            startDate: "2022-10-31",
+            endDate: "today",
+          },
+        ],
 
-        {
-          name: "country",
-        },
-      ], */
-      metrics: [
-        {
-          name: "active28DayUsers",
-        },
-        {
-          name: "sessions",
-        },
+        dimensions: [
+          {
+            name: dimension,
+          },
+        ],
+        metrics: [
+          {
+            name: "active28DayUsers",
+          },
+          {
+            name: "sessions",
+          },
 
-        {
-          name: "eventCountPerUser",
-        },
+          {
+            name: "eventCountPerUser",
+          },
 
-        {
-          name: "eventsPerSession",
-        },
-        {
-          name: "totalUsers",
-        },
+          {
+            name: "eventsPerSession",
+          },
+          {
+            name: "totalUsers",
+          },
 
-        {
-          name: "bounceRate",
-        },
+          {
+            name: "bounceRate",
+          },
 
-        /*  {
-          name: "engagedSessions",
-        }, */
-      ],
-    });
+          /*  {
+            name: "engagedSessions",
+          }, */
+        ],
+      });
 
-    //console.log(response);
-    const obj = [];
-    response.rows.forEach((row) => {
-      //console.log(row);
-      obj.push(row);
-    });
-    console.log(obj);
-    res.status(200).json(obj);
-  } catch (error) {
-    return res.status(500).json({ error: error });
+      //console.log(response);
+      const obj = [];
+      response.rows.forEach((row) => {
+        //console.log(row);
+        obj.push(row);
+      });
+      console.log(obj);
+      res.status(200).json(obj);
+    } catch (error) {
+      return res.status(500).json({ error: error });
+    }
+  } else {
+    try {
+      const [response] = await analyticsDataClient.runReport({
+        property: `properties/${PROPERTY_ID}`,
+        dateRanges: [
+          {
+            startDate: "2022-10-31",
+            endDate: "today",
+          },
+        ],
+        /* 
+        dimensions: [
+          {
+            name: 
+          },
+  
+       
+        ], */
+        metrics: [
+          {
+            name: "active28DayUsers",
+          },
+          {
+            name: "sessions",
+          },
+
+          {
+            name: "eventCountPerUser",
+          },
+
+          {
+            name: "eventsPerSession",
+          },
+          {
+            name: "totalUsers",
+          },
+
+          {
+            name: "bounceRate",
+          },
+
+          /*  {
+            name: "engagedSessions",
+          }, */
+        ],
+      });
+
+      //console.log(response);
+      const obj = [];
+      response.rows.forEach((row) => {
+        //console.log(row);
+        obj.push(row);
+      });
+      console.log(obj);
+      res.status(200).json(obj);
+    } catch (error) {
+      return res.status(500).json({ error: error });
+    }
   }
 };
 
