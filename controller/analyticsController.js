@@ -48,9 +48,9 @@ const runReport = async (req, res) => {
             name: "bounceRate",
           },
 
-          /*  {
+          {
             name: "engagedSessions",
-          }, */
+          },
         ],
       });
 
@@ -106,9 +106,9 @@ const runReport = async (req, res) => {
             name: "bounceRate",
           },
 
-          /*  {
+          {
             name: "engagedSessions",
-          }, */
+          },
         ],
       });
 
