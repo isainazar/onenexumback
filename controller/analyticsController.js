@@ -9,7 +9,7 @@ const analyticsDataClient = new BetaAnalyticsDataClient();
 // Runs a simple report.
 const runReport = async (req, res) => {
   const { dimension } = req.body;
-  if (dimension) {
+  if (typeof dimension === "string" || dimension !== false) {
     try {
       const [response] = await analyticsDataClient.runReport({
         property: `properties/${PROPERTY_ID}`,
