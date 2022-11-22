@@ -53,6 +53,11 @@ const paymentStripe = async (req, res) => {
 };
 const getPayments = async (req, res) => {
   const transfers = await stripe.checkout.sessions.list();
+  if (!transfers || transfers.length === 0) {
+    return res
+      .status(404)
+      .json({ message: "No se encontraron ordenes activas" });
+  }
   console.log(transfers.data);
   return res.status(200).json(transfers.data);
 };
