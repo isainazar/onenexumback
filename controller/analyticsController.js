@@ -8,7 +8,7 @@ const analyticsDataClient = new BetaAnalyticsDataClient();
 
 // Runs a simple report.
 const runReport = async (req, res) => {
-  if (req.body) {
+  if (req.body.dimension) {
     try {
       const [response] = await analyticsDataClient.runReport({
         property: `properties/${PROPERTY_ID}`,
@@ -118,7 +118,7 @@ const runReport = async (req, res) => {
         obj.push(row);
       });
       console.log(obj);
-      res.status(200).json(ob, req.body);
+      res.status(200).json(obj);
     } catch (error) {
       return res.status(500).json({ error: error });
     }
