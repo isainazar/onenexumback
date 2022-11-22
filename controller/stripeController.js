@@ -52,9 +52,9 @@ const paymentStripe = async (req, res) => {
   return res.json({ url: session.url });
 };
 const getPayments = async (req, res) => {
-  const transfers = await stripe.paymentIntents.list();
+  const transfers = await stripe.checkout.sessions.list();
   console.log(transfers.data);
-  return res.status(200).json(transfers);
+  return res.status(200).json(transfers.data);
 };
 module.exports = {
   paymentStripe,
