@@ -7,6 +7,7 @@ const { User } = require("../DataBase/index");
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
 
 const paymentStripe = async (req, res) => {
+  console.log(stripe);
   const { id_user } = req.body;
   if (!id_user) {
     return res.status(500).json({ message: "field required" });
@@ -30,7 +31,6 @@ const paymentStripe = async (req, res) => {
     success_url: `${URL}/login`,
     cancel_url: `${URL}/landing`,
   });
-  console.log(session);
   if (!session) {
     return res.status(404).json({ message: "Error al crear pago" });
   }
@@ -51,16 +51,12 @@ const paymentStripe = async (req, res) => {
   }
   return res.json({ url: session.url });
 };
-const getPayment = async (req, res) => {
-  const { idPayment } = req.body;
-  if (!idPayment) {
-    return res.status(500).json({ message: "field required" });
-  }
-  const session = await stripe.checkout.sessions.retrieve(idPayment);
-  console.log(session);
-  return res.status(200).json(session);
+const getPayments = async (req, res) => {
+  const transfers = await stripe.paymentIntents.list();
+  console.log(transfers.data);
+  return res.status(200).json(transfers);
 };
 module.exports = {
   paymentStripe,
-  getPayment,
+  getPayments,
 };
