@@ -5,5 +5,5 @@ const auth = require("../utilities/auth");
 // Controllers
 const { runReport } = require("../controller/analyticsController");
 
-router.get("/", runReport);
+router.post("/", runReport);
 module.exports = router;
