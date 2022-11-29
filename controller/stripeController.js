@@ -29,7 +29,7 @@ const paymentStripe = async (req, res) => {
     },
     mode: "payment",
     success_url: `${URL}/login`,
-    cancel_url: `${URL}/landing`,
+    cancel_url: `${URL}/info`,
   });
   if (!session) {
     return res.status(404).json({ message: "Error al crear pago" });
