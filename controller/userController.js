@@ -25,40 +25,15 @@ function validarEmail(valor) {
 }
 
 const createUser = async (req, res, next) => {
-  const {
-    name,
-    lastname,
-    password,
-    email,
-    date_birth,
-    country,
-    region,
-    gender,
-    user_type,
-  } = req.body;
+  const { name, lastname, password, email, user_type } = req.body;
 
-  if (
-    !name ||
-    !lastname ||
-    !email ||
-    !password ||
-    !country ||
-    !region ||
-    !gender ||
-    !date_birth ||
-    !user_type
-  ) {
+  if (!name || !lastname || !email || !password || !user_type) {
     return res.status(500).json({ message: "All fields are required" });
   }
-  if (
-    gender === "Masculino" ||
-    gender === "Femenino" ||
-    gender === "Binario" ||
-    gender === "Otro"
-  ) {
-    if (validarEmail(email) === "This email is incorrect") {
-      return res.status(501).json({ message: "This mail doesn't exists" });
-    }
+
+  if (validarEmail(email) === "This email is incorrect") {
+    return res.status(501).json({ message: "This mail doesn't exists" })};
+
     try {
       let user1 = await User.findOne({ where: { email } });
       // Si el correo ya está registrado, devuelvo un error
@@ -67,13 +42,13 @@ const createUser = async (req, res, next) => {
           .status(500)
           .json({ message: "Ya existe un usuario con este email" });
       }
-      const date = date_birth.toString();
+      //   const date = date_birth.toString();
       const nombreE = encrypt(name);
       const apellidoE = encrypt(lastname);
-      const dateE = encrypt(date);
-      const countryE = encrypt(country);
-      const regionE = encrypt(region);
-      const genderE = encrypt(gender);
+      //  const dateE = encrypt(date);
+      //  const countryE = encrypt(country);
+      //   const regionE = encrypt(region);
+      //   const genderE = encrypt(gender);
 
       // Creamos el nuevo usuario y lo guardamos en la DB
       const user = await User.create({
@@ -81,10 +56,10 @@ const createUser = async (req, res, next) => {
         lastname: apellidoE,
         email,
         password,
-        date_birth: dateE,
-        country: countryE,
-        region: regionE,
-        gender: genderE,
+        //   date_birth: dateE,
+        //   country: countryE,
+        //   region: regionE,
+        //   gender: genderE,
         user_type,
       });
 
@@ -117,10 +92,8 @@ const createUser = async (req, res, next) => {
     } catch (err) {
       return res.status(500).json({ error: err });
     }
-  } else {
-    return res.status(500).json({ message: "Genero invalido" });
   }
-};
+;
 
 const login = async (req, res) => {
   const { email, password } = req.body;
