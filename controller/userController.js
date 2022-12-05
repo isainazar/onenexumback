@@ -32,69 +32,75 @@ const createUser = async (req, res, next) => {
   }
 
   if (validarEmail(email) === "This email is incorrect") {
-    return res.status(501).json({ message: "This mail doesn't exists" })};
-
-    try {
-      let user1 = await User.findOne({ where: { email } });
-      // Si el correo ya está registrado, devuelvo un error
-      if (user1) {
-        return res
-          .status(500)
-          .json({ message: "Ya existe un usuario con este email" });
-      }
-      //   const date = date_birth.toString();
-      const nombreE = encrypt(name);
-      const apellidoE = encrypt(lastname);
-      //  const dateE = encrypt(date);
-      //  const countryE = encrypt(country);
-      //   const regionE = encrypt(region);
-      //   const genderE = encrypt(gender);
-
-      // Creamos el nuevo usuario y lo guardamos en la DB
-      const user = await User.create({
-        name: nombreE,
-        lastname: apellidoE,
-        email,
-        password,
-        //   date_birth: dateE,
-        //   country: countryE,
-        //   region: regionE,
-        //   gender: genderE,
-        user_type,
-      });
-
-      // generamos el payload/body para generar el token
-      if (!user) {
-        return res
-          .status(500)
-          .json({ message: "No se pudo crear el usuario en la db" });
-      }
-
-      const payload = {
-        user: {
-          id: user.dataValues.id_user,
-        },
-      };
-
-      jwt.sign(
-        payload,
-        JWT_SECRET,
-        {
-          expiresIn: "1d",
-        },
-        (err, token) => {
-          if (err) throw err;
-          res
-            .status(201)
-            .json({ token: token, id_user: user.dataValues.id_user });
-        }
-      );
-    } catch (err) {
-      return res.status(500).json({ error: err });
-    }
+    return res.status(501).json({ message: "This mail doesn't exists" });
   }
-;
 
+  try {
+    let user1 = await User.findOne({ where: { email } });
+    // Si el correo ya está registrado, devuelvo un error
+    if (user1) {
+      return res
+        .status(500)
+        .json({ message: "Ya existe un usuario con este email" });
+    }
+    //   const date = date_birth.toString();
+    const nombreE = encrypt(name);
+    const apellidoE = encrypt(lastname);
+    //  const dateE = encrypt(date);
+    //  const countryE = encrypt(country);
+    //   const regionE = encrypt(region);
+    //   const genderE = encrypt(gender);
+
+    // Creamos el nuevo usuario y lo guardamos en la DB
+    const user = await User.create({
+      name: nombreE,
+      lastname: apellidoE,
+      email,
+      password,
+      //   date_birth: dateE,
+      //   country: countryE,
+      //   region: regionE,
+      //   gender: genderE,
+      user_type,
+    });
+
+    // generamos el payload/body para generar el token
+    if (!user) {
+      return res
+        .status(500)
+        .json({ message: "No se pudo crear el usuario en la db" });
+    }
+
+    const mail = await sendEmail(
+      "Verificacion de usuario",
+      "",
+      false,
+      user.dataValues.email,
+      `<h2>Creaste un usuario!</h2><div>${name}, necesitamos que verifiques tu usuario. Para lograrlo, necesitas acceder a este https://test.onenexum.com</div>`
+    );
+    const payload = {
+      user: {
+        id: user.dataValues.id_user,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+      (err, token) => {
+        if (err) throw err;
+        res
+          .status(201)
+          .json({ token: token, id_user: user.dataValues.id_user });
+      }
+    );
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
+};
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -162,27 +168,28 @@ const login = async (req, res) => {
             }
             const nombre = decrypt(user.dataValues.name);
             const apellido = decrypt(user.dataValues.lastname);
-            const date = decrypt(user.dataValues.date_birth);
+            /*   const date = decrypt(user.dataValues.date_birth);
             const countryy = decrypt(user.dataValues.country);
             const regionn = decrypt(user.dataValues.region);
-            const genderr = decrypt(user.dataValues.gender);
+            const genderr = decrypt(user.dataValues.gender); */
             const usu = {
               id_user: user.dataValues.id_user,
               name: nombre,
               lastname: apellido,
               email: user.dataValues.email,
-              date_birth: date,
+              /*  date_birth: date,
               country: countryy,
               region: regionn,
               gender: genderr,
               relationship: user.dataValues.relationship,
               ocupation: user.dataValues.ocupation,
-              unemployed: user.dataValues.unemployed,
+              unemployed: user.dataValues.unemployed, */
               user_type: user.dataValues.user_type,
               status: true,
               terminos: true,
               progress: user.dataValues.progress,
               firstLogin: false,
+              mail_accepted: true,
               createdAt: user.dataValues.createdAt,
               updatedAt: user.dataValues.updatedAt,
             };
@@ -238,27 +245,28 @@ const login = async (req, res) => {
     }
     const nombre = decrypt(user.dataValues.name);
     const apellido = decrypt(user.dataValues.lastname);
-    const date = decrypt(user.dataValues.date_birth);
+    /*  const date = decrypt(user.dataValues.date_birth);
     const countryy = decrypt(user.dataValues.country);
     const regionn = decrypt(user.dataValues.region);
-    const genderr = decrypt(user.dataValues.gender);
+    const genderr = decrypt(user.dataValues.gender); */
     const usu = {
       id_user: user.dataValues.id_user,
       name: nombre,
       lastname: apellido,
       email: user.dataValues.email,
-      date_birth: date,
+      /*  date_birth: date,
       country: countryy,
       region: regionn,
       gender: genderr,
       relationship: user.dataValues.relationship,
       ocupation: user.dataValues.ocupation,
-      unemployed: user.dataValues.unemployed,
+      unemployed: user.dataValues.unemployed, */
       user_type: user.dataValues.user_type,
-      status: user.dataValues.status,
-      terminos: user.dataValues.terminos,
+      status: true,
+      terminos: true,
       progress: user.dataValues.progress,
-      firstLogin: user.dataValues.firstLogin,
+      firstLogin: false,
+      mail_accepted: true,
       createdAt: user.dataValues.createdAt,
       updatedAt: user.dataValues.updatedAt,
     };
@@ -461,6 +469,30 @@ const getSession = async (req, res) => {
   }
   return res.status(200).json(req.session.user);
 };
+const updateMailAccepted = async (req, res) => {
+  const { id_user } = req.body;
+
+  if (!id_user) {
+    return res.status(500).json({ message: "Faltan campos" });
+  }
+  const usuarioCambiado = await User.update(
+    {
+      mail_accepted: true,
+    },
+    {
+      where: {
+        id_user,
+      },
+    }
+  );
+  if (usuarioCambiado) {
+    return res.status(200).json({ message: "Usuario cambiado correctamente" });
+  } else {
+    return res
+      .status(404)
+      .json({ message: "Error al intentar cambiar el usuario" });
+  }
+};
 module.exports = {
   login,
   createUser,
@@ -468,4 +500,5 @@ module.exports = {
   forgotPassword,
   updateTerminos,
   getSession,
+  updateMailAccepted,
 };
