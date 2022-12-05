@@ -87,6 +87,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    mail_accepted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     /*   provider: {
       type: DataTypes.STRING,
     },
