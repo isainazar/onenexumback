@@ -78,6 +78,11 @@ const createUser = async (req, res, next) => {
       user.dataValues.email,
       `<h2>Creaste un usuario!</h2><div>${name}, necesitamos que verifiques tu usuario. Para lograrlo, necesitas acceder a este https://test.onenexum.com</div>`
     );
+    if (!mail) {
+      return res
+        .status(500)
+        .json({ message: "No se pudo crear el usuario en la db" });
+    }
     const payload = {
       user: {
         id: user.dataValues.id_user,
