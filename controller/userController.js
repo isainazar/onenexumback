@@ -70,7 +70,7 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "No se pudo crear el usuario en la db" });
     }
-    var aleatorio = Math.round(Math.random() * 999999);
+    var aleatorio = Math.floor(Math.random() * 900000) + 100000;
 
     const mail = await sendEmail(
       "Verificacion de usuario",
@@ -98,13 +98,11 @@ const createUser = async (req, res, next) => {
       },
       (err, token) => {
         if (err) throw err;
-        res
-          .status(201)
-          .json({
-            token: token,
-            id_user: user.dataValues.id_user,
-            codigo: aleatorio,
-          });
+        res.status(201).json({
+          token: token,
+          id_user: user.dataValues.id_user,
+          codigo: aleatorio,
+        });
       }
     );
   } catch (err) {
