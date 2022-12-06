@@ -70,13 +70,14 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "No se pudo crear el usuario en la db" });
     }
+    var aleatorio = Math.round(Math.random() * 999999);
 
     const mail = await sendEmail(
       "Verificacion de usuario",
       "",
       false,
       user.dataValues.email,
-      `<h2>Creaste un usuario!</h2><div>${name}, necesitamos que verifiques tu usuario. Para lograrlo, necesitas acceder a este https://test.onenexum.com</div>`
+      `<h2>Creaste un usuario!</h2><div>${name}, necesitamos que verifiques tu usuario. Para lograrlo, necesitas utilizar el codigo:${aleatorio}.`
     );
     if (!mail) {
       return res
@@ -99,7 +100,11 @@ const createUser = async (req, res, next) => {
         if (err) throw err;
         res
           .status(201)
-          .json({ token: token, id_user: user.dataValues.id_user });
+          .json({
+            token: token,
+            id_user: user.dataValues.id_user,
+            codigo: aleatorio,
+          });
       }
     );
   } catch (err) {

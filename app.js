@@ -29,7 +29,7 @@ var app = express();
 
 app.use(
   cors({
-    origin: [`${URL}`, `${URL2}`,`${URL3}`,`${URL4}`],
+    origin: [`${URL}`, `${URL2}`, `${URL3}`, `${URL4}`],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     // exposedHeaders: ["set-cookie"],
