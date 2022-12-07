@@ -1,6 +1,7 @@
 const { User, Daily } = require("../DataBase/index.js");
 
 const postDaily = async (req, res) => {
+  console.log(req.session);
   const { respuesta } = req.body;
   const { user } = req.session;
   if (!respuesta || !user.id_user) {
@@ -197,6 +198,26 @@ const dailyProgress = async (req, res) => {
 };
 const dailyTotal = async (req, res) => {
   const dailys = await Daily.findAll();
+  if (!dailys || dailys.length === 0) {
+    return res.status(500).json({ message: "No se encontraron dailys" });
+  }
+  const dailyMuyMal = dailys.data.filter((t) => t.respuesta === "muy mal");
+  const dailyMal = dailys.data.filter((t) => t.respuesta === "mal");
+  const dailyRegular = dailys.data.filter((t) => t.respuesta === "regular");
+  const dailyBien = dailys.data.filter((t) => t.respuesta === "bien");
+  const dailyMuyBien = dailys.data.filter((t) => t.respuesta === "muy bien");
+  const arrayDeDailys = [
+    dailyMuyMal,
+    dailyMal,
+    dailyRegular,
+    dailyBien,
+    dailyMuyBien,
+  ];
+  const sortedArrays = arrayDeDailys
+    .slice()
+    .sort((a, b) => b.length - a.length);
+
+  return res.status(200).json(sortedArrays);
 };
 module.exports = {
   postDaily,
