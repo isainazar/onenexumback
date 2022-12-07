@@ -195,7 +195,11 @@ const dailyProgress = async (req, res) => {
     return res.status(500).json({ error: error });
   }
 };
+const dailyTotal = async (req, res) => {
+  const dailys = await Daily.findAll();
+};
 module.exports = {
   postDaily,
   dailyProgress,
+  dailyTotal,
 };

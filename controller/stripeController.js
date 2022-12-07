@@ -61,7 +61,20 @@ const getPayments = async (req, res) => {
   console.log(transfers.data);
   return res.status(200).json(transfers.data);
 };
+const getPaymentsEarns = async (req, res) => {
+  const transfers = await stripe.checkout.sessions.list();
+  if (!transfers || transfers.length === 0) {
+    return res
+      .status(404)
+      .json({ message: "No se encontraron ordenes activas" });
+  }
+
+  const mapa = transfers.data.filter((t) => t.payment_status === "paid");
+  const mapaa = mapa.map((el) => el.amount_total);
+  return res.status(200).json(mapaa);
+};
 module.exports = {
   paymentStripe,
   getPayments,
+  getPaymentsEarns,
 };
