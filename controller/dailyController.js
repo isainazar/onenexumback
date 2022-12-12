@@ -217,7 +217,7 @@ const dailyTotal = async (req, res) => {
     .slice()
     .sort((a, b) => b.length - a.length);
 
-  return res.status(200).json(sortedArrays);
+  return res.status(200).json(arrayDeDailys);
 };
 module.exports = {
   postDaily,
