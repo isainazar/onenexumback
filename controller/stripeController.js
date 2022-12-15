@@ -71,7 +71,9 @@ const getPaymentsEarns = async (req, res) => {
 
   const mapa = transfers.data.filter((t) => t.payment_status === "paid");
   const mapaa = mapa.map((el) => el.amount_total);
-  return res.status(200).json(mapaa);
+  return res
+    .status(200)
+    .json({ total_ganado: mapaa, trasacciones_exitosas: mapa });
 };
 module.exports = {
   paymentStripe,
