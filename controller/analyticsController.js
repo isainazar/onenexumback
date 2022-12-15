@@ -1,4 +1,5 @@
 const { BetaAnalyticsDataClient } = require("@google-analytics/data");
+const cookieSession = require("cookie-session");
 require("dotenv").config();
 const PROPERTY_ID = process.env.PROPERTY_ID;
 
@@ -27,9 +28,9 @@ const runReport = async (req, res) => {
           },
         ],
         metrics: [
-          {
+        /*   {
             name: "active28DayUsers",
-          },
+          }, */
           {
             name: "sessions",
           },
@@ -76,14 +77,14 @@ const runReport = async (req, res) => {
             endDate: "today",
           },
         ],
-        /* 
-        dimensions: [
+        
+       /*  dimensions: [
           {
-            name: 
+            name:'coso',
           },
   
        
-        ], */
+        ],  */
         metrics: [
           {
             name: "active28DayUsers",

@@ -31,25 +31,27 @@ const getAllUsers = async (req, res) => {
     });
 
     if (users.length !== 0) {
-      //console.log(users);
 
       const usuarios = users.map((u) => {
+        let date;
         const nombre = decrypt(u.name);
         const apellido = decrypt(u.lastname);
-        const date = decrypt(u.dataValues.date_birth);
-        const countryy = decrypt(u.dataValues.country);
-        const regionn = decrypt(u.dataValues.region);
-        const genderr = decrypt(u.dataValues.gender);
+        if (u.dataValues.date_birth) {
+        date = decrypt(u.dataValues.date_birth);
+        }
+        // const countryy = decrypt(u.dataValues.country);
+        // const regionn = decrypt(u.dataValues.region);
+        // const genderr = decrypt(u.dataValues.gender);
 
         const usu = {
           id_user: u.dataValues.id_user,
           name: nombre,
           lastname: apellido,
           email: u.dataValues.email,
-          date_birth: date,
-          country: countryy,
-          region: regionn,
-          gender: genderr,
+          date_birth: date!==undefined? date : null,
+          // country: countryy,
+          // region: regionn,
+          //  gender: genderr,
           relationship: u.dataValues.relationship,
           ocupation: u.dataValues.ocupation,
           unemployed: u.dataValues.unemployed,
@@ -109,19 +111,19 @@ const getUserById = async (req, res) => {
     if (userDb) {
       const nombre = decrypt(userDb.dataValues.name);
       const apellido = decrypt(userDb.dataValues.lastname);
-      const date = decrypt(userDb.dataValues.date_birth);
-      const countryy = decrypt(userDb.dataValues.country);
-      const regionn = decrypt(userDb.dataValues.region);
-      const genderr = decrypt(userDb.dataValues.gender);
+    //  const date = decrypt(userDb.dataValues.date_birth);
+    //  const countryy = decrypt(userDb.dataValues.country);
+    //  const regionn = decrypt(userDb.dataValues.region);
+   //   const genderr = decrypt(userDb.dataValues.gender);
       const usu = {
         id_user: userDb.dataValues.id_user,
         name: nombre,
         lastname: apellido,
         email: userDb.dataValues.email,
-        date_birth: date,
-        country: countryy,
-        region: regionn,
-        gender: genderr,
+      //  date_birth: date,
+      //  country: countryy,
+     //   region: regionn,
+    //    gender: genderr,
         relationship: userDb.dataValues.relationship,
         ocupation: userDb.dataValues.ocupation,
         unemployed: userDb.dataValues.unemployed,
