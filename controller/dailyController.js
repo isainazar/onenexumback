@@ -1,5 +1,42 @@
 const { User, Daily } = require("../DataBase/index.js");
 
+function getValuePercentages(arr) {
+  // Use the reduce() method to count the number of times each value appears in the array
+  const counts = arr.reduce((acc, elem) => {
+    if (elem in acc) {
+      acc[elem]++;
+    } else {
+      acc[elem] = 1;
+    }
+    return acc;
+  }, {});
+
+  // Use the filter() method to count the total number of elements in the array
+  const total = arr.filter((elem) => elem in counts).length;
+
+  // Calculate the percentage that each value occupies in the array
+  const percentages = {};
+  Object.keys(counts).forEach((key) => {
+    percentages[key] = (counts[key] / total) * 100;
+  });
+
+  return percentages;
+}
+
+function removeDuplicates(arr) {
+  // Create a new array to store the unique elements
+  const unique = [];
+
+  // Iterate over the array and add each element to the set only if it is not already present in the set
+  for (const elem of arr) {
+    if (!unique.includes(elem)) {
+      unique.push(elem);
+    }
+  }
+
+  return unique;
+}
+
 const postDaily = async (req, res) => {
   console.log(req.session);
   const { respuesta } = req.body;
@@ -201,23 +238,32 @@ const dailyTotal = async (req, res) => {
   if (!dailys || dailys.length === 0) {
     return res.status(500).json({ message: "No se encontraron dailys" });
   }
-  const dailyMuyMal = dailys.data.filter((t) => t.respuesta === "muy mal");
-  const dailyMal = dailys.data.filter((t) => t.respuesta === "mal");
-  const dailyRegular = dailys.data.filter((t) => t.respuesta === "regular");
-  const dailyBien = dailys.data.filter((t) => t.respuesta === "bien");
-  const dailyMuyBien = dailys.data.filter((t) => t.respuesta === "muy bien");
-  const arrayDeDailys = [
-    dailyMuyMal,
-    dailyMal,
-    dailyRegular,
-    dailyBien,
-    dailyMuyBien,
-  ];
+  console.log(dailys);
+  const dailyMuyMal = dailys.filter(
+    (t) => t.dataValues.respuesta === "muy mal"
+  );
+  const dailyMal = dailys.filter((t) => t.dataValues.respuesta === "mal");
+  const dailyRegular = dailys.filter(
+    (t) => t.dataValues.respuesta === "regular"
+  );
+  const dailyBien = dailys.filter((t) => t.dataValues.respuesta === "bien");
+  const dailyMuyBien = dailys.filter(
+    (t) => t.dataValues.respuesta === "muy bien"
+  );
+  const muymal = dailyMuyMal.map((el) => el.respuesta);
+  const mal = dailyMal.map((el) => el.respuesta);
+  const regular = dailyRegular.map((el) => el.respuesta);
+  const bien = dailyBien.map((el) => el.respuesta);
+  const muybien = dailyMuyBien.map((el) => el.respuesta);
+
+  const arrayDeDailys = [muymal, mal, regular, bien, muybien];
   const sortedArrays = arrayDeDailys
     .slice()
     .sort((a, b) => b.length - a.length);
-
-  return res.status(200).json(dailyMuyMal);
+  const flatArr = sortedArrays.flat();
+  const arrPosta = removeDuplicates(flatArr);
+  const porcentaje = getValuePercentages(flatArr);
+  return res.status(200).json({ total: arrPosta, totalPorcentaje: porcentaje });
 };
 module.exports = {
   postDaily,
