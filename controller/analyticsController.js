@@ -10,8 +10,6 @@ const analyticsDataClient = new BetaAnalyticsDataClient();
 // Runs a simple report.
 const runReport = async (req, res) => {
   if (req.body.dimension) {
-    
-
     try {
       const [response] = await analyticsDataClient.runReport({
         property: `properties/${PROPERTY_ID}`,
@@ -28,7 +26,7 @@ const runReport = async (req, res) => {
           },
         ],
         metrics: [
-        /*   {
+          /*   {
             name: "active28DayUsers",
           }, */
           {
@@ -77,8 +75,8 @@ const runReport = async (req, res) => {
             endDate: "today",
           },
         ],
-        
-       /*  dimensions: [
+
+        /*  dimensions: [
           {
             name:'coso',
           },
@@ -128,6 +126,56 @@ const runReport = async (req, res) => {
   }
 };
 
+// obtener promedio usuario
+
+const getAvg = async (req, res) => {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${PROPERTY_ID}`,
+      dateRanges: [
+        {
+          startDate: "2022-10-31",
+          endDate: "today",
+        },
+      ],
+
+      dimensions: [
+        {
+          name: req.body.dimension,
+        },
+      ],
+      metrics: [
+        {
+          name: "userEngagementDuration",
+        },
+        {
+          name: "activeUsers",
+        },
+      ],
+    });
+
+    const obj = [];
+    const path = [];
+    response.rows.forEach((row) => {
+      obj.push(row);
+    });
+
+    for (const dato of obj) {
+      let avgTime = dato.metricValues[0].value / dato.metricValues[1].value;
+      let min = Math.floor(avgTime / 60);
+      let sec = Math.round(avgTime % 60);
+      path.push({
+        path: dato.dimensionValues[0].value,
+        time: `${min}m${sec}s`,
+      });
+    }
+
+    res.status(200).json(path);
+  } catch (error) {
+    return res.status(502).json({ error: error });
+  }
+};
 module.exports = {
   runReport,
+  getAvg,
 };
