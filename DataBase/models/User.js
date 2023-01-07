@@ -121,6 +121,10 @@ module.exports = (sequelize) => {
       through: "daily_by_user",
       timestamps: false,
     });
+    User.belongsToMany(models.Ejercisios, {
+      through: "ejercisios_by_user",
+      timestamps: false,
+    });
   };
 
   return User;
