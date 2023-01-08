@@ -1,4 +1,4 @@
-const { User, Login } = require("../DataBase/index.js");
+const { User, Login, Ejercisios } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
@@ -501,6 +501,32 @@ const updateMailAccepted = async (req, res) => {
       .json({ message: "Error al intentar cambiar el usuario" });
   }
 };
+const postEjercisio = async (req, res) => {
+  const { numero_ejercisio, finished } = req.body;
+  const { user } = req.session;
+  if (!numero_ejercisio || !finished) {
+    return res
+      .status(404)
+      .json({ message: "Error al intentar cambiar el usuario" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const nuevoEjercisio = await Ejercisios.create({
+    numero_ejercisio,
+    finished,
+  });
+  const ejerDef = await Promise.all(await nuevoEjercisio.addUser(userr));
+  if (ejerDef) {
+    return res.status(200).json({
+      message: "Ejercisio creado correctamente",
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear la Daily" });
+  }
+};
+
 module.exports = {
   login,
   createUser,
@@ -509,4 +535,5 @@ module.exports = {
   updateTerminos,
   getSession,
   updateMailAccepted,
+  postEjercisio,
 };

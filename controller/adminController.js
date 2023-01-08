@@ -27,17 +27,22 @@ const getAllUsers = async (req, res) => {
         {
           model: Quiz,
         },
+        {
+          association: "exercises",
+          through: {
+            attributes: [],
+          },
+        },
       ],
     });
 
     if (users.length !== 0) {
-
       const usuarios = users.map((u) => {
         let date;
         const nombre = decrypt(u.name);
         const apellido = decrypt(u.lastname);
         if (u.dataValues.date_birth) {
-        date = decrypt(u.dataValues.date_birth);
+          date = decrypt(u.dataValues.date_birth);
         }
         // const countryy = decrypt(u.dataValues.country);
         // const regionn = decrypt(u.dataValues.region);
@@ -48,7 +53,7 @@ const getAllUsers = async (req, res) => {
           name: nombre,
           lastname: apellido,
           email: u.dataValues.email,
-          date_birth: date!==undefined? date : null,
+          date_birth: date !== undefined ? date : null,
           // country: countryy,
           // region: regionn,
           //  gender: genderr,
@@ -64,6 +69,7 @@ const getAllUsers = async (req, res) => {
           updatedAt: u.dataValues.updatedAt,
           dailies: u.dataValues.dailies,
           logins: u.dataValues.logins,
+          exercises: u.dataValues.exercises,
           quiz: u.dataValues.quiz,
         };
 
@@ -104,6 +110,12 @@ const getUserById = async (req, res) => {
           },
         },
         {
+          association: "exercises",
+          through: {
+            attributes: [],
+          },
+        },
+        {
           model: Quiz,
         },
       ],
@@ -111,19 +123,19 @@ const getUserById = async (req, res) => {
     if (userDb) {
       const nombre = decrypt(userDb.dataValues.name);
       const apellido = decrypt(userDb.dataValues.lastname);
-    //  const date = decrypt(userDb.dataValues.date_birth);
-    //  const countryy = decrypt(userDb.dataValues.country);
-    //  const regionn = decrypt(userDb.dataValues.region);
-   //   const genderr = decrypt(userDb.dataValues.gender);
+      //  const date = decrypt(userDb.dataValues.date_birth);
+      //  const countryy = decrypt(userDb.dataValues.country);
+      //  const regionn = decrypt(userDb.dataValues.region);
+      //   const genderr = decrypt(userDb.dataValues.gender);
       const usu = {
         id_user: userDb.dataValues.id_user,
         name: nombre,
         lastname: apellido,
         email: userDb.dataValues.email,
-      //  date_birth: date,
-      //  country: countryy,
-     //   region: regionn,
-    //    gender: genderr,
+        //  date_birth: date,
+        //  country: countryy,
+        //   region: regionn,
+        //    gender: genderr,
         relationship: userDb.dataValues.relationship,
         ocupation: userDb.dataValues.ocupation,
         unemployed: userDb.dataValues.unemployed,
@@ -136,6 +148,7 @@ const getUserById = async (req, res) => {
         updatedAt: userDb.dataValues.updatedAt,
         dailies: userDb.dataValues.dailies,
         logins: userDb.dataValues.logins,
+        exercises: userDb.dataValues.exercises,
         quiz: userDb.dataValues.quiz,
       };
       return res.status(200).json(usu);

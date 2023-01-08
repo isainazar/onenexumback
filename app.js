@@ -76,17 +76,8 @@ app.use(
     },
   })
 );
-/* app.use(
-  cookieSession({
-    name: "session",
-    secret: process.env.COOKIE_SECRET2,
-    keys: ["key1", "key2"],
 
-    // Cookie Options
-  })
-); */
-
-/* app.use(passport.initialize());
+app.use(passport.initialize());
 app.use(passport.session());
 
 app.get(
@@ -108,7 +99,7 @@ app.get(
     //req.isAuthenticated() will return true if user is logged in
     res.redirect("http://localhost:3002/landing");
   }
-); */
+);
 
 app.use(express.static(path.join(__dirname, "public")));
 

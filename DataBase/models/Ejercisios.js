@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const ejercisios = {
+  const exercise = {
     numero_ejercisio: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -13,19 +13,19 @@ module.exports = (sequelize) => {
   };
 
   const config = {
-    tableName: "ejercisios",
+    tableName: "exercise",
     timestamps: true,
     paranoid: true,
   };
 
-  const Ejercisios = sequelize.define("ejercisios", ejercisios, config);
+  const Exercise = sequelize.define("exercise", exercise, config);
 
-  Ejercisios.associate = (models) => {
-    Ejercisios.belongsToMany(models.User, {
-      through: "ejercisios_by_user",
+  Exercise.associate = (models) => {
+    Exercise.belongsToMany(models.User, {
+      through: "exercise_by_user",
       timestamps: false,
     });
   };
 
-  return Ejercisios;
+  return Exercise;
 };
