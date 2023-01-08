@@ -91,12 +91,12 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    /*   provider: {
+    provider: {
       type: DataTypes.STRING,
     },
     providerId: {
       type: DataTypes.STRING,
-    }, */
+    },
   };
 
   const config = {
