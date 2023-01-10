@@ -91,12 +91,12 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    /*   provider: {
+    provider: {
       type: DataTypes.STRING,
     },
     providerId: {
       type: DataTypes.STRING,
-    }, */
+    },
   };
 
   const config = {
@@ -119,6 +119,10 @@ module.exports = (sequelize) => {
     });
     User.belongsToMany(models.Daily, {
       through: "daily_by_user",
+      timestamps: false,
+    });
+    User.belongsToMany(models.Ejercisios, {
+      through: "ejercisios_by_user",
       timestamps: false,
     });
   };
