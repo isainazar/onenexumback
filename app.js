@@ -34,7 +34,7 @@ app.use(
     credentials: true,
     // exposedHeaders: ["set-cookie"],
   })
-);
+); 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -47,7 +47,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  // res.setHeader("Access-Control-Allow-Origin", `${URL}`);
+ // res.setHeader("Access-Control-Allow-Origin", "http://10.0.0.73:3002");
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Authorization, X-Forwarded-Proto ,Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method, X-Login, X-Date, X-Trans-Key, X-Content-Type, X-Version, Set-Cookie, set-cookie"
