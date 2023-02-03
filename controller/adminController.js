@@ -1,4 +1,12 @@
-const { User, Daily, Quiz, Newsletter } = require("../DataBase/index.js");
+const {
+  User,
+  Daily,
+  Gustoseintereses,
+  Trabajo,
+  Vidayrelaciones,
+  Quiz,
+  Newsletter,
+} = require("../DataBase/index.js");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
@@ -32,6 +40,21 @@ const getAllUsers = async (req, res) => {
           through: {
             attributes: [],
           },
+        },
+        {
+          association: "diariovirtual",
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: Trabajo,
+        },
+        {
+          model: Gustoseintereses,
+        },
+        {
+          model: Vidayrelaciones,
         },
       ],
     });
@@ -71,6 +94,10 @@ const getAllUsers = async (req, res) => {
           logins: u.dataValues.logins,
           exercises: u.dataValues.exercises,
           quiz: u.dataValues.quiz,
+          trabajo: u.dataValues.trabajo,
+          vidayrelaciones: u.dataValues.vidayrelaciones,
+          gustoseintereses: u.dataValues.gustoseintereses,
+          diariovirtual: u.dataValues.diariovirtual,
         };
 
         return usu;
@@ -118,6 +145,21 @@ const getUserById = async (req, res) => {
         {
           model: Quiz,
         },
+        {
+          association: "diariovirtual",
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: Trabajo,
+        },
+        {
+          model: Gustoseintereses,
+        },
+        {
+          model: Vidayrelaciones,
+        },
       ],
     });
     if (userDb) {
@@ -150,6 +192,10 @@ const getUserById = async (req, res) => {
         logins: userDb.dataValues.logins,
         exercises: userDb.dataValues.exercises,
         quiz: userDb.dataValues.quiz,
+        trabajo: userDb.dataValues.trabajo,
+        vidayrelaciones: userDb.dataValues.vidayrelaciones,
+        gustoseintereses: userDb.dataValues.gustoseintereses,
+        diariovirtual: userDb.dataValues.diariovirtual,
       };
       return res.status(200).json(usu);
     } else {
