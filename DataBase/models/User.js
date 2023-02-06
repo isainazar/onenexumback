@@ -112,13 +112,28 @@ module.exports = (sequelize) => {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
-
+    User.hasOne(models.Gustoseintereses, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
+    User.hasOne(models.Vidayrelaciones, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
+    User.hasOne(models.Trabajo, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
     User.belongsToMany(models.Login, {
       through: "login_by_user",
       timestamps: false,
     });
     User.belongsToMany(models.Daily, {
       through: "daily_by_user",
+      timestamps: false,
+    });
+    User.belongsToMany(models.Diariovirtual, {
+      through: "diariovirtual_by_user",
       timestamps: false,
     });
     User.belongsToMany(models.Ejercisios, {

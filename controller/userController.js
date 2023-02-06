@@ -526,7 +526,58 @@ const postEjercisio = async (req, res) => {
     return res.status(500).json({ message: "Error al crear la Daily" });
   }
 };
+const updateUser = async (req, res, next) => {
+  const { name, lastname, password, email } = req.body;
+  const { user } = req.session;
 
+  if (!name || !lastname) {
+    return res.status(500).json({ message: "All fields are required" });
+  }
+
+  if (validarEmail(email) === "This email is incorrect") {
+    return res.status(501).json({ message: "This mail doesn't exists" });
+  }
+
+  try {
+    const nombreE = encrypt(name);
+    const apellidoE = encrypt(lastname);
+    //  const dateE = encrypt(date);
+    //  const countryE = encrypt(country);
+    //   const regionE = encrypt(region);
+    //   const genderE = encrypt(gender);
+
+    // Creamos el nuevo usuario y lo guardamos en la DB
+    const userr = await User.update(
+      {
+        name: nombreE,
+        lastname: apellidoE,
+        email,
+        password,
+        //   date_birth: dateE,
+        //   country: countryE,
+        //   region: regionE,
+        //   gender: genderE,
+        user_type,
+      },
+      {
+        where: {
+          id_user: user,
+          id_user,
+        },
+      }
+    );
+
+    if (userr) {
+      return res.status(200).json({ message: "Usuaerio actualizado" });
+    } else {
+      return res
+        .status(500)
+        .json({ message: "No se pudo modificar el usuario en la db" });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
+};
 module.exports = {
   login,
   createUser,
@@ -536,4 +587,5 @@ module.exports = {
   getSession,
   updateMailAccepted,
   postEjercisio,
+  updateUser,
 };
