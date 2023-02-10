@@ -1,4 +1,3 @@
-const { where } = require("sequelize/types");
 const {
   Vidayrelaciones,
   Trabajo,
@@ -19,8 +18,11 @@ const postVidayrelaciones = async (req, res) => {
     relacion_con_personas,
     mas_aprecia_en_personas,
   } = req.body;
-  const { user } = req.session;
+  
+  const {user} = req.session;
+  
   if (!user.id_user) {
+    
     return res.status(403).json({ message: "Falta informacion" });
   }
   const userr = await User.findByPk(user.id_user);

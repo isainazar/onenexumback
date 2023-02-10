@@ -24,7 +24,7 @@ const adminRouter = require("./routes/adminRouter");
 const progressRouter = require("./routes/progressRoutes");
 const stripeRouter = require("./routes/stripeRouter");
 const analyticsRouter = require("./routes/analyticsRouter");
-const espaciosPersonalRouter = require("./routes/espacioPersonalRoutes");
+const espacioPersonalRouter = require("./routes/espacioPersonalRoutes");
 
 var app = express();
 
@@ -113,7 +113,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/progress", progressRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/analytics", analyticsRouter);
-app.use("/api/espacios", espaciosPersonalRouter);
+app.use("/api/espacios", espacioPersonalRouter);
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
