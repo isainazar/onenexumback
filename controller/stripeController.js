@@ -10,7 +10,7 @@ const paymentStripe = async (req, res) => {
   console.log(stripe);
   const { id_user } = req.body;
   if (!id_user) {
-    return res.status(500).json({ message: "field required" });
+    return res.status(500).json({ message: "Se requiere el ID de usuario" });
   }
   const userr = await User.findByPk(id_user);
   if (!userr) {
@@ -28,8 +28,8 @@ const paymentStripe = async (req, res) => {
       id_user: id_user,
     },
     mode: "payment",
-    success_url: `${URL}/login`,
-    cancel_url: `${URL}/info`,
+    success_url: `${URL}/payment/success`,
+    cancel_url: `${URL}/home`,
   });
   if (!session) {
     return res.status(404).json({ message: "Error al crear pago" });
@@ -47,7 +47,7 @@ const paymentStripe = async (req, res) => {
   if (!usuarioPago) {
     return res
       .status(500)
-      .json({ message: "El usuareio no se pudo actualizar con exito" });
+      .json({ message: "El usuario no se pudo actualizar con éxito" });
   }
   return res.json({ url: session.url });
 };
@@ -56,7 +56,7 @@ const getPayments = async (req, res) => {
   if (!transfers || transfers.length === 0) {
     return res
       .status(404)
-      .json({ message: "No se encontraron ordenes activas" });
+      .json({ message: "No se encontraron órdenes activas" });
   }
   console.log(transfers.data);
   return res.status(200).json(transfers.data);
@@ -66,7 +66,7 @@ const getPaymentsEarns = async (req, res) => {
   if (!transfers || transfers.length === 0) {
     return res
       .status(404)
-      .json({ message: "No se encontraron ordenes activas" });
+      .json({ message: "No se encontraron órdenes activas" });
   }
 
   const mapa = transfers.data.filter((t) => t.payment_status === "paid");

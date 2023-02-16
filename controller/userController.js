@@ -124,7 +124,6 @@ const login = async (req, res) => {
         email: email,
       },
     });
-    console.log(user);
     if (!user) {
       return res.status(405).json({
         message: "Este usuario no existe",
@@ -138,106 +137,81 @@ const login = async (req, res) => {
 
     if (!passwordfinal) {
       return res.status(404).json({
-        message: "Contraseña invalida",
+        message: "Contraseña inválida",
       });
     }
     if (user.dataValues.firstLogin === true) {
-      if (!user.dataValues.idPayment) {
-        return res.status(401).json({
-          message: "Este usuario no tiene idPayment",
-        });
-      }
-      const session = await stripe.checkout.sessions.retrieve(
-        user.dataValues.idPayment
-      );
-      if (session.payment_status === "paid") {
-        const usuarioCambiado = await User.update(
-          {
-            status: true,
-            firstLogin: false,
+      const usuarioCambiado = await User.update(
+        {
+          status: true,
+          firstLogin: false,
+        },
+        {
+          where: {
+            id_user: user.dataValues.id_user,
           },
-          {
-            where: {
-              id_user: user.dataValues.id_user,
-            },
-          }
-        );
-        if (usuarioCambiado) {
-          try {
-            const newLogin = await Login.create({
-              id_user: user.dataValues.id_user,
-            });
+        }
+      );
+      if (usuarioCambiado) {
+        try {
+          const newLogin = await Login.create({
+            id_user: user.dataValues.id_user,
+          });
 
-            const newLoginDef = await Promise.all(await newLogin.addUser(user));
-            if (!newLogin || !newLoginDef) {
-              return res.status(409).json({
-                message: "No se pudo guardar el login",
+          const newLoginDef = await Promise.all(await newLogin.addUser(user));
+          if (!newLogin || !newLoginDef) {
+            return res.status(409).json({
+              message: "No se pudo guardar el login",
+            });
+          }
+          const nombre = decrypt(user.dataValues.name);
+          const apellido = decrypt(user.dataValues.lastname);
+          const usu = {
+            id_user: user.dataValues.id_user,
+            name: nombre,
+            lastname: apellido,
+            email: user.dataValues.email,
+            user_type: user.dataValues.user_type,
+            status: true,
+            terminos: true,
+            progress: user.dataValues.progress,
+            firstLogin: false,
+            mail_accepted: true,
+            createdAt: user.dataValues.createdAt,
+            updatedAt: user.dataValues.updatedAt,
+          };
+          req.session.user = usu;
+
+          const payload = {
+            user: {
+              id: user.dataValues.id_user,
+            },
+          };
+          jwt.sign(
+            payload,
+            JWT_SECRET,
+            {
+              expiresIn: "1d",
+            },
+            (err, token) => {
+              if (err) throw err;
+              return res.status(200).json({
+                token: token,
+                id_user: user.dataValues.id_user,
+                userLogged: true,
               });
             }
-            const nombre = decrypt(user.dataValues.name);
-            const apellido = decrypt(user.dataValues.lastname);
-            /*   const date = decrypt(user.dataValues.date_birth);
-            const countryy = decrypt(user.dataValues.country);
-            const regionn = decrypt(user.dataValues.region);
-            const genderr = decrypt(user.dataValues.gender); */
-            const usu = {
-              id_user: user.dataValues.id_user,
-              name: nombre,
-              lastname: apellido,
-              email: user.dataValues.email,
-              /*  date_birth: date,
-              country: countryy,
-              region: regionn,
-              gender: genderr,
-              relationship: user.dataValues.relationship,
-              ocupation: user.dataValues.ocupation,
-              unemployed: user.dataValues.unemployed, */
-              user_type: user.dataValues.user_type,
-              status: true,
-              terminos: true,
-              progress: user.dataValues.progress,
-              firstLogin: false,
-              mail_accepted: true,
-              createdAt: user.dataValues.createdAt,
-              updatedAt: user.dataValues.updatedAt,
-            };
-            req.session.user = usu;
-
-            const payload = {
-              user: {
-                id: user.dataValues.id_user,
-              },
-            };
-            jwt.sign(
-              payload,
-              JWT_SECRET,
-              {
-                expiresIn: "1d",
-              },
-              (err, token) => {
-                if (err) throw err;
-                return res.status(200).json({
-                  token: token,
-                  id_user: user.dataValues.id_user,
-                  userLogged: true,
-                });
-              }
-            );
-          } catch (error) {
-            return res.status(502).json({
-              message:
-                "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
-              error: err,
-            });
-          }
-        } else {
-          return res.status(403).json({
-            message: "No se ha podido actualizar el usuario",
+          );
+        } catch (error) {
+          return res.status(502).json({
+            message:
+              "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+            error: err,
           });
         }
       } else {
-        return res.status(402).json({
-          message: "Tu compra no ha sido exitosa",
+        return res.status(403).json({
+          message: "No se ha podido actualizar el usuario",
         });
       }
     }
@@ -253,22 +227,11 @@ const login = async (req, res) => {
     }
     const nombre = decrypt(user.dataValues.name);
     const apellido = decrypt(user.dataValues.lastname);
-    /*  const date = decrypt(user.dataValues.date_birth);
-    const countryy = decrypt(user.dataValues.country);
-    const regionn = decrypt(user.dataValues.region);
-    const genderr = decrypt(user.dataValues.gender); */
     const usu = {
       id_user: user.dataValues.id_user,
       name: nombre,
       lastname: apellido,
       email: user.dataValues.email,
-      /*  date_birth: date,
-      country: countryy,
-      region: regionn,
-      gender: genderr,
-      relationship: user.dataValues.relationship,
-      ocupation: user.dataValues.ocupation,
-      unemployed: user.dataValues.unemployed, */
       user_type: user.dataValues.user_type,
       status: true,
       terminos: true,
@@ -279,7 +242,6 @@ const login = async (req, res) => {
       updatedAt: user.dataValues.updatedAt,
     };
     req.session.user = usu;
-    console.log(req.session);
     const payload = {
       user: {
         id: user.dataValues.id_user,
@@ -297,6 +259,7 @@ const login = async (req, res) => {
           token: token,
           id_user: user.dataValues.id_user,
           userLogged: true,
+          usuario: usu,
         });
       }
     );
@@ -531,11 +494,11 @@ const updateUser = async (req, res, next) => {
   const { user } = req.session;
 
   if (!name || !lastname) {
-    return res.status(500).json({ message: "All fields are required" });
+    return res.status(500).json({ message: "Debes llenar todos los campos" });
   }
 
   if (validarEmail(email) === "This email is incorrect") {
-    return res.status(501).json({ message: "This mail doesn't exists" });
+    return res.status(501).json({ message: "Ingresa un email válido" });
   }
 
   try {
