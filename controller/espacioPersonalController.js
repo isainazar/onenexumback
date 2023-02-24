@@ -137,7 +137,7 @@ const postDiarioVirtual = async (req, res) => {
     que_cosa_quieres_y_como_conseguirla,
     nota,
   } = req.body;
-  const { user } = req.session;
+  console.log(req.session)
   if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }

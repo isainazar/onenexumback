@@ -490,48 +490,48 @@ const postEjercisio = async (req, res) => {
   }
 };
 const updateUser = async (req, res, next) => {
-  const { name, lastname, password, email } = req.body;
-  const { user } = req.session;
+ // const { name, lastname, password, email } = req.body;
+ const { name, gender, dob, country, region, user } = req.body;
 
-  if (!name || !lastname) {
+  //const { user } = req.session;
+
+   if (!user) {
     return res.status(500).json({ message: "Debes llenar todos los campos" });
-  }
+  } 
 
-  if (validarEmail(email) === "This email is incorrect") {
+ /*  if (validarEmail(email) === "This email is incorrect") {
     return res.status(501).json({ message: "Ingresa un email válido" });
-  }
+  } */
 
   try {
     const nombreE = encrypt(name);
-    const apellidoE = encrypt(lastname);
+    const dateE = encrypt(dob);
     //  const dateE = encrypt(date);
-    //  const countryE = encrypt(country);
-    //   const regionE = encrypt(region);
-    //   const genderE = encrypt(gender);
-
+    const countryE = encrypt(country);
+    const regionE = encrypt(region);
+    const genderE = encrypt(gender);
     // Creamos el nuevo usuario y lo guardamos en la DB
     const userr = await User.update(
       {
         name: nombreE,
-        lastname: apellidoE,
-        email,
-        password,
-        //   date_birth: dateE,
-        //   country: countryE,
-        //   region: regionE,
-        //   gender: genderE,
-        user_type,
+       // lastname: apellidoE,
+       // email,
+      //  password,
+           date_birth: dateE,
+           country: countryE,
+           region: regionE,
+           gender: genderE,
+        //user_type,
       },
       {
         where: {
           id_user: user,
-          id_user,
         },
       }
     );
 
     if (userr) {
-      return res.status(200).json({ message: "Usuaerio actualizado" });
+      return res.status(200).json({ message: "Usuario actualizado" });
     } else {
       return res
         .status(500)

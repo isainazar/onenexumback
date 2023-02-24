@@ -11,6 +11,7 @@ const {
   updateTerminos,
   getSession,
   updateMailAccepted,
+  updateUser
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -19,6 +20,7 @@ router.post("/sing-in", createUser);
 router.put("/reset-password", resetPassword);
 router.post("/forgot-password", forgotPassword);
 router.put("/terminos", auth, updateTerminos);
+router.put("/data", updateUser);
 router.get("/session", getSession);
 router.put("/mail-accepted", auth, updateMailAccepted);
 
