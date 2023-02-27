@@ -112,6 +112,14 @@ module.exports = (sequelize) => {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
+    User.hasOne(models.Seccion_A, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
+    User.hasOne(models.Seccion_B, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
     User.hasOne(models.Gustoseintereses, {
       sourceKey: "id_user",
       foreignKey: "id_user",
@@ -134,10 +142,6 @@ module.exports = (sequelize) => {
     });
     User.belongsToMany(models.Diariovirtual, {
       through: "diariovirtual_by_user",
-      timestamps: false,
-    });
-    User.belongsToMany(models.Exercise, {
-      through: "ejercisios_by_user",
       timestamps: false,
     });
   };

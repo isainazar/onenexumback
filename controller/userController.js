@@ -1,4 +1,4 @@
-const { User, Login, Ejercisios } = require("../DataBase/index.js");
+const { User, Login, Seccion_A, Seccion_B } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
@@ -464,42 +464,18 @@ const updateMailAccepted = async (req, res) => {
       .json({ message: "Error al intentar cambiar el usuario" });
   }
 };
-const postEjercisio = async (req, res) => {
-  const { numero_ejercisio, finished } = req.body;
-  const { user } = req.session;
-  if (!numero_ejercisio || !finished) {
-    return res
-      .status(404)
-      .json({ message: "Error al intentar cambiar el usuario" });
-  }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
-    return res.status(403).json({ message: "Usuario inexistente" });
-  }
-  const nuevoEjercisio = await Ejercisios.create({
-    numero_ejercisio,
-    finished,
-  });
-  const ejerDef = await Promise.all(await nuevoEjercisio.addUser(userr));
-  if (ejerDef) {
-    return res.status(200).json({
-      message: "Ejercisio creado correctamente",
-    });
-  } else {
-    return res.status(500).json({ message: "Error al crear la Daily" });
-  }
-};
+
 const updateUser = async (req, res, next) => {
- // const { name, lastname, password, email } = req.body;
- const { name, gender, dob, country, region, user } = req.body;
+  // const { name, lastname, password, email } = req.body;
+  const { name, gender, dob, country, region, user } = req.body;
 
   //const { user } = req.session;
 
-   if (!user) {
+  if (!user) {
     return res.status(500).json({ message: "Debes llenar todos los campos" });
-  } 
+  }
 
- /*  if (validarEmail(email) === "This email is incorrect") {
+  /*  if (validarEmail(email) === "This email is incorrect") {
     return res.status(501).json({ message: "Ingresa un email válido" });
   } */
 
@@ -514,13 +490,13 @@ const updateUser = async (req, res, next) => {
     const userr = await User.update(
       {
         name: nombreE,
-       // lastname: apellidoE,
-       // email,
-      //  password,
-           date_birth: dateE,
-           country: countryE,
-           region: regionE,
-           gender: genderE,
+        // lastname: apellidoE,
+        // email,
+        //  password,
+        date_birth: dateE,
+        country: countryE,
+        region: regionE,
+        gender: genderE,
         //user_type,
       },
       {
@@ -541,6 +517,82 @@ const updateUser = async (req, res, next) => {
     return res.status(500).json({ error: err });
   }
 };
+const postSeccionA = async (req, res) => {
+  const { user } = req.session;
+
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newSeccionA = await Seccion_A.create({
+    id_user: userr.dataValues.id_user,
+  });
+
+  if (newSeccionA) {
+    return res.status(200).json({
+      message: "Seccion A creada correctamente",
+      data: newSeccionA,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Seccion A" });
+  }
+};
+const postSeccionB = async (req, res) => {
+  const { user } = req.session;
+
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newSeccionB = await Seccion_B.create({
+    id_user: userr.dataValues.id_user,
+  });
+
+  if (newSeccionB) {
+    return res.status(200).json({
+      message: "Seccion A creada correctamente",
+      data: newSeccionB,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Seccion A" });
+  }
+};
+const putSeccionA = async (req, res) => {
+  const {
+    exercise1_started,
+    exercise1_completed,
+    exercise2_started,
+    exercise2_completed,
+    exercise3_started,
+    exercise3_completed,
+    bonus_started,
+    bonus_completed,
+  } = req.body;
+  const { user } = req.session;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newSeccionA = await Seccion_A.create(
+    {
+      id_user: userr.dataValues.id_user,
+    },
+    {
+      where: {
+        id_user: userr.dataValues.id_user,
+      },
+    }
+  );
+};
 module.exports = {
   login,
   createUser,
@@ -549,6 +601,7 @@ module.exports = {
   updateTerminos,
   getSession,
   updateMailAccepted,
-  postEjercisio,
   updateUser,
+  postSeccionA,
+  postSeccionB,
 };

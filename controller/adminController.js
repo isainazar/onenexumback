@@ -35,12 +35,7 @@ const getAllUsers = async (req, res) => {
         {
           model: Quiz,
         },
-        {
-          association: "exercises",
-          through: {
-            attributes: [],
-          },
-        },
+
         {
           association: "diariovirtual",
           through: {
@@ -92,7 +87,6 @@ const getAllUsers = async (req, res) => {
           updatedAt: u.dataValues.updatedAt,
           dailies: u.dataValues.dailies,
           logins: u.dataValues.logins,
-          exercises: u.dataValues.exercises,
           quiz: u.dataValues.quiz,
           trabajo: u.dataValues.trabajo,
           vidayrelaciones: u.dataValues.vidayrelaciones,
@@ -136,12 +130,7 @@ const getUserById = async (req, res) => {
             attributes: [],
           },
         },
-        {
-          association: "exercises",
-          through: {
-            attributes: [],
-          },
-        },
+
         {
           model: Quiz,
         },
@@ -190,7 +179,6 @@ const getUserById = async (req, res) => {
         updatedAt: userDb.dataValues.updatedAt,
         dailies: userDb.dataValues.dailies,
         logins: userDb.dataValues.logins,
-        exercises: userDb.dataValues.exercises,
         quiz: userDb.dataValues.quiz,
         trabajo: userDb.dataValues.trabajo,
         vidayrelaciones: userDb.dataValues.vidayrelaciones,
