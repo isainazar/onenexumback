@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
+    completed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     exercise1_started: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
