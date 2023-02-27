@@ -48,7 +48,7 @@ module.exports = (sequelize) => {
     paranoid: true,
   };
 
-  const Seccion_B = sequelize.define("seccion_b", seccion_b, config);
+  const Seccion_B = sequelize.define("seccionb", seccion_b, config);
 
   Seccion_B.associate = (models) => {
     Seccion_B.belongsTo(models.User, {

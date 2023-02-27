@@ -517,7 +517,7 @@ const updateUser = async (req, res, next) => {
     return res.status(500).json({ error: err });
   }
 };
-const postSeccionA = async (req, res) => {
+const postSeccion_A = async (req, res) => {
   const { user } = req.session;
 
   if (!user.id_user) {
@@ -527,14 +527,14 @@ const postSeccionA = async (req, res) => {
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newSeccionA = await Seccion_A.create({
+  const newSeccion_A = await Seccion_A.create({
     id_user: userr.dataValues.id_user,
   });
 
-  if (newSeccionA) {
+  if (newSeccion_A) {
     return res.status(200).json({
       message: "Seccion A creada correctamente",
-      data: newSeccionA,
+      data: newSeccion_A,
     });
   } else {
     return res.status(500).json({ message: "Error al crear Seccion A" });
@@ -563,7 +563,7 @@ const postSeccionB = async (req, res) => {
     return res.status(500).json({ message: "Error al crear Seccion A" });
   }
 };
-const putSeccionA = async (req, res) => {
+const putSeccion_A = async (req, res) => {
   const {
     exercise1_started,
     exercise1_completed,
@@ -582,7 +582,7 @@ const putSeccionA = async (req, res) => {
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newSeccionA = await Seccion_A.create(
+  const newSeccion_A = await Seccion_A.create(
     {
       id_user: userr.dataValues.id_user,
     },
@@ -602,6 +602,6 @@ module.exports = {
   getSession,
   updateMailAccepted,
   updateUser,
-  postSeccionA,
+  postSeccion_A,
   postSeccionB,
 };
