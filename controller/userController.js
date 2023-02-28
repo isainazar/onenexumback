@@ -179,6 +179,7 @@ const login = async (req, res) => {
             mail_accepted: true,
             createdAt: user.dataValues.createdAt,
             updatedAt: user.dataValues.updatedAt,
+
           };
           req.session.user = usu;
 
@@ -240,6 +241,8 @@ const login = async (req, res) => {
       mail_accepted: true,
       createdAt: user.dataValues.createdAt,
       updatedAt: user.dataValues.updatedAt,
+      id_payment: user.dataValues.idPayment,
+
     };
     req.session.user = usu;
     const payload = {
@@ -604,4 +607,5 @@ module.exports = {
   updateUser,
   postSeccion_A,
   postSeccionB,
+  putSeccion_A
 };

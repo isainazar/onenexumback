@@ -51,6 +51,7 @@ const paymentStripe = async (req, res) => {
   }
   return res.json({ url: session.url });
 };
+
 const getPayments = async (req, res) => {
   const transfers = await stripe.checkout.sessions.list();
   if (!transfers || transfers.length === 0) {
@@ -61,6 +62,22 @@ const getPayments = async (req, res) => {
   console.log(transfers.data);
   return res.status(200).json(transfers.data);
 };
+
+const checkUserPayment = async (req, res) => {
+  const { idPayment } = req.body;
+  if (!idPayment) {
+    return res.status(500).json({ message: "No hay idPayment" });
+  }
+  const transfers = await stripe.checkout.sessions.list();
+  if (!transfers || transfers.length === 0) {
+    return res
+      .status(404)
+      .json({ message: "No se encontraron órdenes activas" });
+  }
+  const mapa = transfers.data.filter((t) => t.id === idPayment);
+  return res.status(200).json({ message: mapa });
+};
+
 const getPaymentsEarns = async (req, res) => {
   const transfers = await stripe.checkout.sessions.list();
   if (!transfers || transfers.length === 0) {
@@ -78,5 +95,6 @@ const getPaymentsEarns = async (req, res) => {
 module.exports = {
   paymentStripe,
   getPayments,
+  checkUserPayment,
   getPaymentsEarns,
 };
