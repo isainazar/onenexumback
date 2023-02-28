@@ -11,7 +11,8 @@ const {
   updateTerminos,
   getSession,
   updateMailAccepted,
-  updateUser
+  updateUser,
+  updatePayment
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -23,5 +24,6 @@ router.put("/terminos", auth, updateTerminos);
 router.put("/data", updateUser);
 router.get("/session", getSession);
 router.put("/mail-accepted", auth, updateMailAccepted);
+router.put("/processed", auth, updatePayment);
 
 module.exports = router;

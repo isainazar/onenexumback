@@ -143,7 +143,7 @@ const login = async (req, res) => {
     if (user.dataValues.firstLogin === true) {
       const usuarioCambiado = await User.update(
         {
-          status: true,
+          // status: true,
           firstLogin: false,
         },
         {
@@ -172,14 +172,13 @@ const login = async (req, res) => {
             lastname: apellido,
             email: user.dataValues.email,
             user_type: user.dataValues.user_type,
-            status: true,
+            status: user.dataValues.status,
             terminos: true,
             progress: user.dataValues.progress,
             firstLogin: false,
             mail_accepted: true,
             createdAt: user.dataValues.createdAt,
             updatedAt: user.dataValues.updatedAt,
-
           };
           req.session.user = usu;
 
@@ -234,7 +233,7 @@ const login = async (req, res) => {
       lastname: apellido,
       email: user.dataValues.email,
       user_type: user.dataValues.user_type,
-      status: true,
+      status: user.dataValues.status,
       terminos: true,
       progress: user.dataValues.progress,
       firstLogin: false,
@@ -242,7 +241,6 @@ const login = async (req, res) => {
       createdAt: user.dataValues.createdAt,
       updatedAt: user.dataValues.updatedAt,
       id_payment: user.dataValues.idPayment,
-
     };
     req.session.user = usu;
     const payload = {
@@ -520,6 +518,32 @@ const updateUser = async (req, res, next) => {
     return res.status(500).json({ error: err });
   }
 };
+
+
+const updatePayment = async (req, res) => {
+  const { id_user } = req.body;
+  const usuario = await User.findByPk(id_user);
+
+  if (!usuario) {
+    return res.status(404).json({ message: "Este usuario no existe" });
+  }
+  try {
+    const updateUser = await User.update(
+      {
+        status: true,
+      },
+      {
+        where: {
+          id_user: usuario.dataValues.id_user,
+        },
+      }
+    );
+    return res.status(200).json({ message: updateUser });
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
+};
+
 const postSeccion_A = async (req, res) => {
   const { user } = req.session;
 
@@ -601,11 +625,12 @@ module.exports = {
   createUser,
   resetPassword,
   forgotPassword,
-  updateTerminos,
   getSession,
+  updateTerminos,
   updateMailAccepted,
   updateUser,
+  updatePayment,
   postSeccion_A,
   postSeccionB,
-  putSeccion_A
+  putSeccion_A,
 };

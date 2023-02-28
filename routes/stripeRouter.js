@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/", auth, paymentStripe);
 router.get("/get", auth, getPayments);
-router.get("/check", checkUserPayment);
+router.post("/check", checkUserPayment);
 router.get("/getEarns", auth, getPaymentsEarns);
 
 module.exports = router;

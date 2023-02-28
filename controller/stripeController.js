@@ -7,7 +7,6 @@ const { User } = require("../DataBase/index");
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
 
 const paymentStripe = async (req, res) => {
-  console.log(stripe);
   const { id_user } = req.body;
   if (!id_user) {
     return res.status(500).json({ message: "Se requiere el ID de usuario" });
@@ -49,7 +48,32 @@ const paymentStripe = async (req, res) => {
       .status(500)
       .json({ message: "El usuario no se pudo actualizar con éxito" });
   }
-  return res.json({ url: session.url });
+  return res.json({ url: session.url , id:session.id });
+};
+
+const checkUserPayment = async (req, res) => {
+  const { idPayment, id_user } = req.body;
+
+  const usuario = await User.findByPk(id_user);
+
+  if (!usuario) {
+    return res.status(404).json({ message: "Este usuario no existe" });
+  }
+  if (!idPayment) {
+    return res.status(500).json({ message: "No ha generado un link de pago" });
+  }
+
+  const session = await stripe.checkout.sessions.retrieve(idPayment);
+  if (!session) {
+    return res
+      .status(404)
+      .json({ message: "No se encontraron órdenes activas" });
+  }
+  if (session.payment_status === "unpaid") {
+    return res.status(402).json({ message: "No se ha realizado el pago correctamente" });
+  }
+  return res.status(200).json({payment_status:true})
+
 };
 
 const getPayments = async (req, res) => {
@@ -61,21 +85,6 @@ const getPayments = async (req, res) => {
   }
   console.log(transfers.data);
   return res.status(200).json(transfers.data);
-};
-
-const checkUserPayment = async (req, res) => {
-  const { idPayment } = req.body;
-  if (!idPayment) {
-    return res.status(500).json({ message: "No hay idPayment" });
-  }
-  const transfers = await stripe.checkout.sessions.list();
-  if (!transfers || transfers.length === 0) {
-    return res
-      .status(404)
-      .json({ message: "No se encontraron órdenes activas" });
-  }
-  const mapa = transfers.data.filter((t) => t.id === idPayment);
-  return res.status(200).json({ message: mapa });
 };
 
 const getPaymentsEarns = async (req, res) => {
