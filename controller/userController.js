@@ -178,15 +178,17 @@ const login = async (req, res) => {
               message: "No se pudo guardar el login",
             });
           }
-          const nombre = decrypt(user.dataValues.name);
-          const apellido = decrypt(user.dataValues.lastname);
           const usu = {
             id_user: user.dataValues.id_user,
-            name: nombre,
-            lastname: apellido,
+            name: decrypt(nombre),
+            lastname: decrypt(apellido),
             email: user.dataValues.email,
             user_type: user.dataValues.user_type,
             status: user.dataValues.status,
+            gender: decrypt(user.dataValues.gender),
+            dob: decrypt(user.dataValues.date_birth),
+            country: decrypt(user.dataValues.country),
+            region: decrypt(user.dataValues.region),
             section_a: section_a,
             section_b: section_b,
             // terminos: true,
@@ -263,12 +265,12 @@ const login = async (req, res) => {
       email: user.dataValues.email,
       user_type: user.dataValues.user_type,
       status: user.dataValues.status,
-      //   terminos: true,
-      //   progress: user.dataValues.progress,
-      //   firstLogin: false,
-      //   mail_accepted: true,
-      //   createdAt: user.dataValues.createdAt,
-      //   updatedAt: user.dataValues.updatedAt,
+      gender: decrypt(user.dataValues.gender),
+      dob: decrypt(user.dataValues.date_birth),
+      country: decrypt(user.dataValues.country),
+      region: decrypt(user.dataValues.region),
+      section_a: section_a,
+      section_b: section_b,
       id_payment: user.dataValues.idPayment,
       section_a: section_a,
       section_b: section_b,
@@ -498,7 +500,6 @@ const updateMailAccepted = async (req, res) => {
 };
 
 const updateUser = async (req, res, next) => {
-  // const { name, lastname, password, email } = req.body;
   const { name, gender, dob, country, region, user } = req.body;
 
   //const { user } = req.session;
@@ -514,22 +515,16 @@ const updateUser = async (req, res, next) => {
   try {
     const nombreE = encrypt(name);
     const dateE = encrypt(dob);
-    //  const dateE = encrypt(date);
     const countryE = encrypt(country);
     const regionE = encrypt(region);
     const genderE = encrypt(gender);
-    // Creamos el nuevo usuario y lo guardamos en la DB
     const userr = await User.update(
       {
         name: nombreE,
-        // lastname: apellidoE,
-        // email,
-        //  password,
         date_birth: dateE,
         country: countryE,
         region: regionE,
         gender: genderE,
-        //user_type,
       },
       {
         where: {
@@ -537,7 +532,6 @@ const updateUser = async (req, res, next) => {
         },
       }
     );
-
     if (userr) {
       return res.status(200).json({ message: "Usuario actualizado" });
     } else {
@@ -576,12 +570,12 @@ const updatePayment = async (req, res) => {
 
 const getUserData = async (req, res) => {
   const { id_user } = req.body;
-  
+
   const usuario = await User.findByPk(id_user);
   if (!usuario) {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
-  try{
+  try {
     const section_a = await Secciona.findOne({
       where: {
         id_user: usuario.dataValues.id_user,
@@ -592,7 +586,7 @@ const getUserData = async (req, res) => {
         id_user: usuario.dataValues.id_user,
       },
     });
-   
+
     const returnedUser = {
       id_user: usuario.dataValues.id_user,
       name: decrypt(usuario.dataValues.name),
@@ -600,12 +594,16 @@ const getUserData = async (req, res) => {
       email: usuario.dataValues.email,
       status: usuario.dataValues.status,
       id_payment: usuario.dataValues.idPayment,
+      gender: decrypt(usuario.dataValues.gender),
+      dob: decrypt(usuario.dataValues.date_birth),
+      country: decrypt(usuario.dataValues.country),
+      region: decrypt(usuario.dataValues.region),
       section_a: section_a,
       section_b: section_b,
     };
     return res.status(200).json({ usuario: returnedUser });
-  }catch(err){
-    return res.status(500).json({message:err})
+  } catch (err) {
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -697,5 +695,5 @@ module.exports = {
   postSeccion_A,
   postSeccionB,
   putSeccion_A,
-  getUserData
+  getUserData,
 };
