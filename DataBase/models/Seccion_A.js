@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
+    completed:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     exercise1_started: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -46,16 +50,17 @@ module.exports = (sequelize) => {
     tableName: "seccion_a",
     timestamps: true,
     paranoid: true,
+    underscored:true
   };
 
-  const Seccion_A = sequelize.define("seccion_a", seccion_a, config);
+  const Seccion_A = sequelize.define("secciona", seccion_a, config);
 
   Seccion_A.associate = (models) => {
     Seccion_A.belongsTo(models.User, {
       sourceKey: "id",
       foreignKey: "id_user",
     });
-  };
+  }; 
 
   return Seccion_A;
 };

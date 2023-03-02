@@ -8,6 +8,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
+    completed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     exercise1_started: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -48,7 +52,7 @@ module.exports = (sequelize) => {
     paranoid: true,
   };
 
-  const Seccion_B = sequelize.define("seccion_b", seccion_b, config);
+  const Seccion_B = sequelize.define("seccionb", seccion_b, config);
 
   Seccion_B.associate = (models) => {
     Seccion_B.belongsTo(models.User, {

@@ -1,4 +1,4 @@
-const { User, Login, Seccion_A, Seccion_B } = require("../DataBase/index.js");
+const { User, Login, Secciona, Seccionb } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
@@ -28,11 +28,11 @@ const createUser = async (req, res, next) => {
   const { name, lastname, password, email, user_type } = req.body;
 
   if (!name || !lastname || !email || !password || !user_type) {
-    return res.status(500).json({ message: "All fields are required" });
+    return res.status(500).json({ message: "Se requieren todos los campos" });
   }
 
   if (validarEmail(email) === "This email is incorrect") {
-    return res.status(501).json({ message: "This mail doesn't exists" });
+    return res.status(501).json({ message: "Este mail no es válido" });
   }
 
   try {
@@ -43,7 +43,6 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "Ya existe un usuario con este email" });
     }
-    //   const date = date_birth.toString();
     const nombreE = encrypt(name);
     const apellidoE = encrypt(lastname);
     //  const dateE = encrypt(date);
@@ -63,7 +62,6 @@ const createUser = async (req, res, next) => {
       //   gender: genderE,
       user_type,
     });
-
     // generamos el payload/body para generar el token
     if (!user) {
       return res
@@ -143,7 +141,7 @@ const login = async (req, res) => {
     if (user.dataValues.firstLogin === true) {
       const usuarioCambiado = await User.update(
         {
-          status: true,
+          // status: true,
           firstLogin: false,
         },
         {
@@ -152,8 +150,24 @@ const login = async (req, res) => {
           },
         }
       );
-      if (usuarioCambiado) {
+      const newSeccion_A = await Secciona.create({
+        id_user: user.dataValues.id_user,
+      });
+      const newSeccion_B = await Seccionb.create({
+        id_user: user.dataValues.id_user,
+      });
+      if (usuarioCambiado && newSeccion_A && newSeccion_B) {
         try {
+          const section_a = await Secciona.findOne({
+            where: {
+              id_user: user.dataValues.id_user,
+            },
+          });
+          const section_b = await Seccionb.findOne({
+            where: {
+              id_user: user.dataValues.id_user,
+            },
+          });
           const newLogin = await Login.create({
             id_user: user.dataValues.id_user,
           });
@@ -164,21 +178,25 @@ const login = async (req, res) => {
               message: "No se pudo guardar el login",
             });
           }
-          const nombre = decrypt(user.dataValues.name);
-          const apellido = decrypt(user.dataValues.lastname);
           const usu = {
             id_user: user.dataValues.id_user,
-            name: nombre,
-            lastname: apellido,
+            name: decrypt(nombre),
+            lastname: decrypt(apellido),
             email: user.dataValues.email,
             user_type: user.dataValues.user_type,
-            status: true,
-            terminos: true,
-            progress: user.dataValues.progress,
-            firstLogin: false,
-            mail_accepted: true,
-            createdAt: user.dataValues.createdAt,
-            updatedAt: user.dataValues.updatedAt,
+            status: user.dataValues.status,
+            gender: decrypt(user.dataValues.gender),
+            dob: decrypt(user.dataValues.date_birth),
+            country: decrypt(user.dataValues.country),
+            region: decrypt(user.dataValues.region),
+            section_a: section_a,
+            section_b: section_b,
+            // terminos: true,
+            //   progress: user.dataValues.progress,
+            //   firstLogin: false,
+            //   mail_accepted: true,
+            //  createdAt: user.dataValues.createdAt,
+            //   updatedAt: user.dataValues.updatedAt,
           };
           req.session.user = usu;
 
@@ -199,6 +217,7 @@ const login = async (req, res) => {
                 token: token,
                 id_user: user.dataValues.id_user,
                 userLogged: true,
+                usuario: usu,
               });
             }
           );
@@ -227,19 +246,34 @@ const login = async (req, res) => {
     }
     const nombre = decrypt(user.dataValues.name);
     const apellido = decrypt(user.dataValues.lastname);
+
+    const section_a = await Secciona.findOne({
+      where: {
+        id_user: user.dataValues.id_user,
+      },
+    });
+    const section_b = await Seccionb.findOne({
+      where: {
+        id_user: user.dataValues.id_user,
+      },
+    });
+
     const usu = {
       id_user: user.dataValues.id_user,
       name: nombre,
       lastname: apellido,
       email: user.dataValues.email,
       user_type: user.dataValues.user_type,
-      status: true,
-      terminos: true,
-      progress: user.dataValues.progress,
-      firstLogin: false,
-      mail_accepted: true,
-      createdAt: user.dataValues.createdAt,
-      updatedAt: user.dataValues.updatedAt,
+      status: user.dataValues.status,
+      gender: decrypt(user.dataValues.gender),
+      dob: decrypt(user.dataValues.date_birth),
+      country: decrypt(user.dataValues.country),
+      region: decrypt(user.dataValues.region),
+      section_a: section_a,
+      section_b: section_b,
+      id_payment: user.dataValues.idPayment,
+      section_a: section_a,
+      section_b: section_b,
     };
     req.session.user = usu;
     const payload = {
@@ -466,7 +500,6 @@ const updateMailAccepted = async (req, res) => {
 };
 
 const updateUser = async (req, res, next) => {
-  // const { name, lastname, password, email } = req.body;
   const { name, gender, dob, country, region, user } = req.body;
 
   //const { user } = req.session;
@@ -482,22 +515,16 @@ const updateUser = async (req, res, next) => {
   try {
     const nombreE = encrypt(name);
     const dateE = encrypt(dob);
-    //  const dateE = encrypt(date);
     const countryE = encrypt(country);
     const regionE = encrypt(region);
     const genderE = encrypt(gender);
-    // Creamos el nuevo usuario y lo guardamos en la DB
     const userr = await User.update(
       {
         name: nombreE,
-        // lastname: apellidoE,
-        // email,
-        //  password,
         date_birth: dateE,
         country: countryE,
         region: regionE,
         gender: genderE,
-        //user_type,
       },
       {
         where: {
@@ -505,7 +532,6 @@ const updateUser = async (req, res, next) => {
         },
       }
     );
-
     if (userr) {
       return res.status(200).json({ message: "Usuario actualizado" });
     } else {
@@ -517,8 +543,72 @@ const updateUser = async (req, res, next) => {
     return res.status(500).json({ error: err });
   }
 };
-const postSeccionA = async (req, res) => {
-  const { user } = req.session;
+
+const updatePayment = async (req, res) => {
+  const { id_user } = req.body;
+  const usuario = await User.findByPk(id_user);
+
+  if (!usuario) {
+    return res.status(404).json({ message: "Este usuario no existe" });
+  }
+  try {
+    const updateUser = await User.update(
+      {
+        status: true,
+      },
+      {
+        where: {
+          id_user: usuario.dataValues.id_user,
+        },
+      }
+    );
+    return res.status(200).json({ message: updateUser });
+  } catch (err) {
+    return res.status(500).json({ error: err });
+  }
+};
+
+const getUserData = async (req, res) => {
+  const { id_user } = req.body;
+
+  const usuario = await User.findByPk(id_user);
+  if (!usuario) {
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+  try {
+    const section_a = await Secciona.findOne({
+      where: {
+        id_user: usuario.dataValues.id_user,
+      },
+    });
+    const section_b = await Seccionb.findOne({
+      where: {
+        id_user: usuario.dataValues.id_user,
+      },
+    });
+
+    const returnedUser = {
+      id_user: usuario.dataValues.id_user,
+      name: decrypt(usuario.dataValues.name),
+      lastname: decrypt(usuario.dataValues.lastname),
+      email: usuario.dataValues.email,
+      status: usuario.dataValues.status,
+      id_payment: usuario.dataValues.idPayment,
+      gender: decrypt(usuario.dataValues.gender),
+      dob: decrypt(usuario.dataValues.date_birth),
+      country: decrypt(usuario.dataValues.country),
+      region: decrypt(usuario.dataValues.region),
+      section_a: section_a,
+      section_b: section_b,
+    };
+    return res.status(200).json({ usuario: returnedUser });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
+const postSeccion_A = async (req, res) => {
+  const { user } = req.body;
 
   if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
@@ -527,22 +617,21 @@ const postSeccionA = async (req, res) => {
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newSeccionA = await Seccion_A.create({
+  const newSeccion_A = await Secciona.create({
     id_user: userr.dataValues.id_user,
   });
 
-  if (newSeccionA) {
+  if (newSeccion_A) {
     return res.status(200).json({
       message: "Seccion A creada correctamente",
-      data: newSeccionA,
+      data: newSeccion_A,
     });
   } else {
     return res.status(500).json({ message: "Error al crear Seccion A" });
   }
 };
 const postSeccionB = async (req, res) => {
-  const { user } = req.session;
-
+  const { user } = req.body;
   if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
@@ -563,7 +652,7 @@ const postSeccionB = async (req, res) => {
     return res.status(500).json({ message: "Error al crear Seccion A" });
   }
 };
-const putSeccionA = async (req, res) => {
+const putSeccion_A = async (req, res) => {
   const {
     exercise1_started,
     exercise1_completed,
@@ -599,10 +688,13 @@ module.exports = {
   createUser,
   resetPassword,
   forgotPassword,
-  updateTerminos,
   getSession,
+  updateTerminos,
   updateMailAccepted,
   updateUser,
-  postSeccionA,
+  updatePayment,
+  postSeccion_A,
   postSeccionB,
+  putSeccion_A,
+  getUserData,
 };
