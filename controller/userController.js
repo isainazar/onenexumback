@@ -582,6 +582,7 @@ const putSeccionA = async (req, res) => {
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
+
   const newSeccionA = await Seccion_A.create(
     {
       id_user: userr.dataValues.id_user,
