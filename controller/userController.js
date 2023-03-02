@@ -653,34 +653,41 @@ const postSeccionB = async (req, res) => {
   }
 };
 const putSeccion_A = async (req, res) => {
-  const {
-    exercise1_started,
-    exercise1_completed,
-    exercise2_started,
-    exercise2_completed,
-    exercise3_started,
-    exercise3_completed,
-    bonus_started,
-    bonus_completed,
-  } = req.body;
-  const { user } = req.session;
-  if (!user.id_user) {
+  const { section_a, user } = req.body;
+console.log(section_a)
+  
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newSeccion_A = await Seccion_A.create(
-    {
-      id_user: userr.dataValues.id_user,
-    },
-    {
-      where: {
-        id_user: userr.dataValues.id_user,
+  try {
+    const updateSeccion = await Secciona.update(
+      {
+        exercise1_started : section_a.exercise1_started,
+        exercise2_started : section_a.exercise2_started,
+        exercise3_started : section_a.exercise3_started,
+        exercise1_completed : section_a.exercise1_completed,
+        exercise2_completed : section_a.exercise2_completed,
+        exercise3_completed : section_a.exercise3_completed,
+        bonus_started: section_a.bonus_started,
+        bonus_completed: section_a.bonus_completed,
+        completed: section_a.completed,
       },
+      {
+        where: {
+          id_user: usuario.dataValues.id_user,
+        },
+      }
+    );
+    if(updateSeccion){
+      return res.status(200).json({message: "Seccion actualizada correctamente"})
     }
-  );
+  } catch (err) {
+    return res.status(510).json({ message: err });
+  }
 };
 module.exports = {
   login,
