@@ -654,7 +654,6 @@ const postSeccionB = async (req, res) => {
 };
 const putSeccion_A = async (req, res) => {
   const { section_a, user } = req.body;
-console.log(section_a)  
   if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
@@ -688,6 +687,42 @@ console.log(section_a)
     return res.status(510).json({ message: err });
   }
 };
+
+const putSeccion_B = async (req, res) => {
+  const { section_b, user } = req.body;
+  if (!user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  try {
+    const updateSeccion = await Seccionb.update(
+      {
+        exercise1_started : section_b.exercise1_started,
+        exercise2_started : section_b.exercise2_started,
+        exercise3_started : section_b.exercise3_started,
+        exercise1_completed : section_b.exercise1_completed,
+        exercise2_completed : section_b.exercise2_completed,
+        exercise3_completed : section_b.exercise3_completed,
+        bonus_started: section_b.bonus_started,
+        bonus_completed: section_b.bonus_completed,
+        completed: section_b.completed,
+      },
+      {
+        where: {
+          id_user: usuario.dataValues.id_user,
+        },
+      }
+    );
+    if(updateSeccion){
+      return res.status(200).json({message: "Seccion actualizada correctamente"})
+    }
+  } catch (err) {
+    return res.status(510).json({ message: err });
+  }
+};
 module.exports = {
   login,
   createUser,
@@ -701,5 +736,6 @@ module.exports = {
   postSeccion_A,
   postSeccionB,
   putSeccion_A,
+  putSeccion_B,
   getUserData,
 };

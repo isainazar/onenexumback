@@ -15,7 +15,8 @@ const {
   updatePayment,
   postSeccion_A,
   getUserData,
-  putSeccion_A
+  putSeccion_A,
+  putSeccion_B
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -31,5 +32,6 @@ router.get("/session", getSession);
 router.put("/mail-accepted", auth, updateMailAccepted);
 router.put("/processed", auth, updatePayment);
 router.put("/section_a", putSeccion_A)
+router.put("/section_b", putSeccion_B)
 
 module.exports = router;
