@@ -132,11 +132,19 @@ module.exports = (sequelize) => {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
-    User.hasOne(models.Secciona, {
+    User.hasOne(models.Seccion_A, {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });
-    User.hasOne(models.Seccionb, {
+    User.hasOne(models.Seccion_B, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
+    User.hasOne(models.Valoracion_seccion_A, {
+      sourceKey: "id_user",
+      foreignKey: "id_user",
+    });
+    User.hasOne(models.Valoracion_seccion_B, {
       sourceKey: "id_user",
       foreignKey: "id_user",
     });

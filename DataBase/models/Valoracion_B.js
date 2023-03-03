@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const valoracion_seccion_a = {
+  const valoracion_seccion_b = {
     valoracion_exercise_1: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
@@ -21,23 +21,23 @@ module.exports = (sequelize) => {
   };
 
   const config = {
-    tableName: "valoracionsecciona",
+    tableName: "valoracionseccionb",
     timestamps: true,
     paranoid: true,
   };
 
-  const Valoracion_seccion_A = sequelize.define(
-    "valoracionseccionaa",
-    valoracion_seccion_a,
+  const Valoracion_seccion_B = sequelize.define(
+    "valoracionseccionab",
+    valoracion_seccion_b,
     config
   );
 
-  Valoracion_seccion_A.associate = (models) => {
-    Valoracion_seccion_A.belongsTo(models.User, {
+  Valoracion_seccion_B.associate = (models) => {
+    Valoracion_seccion_B.belongsTo(models.User, {
       sourceKey: "id",
       foreignKey: "id_user",
     });
   };
 
-  return Valoracion_seccion_A;
+  return Valoracion_seccion_B;
 };
