@@ -654,8 +654,7 @@ const postSeccionB = async (req, res) => {
 };
 const putSeccion_A = async (req, res) => {
   const { section_a, user } = req.body;
-console.log(section_a)
-  
+console.log(section_a)  
   if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
