@@ -678,8 +678,8 @@ const putSeccion_A = async (req, res) => {
   if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   if (completed) {
