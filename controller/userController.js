@@ -1,4 +1,14 @@
-const { User, Login, Secciona, Seccionb } = require("../DataBase/index.js");
+const {
+  User,
+  Login,
+  Seccion_A,
+  Seccion_B,
+  Testpersonalidad1,
+  Testpersonalidad2,
+  Testpersonalidad3,
+  Testpersonalidad4,
+  Testpersonalidad5,
+} = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
@@ -226,21 +236,21 @@ const login = async (req, res) => {
           },
         }
       );
-      const newSeccion_A = await Secciona.create({
+      const newSeccion_A = await Seccion_A.create({
         id_user: user.dataValues.id_user,
       });
-      const newSeccion_B = await Seccionb.create({
+      const newSeccion_B = await Seccion_B.create({
         id_user: user.dataValues.id_user,
       });
 
       if (usuarioCambiado && newSeccion_A && newSeccion_B) {
         try {
-          const section_a = await Secciona.findOne({
+          const section_a = await Seccion_A.findOne({
             where: {
               id_user: user.dataValues.id_user,
             },
           });
-          const section_b = await Seccionb.findOne({
+          const section_b = await Seccion_B.findOne({
             where: {
               id_user: user.dataValues.id_user,
             },
@@ -659,12 +669,12 @@ const getUserData = async (req, res) => {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
   try {
-    const section_a = await Secciona.findOne({
+    const section_a = await Seccion_A.findOne({
       where: {
         id_user: usuario.dataValues.id_user,
       },
     });
-    const section_b = await Seccionb.findOne({
+    const section_b = await Seccion_B.findOne({
       where: {
         id_user: usuario.dataValues.id_user,
       },
@@ -699,7 +709,7 @@ const postSeccion_A = async (req, res) => {
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newSeccion_A = await Secciona.create({
+  const newSeccion_A = await Seccion_A.create({
     id_user: userr.dataValues.id_user,
   });
 
@@ -712,7 +722,7 @@ const postSeccion_A = async (req, res) => {
     return res.status(500).json({ message: "Error al crear Seccion A" });
   }
 };
-const postSeccionB = async (req, res) => {
+const postSeccion_B = async (req, res) => {
   const { user } = req.body;
   if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
@@ -735,76 +745,528 @@ const postSeccionB = async (req, res) => {
   }
 };
 const putSeccion_A = async (req, res) => {
-  const { section_a, user } = req.body;
-  if (!user) {
+  const {
+    completed,
+    exercise1_started,
+    exercise1_completed,
+    exercise2_started,
+    exercise2_completed,
+    exercise3_started,
+    exercise3_completed,
+    bonus_started,
+    bonus_completed,
+  } = req.body;
+  const { user } = req.body;
+  if (!user.id_user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   const usuario = await User.findByPk(user);
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  try {
-    const updateSeccion = await Secciona.update(
+  if (completed) {
+    const newSeccionA = await Seccion_A.update(
       {
-        exercise1_started : section_a.exercise1_started,
-        exercise2_started : section_a.exercise2_started,
-        exercise3_started : section_a.exercise3_started,
-        exercise1_completed : section_a.exercise1_completed,
-        exercise2_completed : section_a.exercise2_completed,
-        exercise3_completed : section_a.exercise3_completed,
-        bonus_started: section_a.bonus_started,
-        bonus_completed: section_a.bonus_completed,
-        completed: section_a.completed,
+        completed: true,
       },
       {
         where: {
-          id_user: usuario.dataValues.id_user,
+          id_user: userr.dataValues.id_user,
         },
       }
     );
-    if(updateSeccion){
-      return res.status(200).json({message: "Seccion actualizada correctamente"})
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
-  } catch (err) {
-    return res.status(510).json({ message: err });
+  }
+  if (exercise1_started) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise1_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise1_completed) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise1_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise2_started) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise2_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise2_completed) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise2_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise3_started) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise3_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise3_completed) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        exercise3_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (bonus_started) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        bonus_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (bonus_completed) {
+    const newSeccionA = await Seccion_A.update(
+      {
+        bonus_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+};
+const putSeccion_B = async (req, res) => {
+  const {
+    completed,
+    exercise1_started,
+    exercise1_completed,
+    exercise2_started,
+    exercise2_completed,
+    exercise3_started,
+    exercise3_completed,
+    bonus_started,
+    bonus_completed,
+  } = req.body;
+  const { user } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  if (completed) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise1_started) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise1_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise1_completed) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise1_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise2_started) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise2_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise2_completed) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise2_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise3_started) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise3_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (exercise3_completed) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        exercise3_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (bonus_started) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        bonus_started: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (bonus_completed) {
+    const newSeccionA = await Seccion_B.update(
+      {
+        bonus_completed: true,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newSeccionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newSeccionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+};
+const postTest1 = async (req, res) => {
+  const { user, result } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newTest = await Testpersonalidad1.create({
+    id_user: userr.dataValues.id_user,
+    result,
+    completed: true,
+  });
+
+  if (newTest) {
+    return res.status(200).json({
+      message: "Test creado correctamente",
+      data: newTest,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Test" });
+  }
+};
+const postTest2 = async (req, res) => {
+  const { user, result } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newTest = await Testpersonalidad2.create({
+    id_user: userr.dataValues.id_user,
+    result,
+    completed: true,
+  });
+
+  if (newTest) {
+    return res.status(200).json({
+      message: "Test creado correctamente",
+      data: newTest,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Test" });
+  }
+};
+const postTest3 = async (req, res) => {
+  const { user, result } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newTest = await Testpersonalidad3.create({
+    id_user: userr.dataValues.id_user,
+    result,
+    completed: true,
+  });
+
+  if (newTest) {
+    return res.status(200).json({
+      message: "Test creado correctamente",
+      data: newTest,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Test" });
+  }
+};
+const postTest4 = async (req, res) => {
+  const { user, result } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newTest = await Testpersonalidad4.create({
+    id_user: userr.dataValues.id_user,
+    result,
+    completed: true,
+  });
+
+  if (newTest) {
+    return res.status(200).json({
+      message: "Test creado correctamente",
+      data: newTest,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Test" });
+  }
+};
+const postTest5 = async (req, res) => {
+  const { user, result } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  const newTest = await Testpersonalidad5.create({
+    id_user: userr.dataValues.id_user,
+    result,
+    completed: true,
+  });
+
+  if (newTest) {
+    return res.status(200).json({
+      message: "Test creado correctamente",
+      data: newTest,
+    });
+  } else {
+    return res.status(500).json({ message: "Error al crear Test" });
   }
 };
 
-const putSeccion_B = async (req, res) => {
-  const { section_b, user } = req.body;
-  if (!user) {
-    return res.status(403).json({ message: "Falta informacion" });
-  }
-  const usuario = await User.findByPk(user);
-  if (!usuario) {
-    return res.status(403).json({ message: "Usuario inexistente" });
-  }
-  try {
-    const updateSeccion = await Seccionb.update(
-      {
-        exercise1_started : section_b.exercise1_started,
-        exercise2_started : section_b.exercise2_started,
-        exercise3_started : section_b.exercise3_started,
-        exercise1_completed : section_b.exercise1_completed,
-        exercise2_completed : section_b.exercise2_completed,
-        exercise3_completed : section_b.exercise3_completed,
-        bonus_started: section_b.bonus_started,
-        bonus_completed: section_b.bonus_completed,
-        completed: section_b.completed,
-      },
-      {
-        where: {
-          id_user: usuario.dataValues.id_user,
-        },
-      }
-    );
-    if(updateSeccion){
-      return res.status(200).json({message: "Seccion actualizada correctamente"})
-    }
-  } catch (err) {
-    return res.status(510).json({ message: err });
-  }
-};
 module.exports = {
   login,
   createUser,
@@ -816,8 +1278,13 @@ module.exports = {
   updateUser,
   updatePayment,
   postSeccion_A,
-  postSeccionB,
+  postSeccion_B,
   putSeccion_A,
   putSeccion_B,
   getUserData,
-}
+  postTest1,
+  postTest2,
+  postTest3,
+  postTest4,
+  postTest5,
+};
