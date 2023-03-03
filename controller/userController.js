@@ -108,14 +108,16 @@ const createUser = async (req, res, next) => {
   }
 };
 const login = async (req, res) => {
-  const { email, password } = req.body;
 
+  
+  const { email, password } = req.body;
+  
   if (!email || !password) {
     return res.status(505).json({
       message: "Se requiere un usuario o contraseña valido",
     });
   }
-
+  
   try {
     const user = await User.findOne({
       where: {
@@ -127,21 +129,95 @@ const login = async (req, res) => {
         message: "Este usuario no existe",
       });
     }
-
     const passwordfinal = bcrypt.compareSync(
       password,
       user.dataValues.password
+      );
+      if (!passwordfinal) {
+        return res.status(404).json({
+          message: "Contraseña inválida",
+        });
+      }
+  // FIRST LOGIN
+  if (user.dataValues.firstLogin === true) {
+    const usuarioCambiado = await User.update(
+      {
+        status: true,
+        firstLogin: false,
+      },
+      {
+        where: {
+          id_user: user.dataValues.id_user,
+        },
+      }
     );
+    if (usuarioCambiado) {
+      try {
+        const newLogin = await Login.create({
+          id_user: user.dataValues.id_user,
+        });
 
-    if (!passwordfinal) {
-      return res.status(404).json({
-        message: "Contraseña inválida",
+        const newLoginDef = await Promise.all(await newLogin.addUser(user));
+        if (!newLogin || !newLoginDef) {
+          return res.status(409).json({
+            message: "No se pudo guardar el login",
+          });
+        }
+        const nombre = decrypt(user.dataValues.name);
+        const apellido = decrypt(user.dataValues.lastname);
+        const usu = {
+          id_user: user.dataValues.id_user,
+          name: nombre,
+          lastname: apellido,
+          email: user.dataValues.email,
+          user_type: user.dataValues.user_type,
+          status: true,
+          terminos: true,
+          progress: user.dataValues.progress,
+          firstLogin: false,
+          mail_accepted: true,
+          createdAt: user.dataValues.createdAt,
+          updatedAt: user.dataValues.updatedAt,
+        };
+        req.session.user = usu;
+
+        const payload = {
+          user: {
+            id: user.dataValues.id_user,
+          },
+        };
+        jwt.sign(
+          payload,
+          JWT_SECRET,
+          {
+            expiresIn: "1d",
+          },
+          (err, token) => {
+            if (err) throw err;
+            return res.status(200).json({
+              token: token,
+              id_user: user.dataValues.id_user,
+              userLogged: true,
+            });
+          }
+        );
+      } catch (error) {
+        return res.status(502).json({
+          message:
+            "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+          error: err,
+        });
+      }
+    } else {
+      return res.status(403).json({
+        message: "No se ha podido actualizar el usuario",
       });
     }
-    if (user.dataValues.firstLogin === true) {
+  }
+   /*  if (user.dataValues.firstLogin === true) {
+    
       const usuarioCambiado = await User.update(
         {
-          // status: true,
           firstLogin: false,
         },
         {
@@ -156,6 +232,7 @@ const login = async (req, res) => {
       const newSeccion_B = await Seccionb.create({
         id_user: user.dataValues.id_user,
       });
+
       if (usuarioCambiado && newSeccion_A && newSeccion_B) {
         try {
           const section_a = await Secciona.findOne({
@@ -178,10 +255,12 @@ const login = async (req, res) => {
               message: "No se pudo guardar el login",
             });
           }
+         console.log(user.dataValues.name)
+
           const usu = {
             id_user: user.dataValues.id_user,
-            name: decrypt(nombre),
-            lastname: decrypt(apellido),
+            name: decrypt(user.dataValues.name),
+            lastname: decrypt(user.dataValues.lastname),
             email: user.dataValues.email,
             user_type: user.dataValues.user_type,
             status: user.dataValues.status,
@@ -191,14 +270,9 @@ const login = async (req, res) => {
             region: decrypt(user.dataValues.region),
             section_a: section_a,
             section_b: section_b,
-            // terminos: true,
-            //   progress: user.dataValues.progress,
-            //   firstLogin: false,
-            //   mail_accepted: true,
-            //  createdAt: user.dataValues.createdAt,
-            //   updatedAt: user.dataValues.updatedAt,
           };
-          req.session.user = usu;
+          
+        //  req.session.user = usu;
 
           const payload = {
             user: {
@@ -233,7 +307,10 @@ const login = async (req, res) => {
           message: "No se ha podido actualizar el usuario",
         });
       }
-    }
+    } */
+
+    // SI YA EL USUARIO SE LOGEÓ POR PRIMERA VEZ
+ else{
     const newLogin = await Login.create({
       id_user: user.dataValues.id_user,
     });
@@ -257,7 +334,7 @@ const login = async (req, res) => {
         id_user: user.dataValues.id_user,
       },
     });
-
+    try{
     const usu = {
       id_user: user.dataValues.id_user,
       name: nombre,
@@ -304,7 +381,13 @@ const login = async (req, res) => {
       error: err,
     });
   }
-};
+}}catch (err){
+return res.status(500).json({
+  message:
+  "Error",
+  error: err
+})
+}};
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -586,7 +669,6 @@ const getUserData = async (req, res) => {
         id_user: usuario.dataValues.id_user,
       },
     });
-
     const returnedUser = {
       id_user: usuario.dataValues.id_user,
       name: decrypt(usuario.dataValues.name),
@@ -738,4 +820,4 @@ module.exports = {
   putSeccion_A,
   putSeccion_B,
   getUserData,
-};
+}

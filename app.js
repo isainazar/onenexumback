@@ -124,7 +124,7 @@ app.get("*", (req, res) => {
 
 conn
   .sync({
-    force: false,
+    force: true,
   })
   .then(() => {
     app.listen(3000, async () => {
