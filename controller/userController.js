@@ -8,6 +8,8 @@ const {
   Testpersonalidad3,
   Testpersonalidad4,
   Testpersonalidad5,
+  Valoracion_seccion_A,
+  Valoracion_seccion_B,
 } = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
@@ -242,8 +244,19 @@ const login = async (req, res) => {
       const newSeccion_B = await Seccion_B.create({
         id_user: user.dataValues.id_user,
       });
-
-      if (usuarioCambiado && newSeccion_A && newSeccion_B) {
+      const newValoracion_A = await Valoracion_seccion_A.create({
+        id_user: user.dataValues.id_user,
+      });
+      const newValoracion_B = await Valoracion_seccion_B.create({
+        id_user: user.dataValues.id_user,
+      });
+      if (
+        usuarioCambiado &&
+        newSeccion_A &&
+        newSeccion_B &&
+        newValoracion_A &&
+        newValoracion_B
+      ) {
         try {
           const section_a = await Seccion_A.findOne({
             where: {
@@ -1266,7 +1279,198 @@ const postTest5 = async (req, res) => {
     return res.status(500).json({ message: "Error al crear Test" });
   }
 };
-
+const putValoracion_A = async (req, res) => {
+  const {
+    valoracion_exercise_1,
+    valoracion_exercise_2,
+    valoracion_exercise_3,
+    valoracion_bonus,
+  } = req.body;
+  const { user } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  if (valoracion_exercise_1) {
+    const newValoracionA = await Valoracion_seccion_A.update(
+      {
+        valoracion_exercise_1: valoracion_exercise_1,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_exercise_2) {
+    const newValoracionA = await Valoracion_seccion_A.update(
+      {
+        valoracion_exercise_2: valoracion_exercise_2,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_exercise_3) {
+    const newValoracionA = await Valoracion_seccion_A.update(
+      {
+        valoracion_exercise_3: valoracion_exercise_3,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_bonus) {
+    const newValoracionA = await Valoracion_seccion_A.update(
+      {
+        valoracion_bonus: valoracion_bonus,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+};
+const putValoracion_B = async (req, res) => {
+  const {
+    valoracion_exercise_1,
+    valoracion_exercise_2,
+    valoracion_exercise_3,
+    valoracion_bonus,
+  } = req.body;
+  const { user } = req.body;
+  if (!user.id_user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const userr = await User.findByPk(user.id_user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  if (valoracion_exercise_1) {
+    const newValoracionA = await Valoracion_seccion_B.update(
+      {
+        valoracion_exercise_1: valoracion_exercise_1,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_exercise_2) {
+    const newValoracionA = await Valoracion_seccion_B.update(
+      {
+        valoracion_exercise_2: valoracion_exercise_2,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_exercise_3) {
+    const newValoracionA = await Valoracion_seccion_B.update(
+      {
+        valoracion_exercise_3: valoracion_exercise_3,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+  if (valoracion_bonus) {
+    const newValoracionA = await Valoracion_seccion_B.update(
+      {
+        valoracion_bonus: valoracion_bonus,
+      },
+      {
+        where: {
+          id_user: userr.dataValues.id_user,
+        },
+      }
+    );
+    if (newValoracionA) {
+      return res.status(200).json({
+        message: "Seccion A modificada correctamente",
+        data: newValoracionA,
+      });
+    } else {
+      return res.status(500).json({ message: "Error al modificar Seccion A" });
+    }
+  }
+};
 module.exports = {
   login,
   createUser,
@@ -1287,4 +1491,6 @@ module.exports = {
   postTest3,
   postTest4,
   postTest5,
+  putValoracion_A,
+  putValoracion_B,
 };

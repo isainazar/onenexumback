@@ -16,16 +16,15 @@ const {
   postSeccion_A,
   getUserData,
   putSeccion_A,
-<<<<<<< HEAD
-  putSeccion_B
-=======
+  putSeccion_B,
   postSeccion_B,
   postTest1,
   postTest2,
   postTest3,
   postTest4,
   postTest5,
->>>>>>> 7cc065f64cf49525be6bda87cf60f8b9edeebc10
+  putValoracion_A,
+  putValoracion_B,
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -39,7 +38,7 @@ router.post("/create-seccion-b", postSeccion_B);
 router.post("/post-test1", postTest1);
 router.post("/post-test2", postTest2);
 router.post("/post-test3", postTest3);
-router.post("/post-test4", postTest5);
+router.post("/post-test4", postTest4);
 router.post("/post-test5", postTest5);
 
 router.put("/terminos", auth, updateTerminos);
@@ -47,11 +46,9 @@ router.put("/data", updateUser);
 router.get("/session", getSession);
 router.put("/mail-accepted", auth, updateMailAccepted);
 router.put("/processed", auth, updatePayment);
-<<<<<<< HEAD
-router.put("/section_a", putSeccion_A)
-router.put("/section_b", putSeccion_B)
-=======
-router.put("/put-section_a", putSeccion_A);
->>>>>>> 7cc065f64cf49525be6bda87cf60f8b9edeebc10
+router.put("/put-section-a", putSeccion_A);
+router.put("/put-section-b", putSeccion_B);
+router.put("/put-valoracion-a", putSeccion_A);
+router.put("/put-valoracion-b", putSeccion_B);
 
 module.exports = router;
