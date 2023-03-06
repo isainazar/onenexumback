@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
   };
 
   const Valoracion_seccion_A = sequelize.define(
-    "valoracionseccionaa",
+    "valoracionsecciona",
     valoracion_seccion_a,
     config
   );
