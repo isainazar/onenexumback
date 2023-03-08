@@ -1,8 +1,8 @@
 const {
   User,
   Login,
-  Seccion_A,
-  Seccion_B,
+  Secciona,
+  Seccionb,
   Testpersonalidad1,
   Testpersonalidad2,
   Testpersonalidad3,
@@ -11,11 +11,11 @@ const {
   Valoracion_seccion_A,
   Valoracion_seccion_B,
 } = require("../DataBase/index.js");
+models = require("../DataBase/index.js");
 const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const URL = process.env.URL;
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
-
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
@@ -120,16 +120,14 @@ const createUser = async (req, res, next) => {
   }
 };
 const login = async (req, res) => {
-
-  
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
     return res.status(505).json({
       message: "Se requiere un usuario o contraseña valido",
     });
   }
-  
+
   try {
     const user = await User.findOne({
       where: {
@@ -144,89 +142,107 @@ const login = async (req, res) => {
     const passwordfinal = bcrypt.compareSync(
       password,
       user.dataValues.password
-      );
-      if (!passwordfinal) {
-        return res.status(404).json({
-          message: "Contraseña inválida",
-        });
-      }
-  // FIRST LOGIN
-  if (user.dataValues.firstLogin === true) {
-    const usuarioCambiado = await User.update(
-      {
-        status: true,
-        firstLogin: false,
-      },
-      {
-        where: {
-          id_user: user.dataValues.id_user,
-        },
-      }
     );
-    if (usuarioCambiado) {
-      try {
-        const newLogin = await Login.create({
-          id_user: user.dataValues.id_user,
-        });
-
-        const newLoginDef = await Promise.all(await newLogin.addUser(user));
-        if (!newLogin || !newLoginDef) {
-          return res.status(409).json({
-            message: "No se pudo guardar el login",
-          });
-        }
-        const nombre = decrypt(user.dataValues.name);
-        const apellido = decrypt(user.dataValues.lastname);
-        const usu = {
-          id_user: user.dataValues.id_user,
-          name: nombre,
-          lastname: apellido,
-          email: user.dataValues.email,
-          user_type: user.dataValues.user_type,
-          status: true,
-          terminos: true,
-          progress: user.dataValues.progress,
-          firstLogin: false,
-          mail_accepted: true,
-          createdAt: user.dataValues.createdAt,
-          updatedAt: user.dataValues.updatedAt,
-        };
-        req.session.user = usu;
-
-        const payload = {
-          user: {
-            id: user.dataValues.id_user,
-          },
-        };
-        jwt.sign(
-          payload,
-          JWT_SECRET,
-          {
-            expiresIn: "1d",
-          },
-          (err, token) => {
-            if (err) throw err;
-            return res.status(200).json({
-              token: token,
-              id_user: user.dataValues.id_user,
-              userLogged: true,
-            });
-          }
-        );
-      } catch (error) {
-        return res.status(502).json({
-          message:
-            "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
-          error: err,
-        });
-      }
-    } else {
-      return res.status(403).json({
-        message: "No se ha podido actualizar el usuario",
+    if (!passwordfinal) {
+      return res.status(404).json({
+        message: "Contraseña inválida",
       });
     }
-  }
-   /*  if (user.dataValues.firstLogin === true) {
+    // FIRST LOGIN
+    if (user.dataValues.firstLogin === true) {
+      const usuarioCambiado = await User.update(
+        {
+          // status: true,
+          firstLogin: false,
+        },
+        {
+          where: {
+            id_user: user.dataValues.id_user,
+          },
+        }
+      );
+
+      const newSeccion_A = await Secciona.create({
+        id_user: user.dataValues.id_user,
+      });
+      const newSeccion_B = await Seccionb.create({
+        id_user: user.dataValues.id_user,
+      });
+
+      if (usuarioCambiado && newSeccion_A && newSeccion_B) {
+        try {
+          const section_a = await Secciona.findOne({
+            where: {
+              id_user: user.dataValues.id_user,
+            },
+          });
+          const section_b = await Seccionb.findOne({
+            where: {
+              id_user: user.dataValues.id_user,
+            },
+          });
+          const newLogin = await Login.create({
+            id_user: user.dataValues.id_user,
+          });
+          const newLoginDef = await Promise.all(await newLogin.addUser(user));
+          if (!newLogin || !newLoginDef) {
+            return res.status(409).json({
+              message: "No se pudo guardar el login",
+            });
+          }
+
+          const nombre = decrypt(user.dataValues.name);
+          const apellido = decrypt(user.dataValues.lastname);
+
+          const usu = {
+            id_user: user.dataValues.id_user,
+            name: nombre,
+            lastname: apellido,
+            email: user.dataValues.email,
+            user_type: user.dataValues.user_type,
+            status: user.dataValues.status,
+            gender: user.dataValues.gender,
+            dob: user.dataValues.dob,
+            country: user.dataValues.country,
+            region: user.dataValues.region,
+            section_a: section_a,
+            section_b: section_b,
+          };
+          req.session.user = usu;
+          const payload = {
+            user: {
+              id: user.dataValues.id_user,
+            },
+          };
+          jwt.sign(
+            payload,
+            JWT_SECRET,
+            {
+              expiresIn: "1d",
+            },
+            (err, token) => {
+              if (err) throw err;
+              return res.status(200).json({
+                token: token,
+                id_user: user.dataValues.id_user,
+                userLogged: true,
+              });
+            }
+          );
+        } catch (error) {
+          return res.status(502).json({
+            message:
+              "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+            error: err,
+          });
+        }
+      } else {
+        return res.status(403).json({
+          message: "No se ha podido actualizar el usuario",
+        });
+      }
+    }
+    /*  if (user.dataValues.firstLogin === true) {
     
       const usuarioCambiado = await User.update(
         {
@@ -333,84 +349,85 @@ const login = async (req, res) => {
     } */
 
     // SI YA EL USUARIO SE LOGEÓ POR PRIMERA VEZ
- else{
-    const newLogin = await Login.create({
-      id_user: user.dataValues.id_user,
-    });
-
-    const newLoginDef = await Promise.all(await newLogin.addUser(user));
-    if (!newLogin || !newLoginDef) {
-      return res.status(409).json({
-        message: "No se pudo guardar el login",
+    else {
+      const newLogin = await Login.create({
+        id_user: user.dataValues.id_user,
       });
-    }
-    const nombre = decrypt(user.dataValues.name);
-    const apellido = decrypt(user.dataValues.lastname);
 
-    const section_a = await Secciona.findOne({
-      where: {
-        id_user: user.dataValues.id_user,
-      },
-    });
-    const section_b = await Seccionb.findOne({
-      where: {
-        id_user: user.dataValues.id_user,
-      },
-    });
-    try{
-    const usu = {
-      id_user: user.dataValues.id_user,
-      name: nombre,
-      lastname: apellido,
-      email: user.dataValues.email,
-      user_type: user.dataValues.user_type,
-      status: user.dataValues.status,
-      gender: decrypt(user.dataValues.gender),
-      dob: decrypt(user.dataValues.date_birth),
-      country: decrypt(user.dataValues.country),
-      region: decrypt(user.dataValues.region),
-      section_a: section_a,
-      section_b: section_b,
-      id_payment: user.dataValues.idPayment,
-      section_a: section_a,
-      section_b: section_b,
-    };
-    req.session.user = usu;
-    const payload = {
-      user: {
-        id: user.dataValues.id_user,
-      },
-    };
-    jwt.sign(
-      payload,
-      JWT_SECRET,
-      {
-        expiresIn: "1d",
-      },
-      (err, token) => {
-        if (err) throw err;
-        return res.status(200).json({
-          token: token,
-          id_user: user.dataValues.id_user,
-          userLogged: true,
-          usuario: usu,
+      const newLoginDef = await Promise.all(await newLogin.addUser(user));
+      if (!newLogin || !newLoginDef) {
+        return res.status(409).json({
+          message: "No se pudo guardar el login",
         });
       }
-    );
+      const nombre = decrypt(user.dataValues.name);
+      const apellido = decrypt(user.dataValues.lastname);
+
+      const section_a = await Secciona.findOne({
+        where: {
+          id_user: user.dataValues.id_user,
+        },
+      });
+      const section_b = await Seccionb.findOne({
+        where: {
+          id_user: user.dataValues.id_user,
+        },
+      });
+      try {
+        const usu = {
+          id_user: user.dataValues.id_user,
+          name: nombre,
+          lastname: apellido,
+          email: user.dataValues.email,
+          user_type: user.dataValues.user_type,
+          status: user.dataValues.status,
+          gender: user.dataValues.gender,
+          dob: user.dataValues.date_birth,
+          country: user.dataValues.country,
+          region: user.dataValues.region,
+          section_a: section_a,
+          section_b: section_b,
+          id_payment: user.dataValues.idPayment,
+          section_a: section_a,
+          section_b: section_b,
+        };
+        req.session.user = usu;
+        const payload = {
+          user: {
+            id: user.dataValues.id_user,
+          },
+        };
+        jwt.sign(
+          payload,
+          JWT_SECRET,
+          {
+            expiresIn: "1d",
+          },
+          (err, token) => {
+            if (err) throw err;
+            return res.status(200).json({
+              token: token,
+              id_user: user.dataValues.id_user,
+              userLogged: true,
+              usuario: usu,
+            });
+          }
+        );
+      } catch (err) {
+        return res.status(510).json({
+          message:
+            "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+          error: err,
+        });
+      }
+    }
   } catch (err) {
-    return res.status(510).json({
-      message:
-        "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
+    return res.status(500).json({
+      message: "Error",
       error: err,
     });
   }
-}}catch (err){
-return res.status(500).json({
-  message:
-  "Error",
-  error: err
-})
-}};
+};
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -675,19 +692,19 @@ const updatePayment = async (req, res) => {
 };
 
 const getUserData = async (req, res) => {
-  const { id_user } = req.body;
+  const { id_user } = req.params;
 
   const usuario = await User.findByPk(id_user);
   if (!usuario) {
     return res.status(404).json({ message: "Usuario no encontrado" });
   }
   try {
-    const section_a = await Seccion_A.findOne({
+    const section_a = await Secciona.findOne({
       where: {
         id_user: usuario.dataValues.id_user,
       },
     });
-    const section_b = await Seccion_B.findOne({
+    const section_b = await Seccionb.findOne({
       where: {
         id_user: usuario.dataValues.id_user,
       },
@@ -699,10 +716,10 @@ const getUserData = async (req, res) => {
       email: usuario.dataValues.email,
       status: usuario.dataValues.status,
       id_payment: usuario.dataValues.idPayment,
-      gender: decrypt(usuario.dataValues.gender),
-      dob: decrypt(usuario.dataValues.date_birth),
-      country: decrypt(usuario.dataValues.country),
-      region: decrypt(usuario.dataValues.region),
+      gender: usuario.dataValues.gender,
+      dob: usuario.dataValues.dob,
+      country: usuario.dataValues.country,
+      region: usuario.dataValues.region,
       section_a: section_a,
       section_b: section_b,
     };
@@ -770,7 +787,7 @@ const putSeccion_A = async (req, res) => {
     bonus_completed,
   } = req.body;
   const { user } = req.body;
-  if (!user.id_user) {
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   const usuario = await User.findByPk(user);
@@ -778,13 +795,13 @@ const putSeccion_A = async (req, res) => {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   if (completed) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -798,13 +815,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise1_started) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise1_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -818,13 +835,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise1_completed) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise1_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -838,13 +855,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise2_started) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise2_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -858,13 +875,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise2_completed) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise2_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -878,13 +895,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise3_started) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise3_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -898,13 +915,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (exercise3_completed) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         exercise3_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -918,13 +935,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (bonus_started) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         bonus_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -938,13 +955,13 @@ const putSeccion_A = async (req, res) => {
     }
   }
   if (bonus_completed) {
-    const newSeccionA = await Seccion_A.update(
+    const newSeccionA = await Secciona.update(
       {
         bonus_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
@@ -971,204 +988,294 @@ const putSeccion_B = async (req, res) => {
     bonus_completed,
   } = req.body;
   const { user } = req.body;
-  if (!user.id_user) {
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
+  const usuario = await User.findByPk(user.id_user);
+  if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   if (completed) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise1_started) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise1_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise1_completed) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise1_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise2_started) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise2_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise2_completed) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise2_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise3_started) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise3_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (exercise3_completed) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         exercise3_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (bonus_started) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         bonus_started: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
   if (bonus_completed) {
-    const newSeccionA = await Seccion_B.update(
+    const newSeccionB = await Seccionb.update(
       {
         bonus_completed: true,
       },
       {
         where: {
-          id_user: userr.dataValues.id_user,
+          id_user: usuario.dataValues.id_user,
         },
       }
     );
-    if (newSeccionA) {
+    if (newSeccionB) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
-        data: newSeccionA,
+        data: newSeccionB,
       });
     } else {
       return res.status(500).json({ message: "Error al modificar Seccion A" });
     }
   }
 };
-const postTest1 = async (req, res) => {
-  const { user, result } = req.body;
-  if (!user.id_user) {
+
+
+
+// USER TEST
+const getTest = async (req, res) => {
+  const { user } = req.params;
+  const { testid } = req.query;
+  const testArray = [
+    "Testpersonalidad1",
+    "Testpersonalidad2",
+    "Testpersonalidad3",
+    "Testpersonalidad4",
+    "Testpersonalidad5",
+  ];
+  if (!user || !testid) {
+    return res.status(501).json({ message: "Falta informacion" });
+  }
+  try {
+    const userDb = await User.findOne({
+      where: {
+        id_user: user,
+      },
+    });
+    const test = await models[testArray[testid - 1]].findOne({
+      where: {
+        id_user: user,
+      },
+    });
+    if (userDb && test) {
+      return res.status(200).json({ message: test });
+    } else {
+      return res.status(200).json({ message: 0 });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Error Inesperado" });
+  }
+};
+
+const getAllTest = async (req, res) => {
+  const { user } = req.params;
+  const testArray = [
+    "Testpersonalidad1",
+    "Testpersonalidad2",
+    "Testpersonalidad3",
+    "Testpersonalidad4",
+    "Testpersonalidad5",
+  ];
+  const tests = [];
+  if (!user) {
+    return res.status(501).json({ message: "Falta informacion" });
+  }
+  try {
+    const userDb = await User.findOne({
+      where: {
+        id_user: user,
+      },
+    });
+
+    for (let i = 0; i < testArray.length; i++) {
+      let result;
+      const test = await models[testArray[i]].findOne({
+        where: {
+          id_user: user,
+        },
+      });
+      if (!test) {
+        result = null;
+        tests.push(result);
+      } else {
+        result = test.dataValues.result;
+        tests.push(result);
+      }
+    }
+
+    if (userDb && tests) {
+      return res.status(200).json({ message: tests });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: "Error Inesperado" });
+  }
+};
+
+const postTest = async (req, res) => {
+  const { user, result, testid } = req.body;
+  const testArray = [
+    "Testpersonalidad1",
+    "Testpersonalidad2",
+    "Testpersonalidad3",
+    "Testpersonalidad4",
+    "Testpersonalidad5",
+  ];
+
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
+  const userr = await User.findByPk(user);
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newTest = await Testpersonalidad1.create({
+  const newTest = await models[testArray[testid]].create({
     id_user: userr.dataValues.id_user,
     result,
     completed: true,
@@ -1183,108 +1290,53 @@ const postTest1 = async (req, res) => {
     return res.status(500).json({ message: "Error al crear Test" });
   }
 };
-const postTest2 = async (req, res) => {
-  const { user, result } = req.body;
-  if (!user.id_user) {
+
+const putTest = async (req, res) => {
+  const { result, user, testid } = req.body;
+  const testArray = [
+    "Testpersonalidad1",
+    "Testpersonalidad2",
+    "Testpersonalidad3",
+    "Testpersonalidad4",
+    "Testpersonalidad5",
+  ];
+  if (!user || !result) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  const newTest = await Testpersonalidad2.create({
-    id_user: userr.dataValues.id_user,
-    result,
-    completed: true,
-  });
 
-  if (newTest) {
-    return res.status(200).json({
-      message: "Test creado correctamente",
-      data: newTest,
-    });
-  } else {
-    return res.status(500).json({ message: "Error al crear Test" });
+  try {
+    const updateTest = await models[testArray[testid]].update(
+      {
+        result: result,
+      },
+      {
+        where: {
+          id_user: usuario.dataValues.id_user,
+        },
+      }
+    );
+    if (!updateTest) {
+      return res.status(510).json({ message: "no se pudo actualizar el test" });
+    }
+    return res.status(200).json({ message: "Actualizado correctamente" });
+  } catch (err) {
+    return res.status(500).json({ message: "Ocurrio un error" });
   }
 };
-const postTest3 = async (req, res) => {
-  const { user, result } = req.body;
-  if (!user.id_user) {
-    return res.status(403).json({ message: "Falta informacion" });
-  }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
-    return res.status(403).json({ message: "Usuario inexistente" });
-  }
-  const newTest = await Testpersonalidad3.create({
-    id_user: userr.dataValues.id_user,
-    result,
-    completed: true,
-  });
 
-  if (newTest) {
-    return res.status(200).json({
-      message: "Test creado correctamente",
-      data: newTest,
-    });
-  } else {
-    return res.status(500).json({ message: "Error al crear Test" });
-  }
-};
-const postTest4 = async (req, res) => {
-  const { user, result } = req.body;
-  if (!user.id_user) {
-    return res.status(403).json({ message: "Falta informacion" });
-  }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
-    return res.status(403).json({ message: "Usuario inexistente" });
-  }
-  const newTest = await Testpersonalidad4.create({
-    id_user: userr.dataValues.id_user,
-    result,
-    completed: true,
-  });
+// VALORACION DE EJERCICIOS
 
-  if (newTest) {
-    return res.status(200).json({
-      message: "Test creado correctamente",
-      data: newTest,
-    });
-  } else {
-    return res.status(500).json({ message: "Error al crear Test" });
-  }
-};
-const postTest5 = async (req, res) => {
-  const { user, result } = req.body;
-  if (!user.id_user) {
-    return res.status(403).json({ message: "Falta informacion" });
-  }
-  const userr = await User.findByPk(user.id_user);
-  if (!userr) {
-    return res.status(403).json({ message: "Usuario inexistente" });
-  }
-  const newTest = await Testpersonalidad5.create({
-    id_user: userr.dataValues.id_user,
-    result,
-    completed: true,
-  });
-
-  if (newTest) {
-    return res.status(200).json({
-      message: "Test creado correctamente",
-      data: newTest,
-    });
-  } else {
-    return res.status(500).json({ message: "Error al crear Test" });
-  }
-};
 const putValoracion_A = async (req, res) => {
   const {
     valoracion_exercise_1,
     valoracion_exercise_2,
     valoracion_exercise_3,
     valoracion_bonus,
+    colore,
   } = req.body;
   const { user } = req.body;
   if (!user.id_user) {
@@ -1486,11 +1538,10 @@ module.exports = {
   putSeccion_A,
   putSeccion_B,
   getUserData,
-  postTest1,
-  postTest2,
-  postTest3,
-  postTest4,
-  postTest5,
+  postTest,
   putValoracion_A,
   putValoracion_B,
+  getTest,
+  putTest,
+  getAllTest,
 };

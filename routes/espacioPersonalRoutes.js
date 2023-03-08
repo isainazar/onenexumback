@@ -11,14 +11,25 @@ const {
   putGustoseintereses,
   putTrabajo,
   putVidayrelaciones,
+  getVidayrelaciones,
+  getGustoseintereses,
+  getTrabajo,
+  getDiario
 } = require("../controller/espacioPersonalController");
 
+router.get("/getVyR/:user", getVidayrelaciones);
 router.post("/postVyR", postVidayrelaciones);
-router.post("/postGei", postGustoseintereses);
-router.post("/postTrabajo", postTrabajo);
-router.post("/postDiario", postDiarioVirtual);
 router.put("/putVyR", putVidayrelaciones);
+
+router.get("/getGei/:user", getGustoseintereses);
+router.post("/postGei", postGustoseintereses);
 router.put("/putGei", putGustoseintereses);
+
+router.get("/getTrabajo/:user", getTrabajo);
+router.post("/postTrabajo", postTrabajo);
 router.put("/putTrabajo", putTrabajo);
+
+router.get("/getJournal/:user", getDiario);
+router.post("/postDiario", postDiarioVirtual);
 
 module.exports = router;

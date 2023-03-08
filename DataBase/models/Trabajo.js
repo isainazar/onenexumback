@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
     trabajo_y_rol: {
       type: DataTypes.ENUM(
         "si, empleado",
-        "si, autonomo",
+        "si, autónomo",
         "si, empleador",
         "no"
       ),
@@ -26,11 +26,11 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     buen_ambiente_laboral: {
-      type: DataTypes.ENUM("si", "no", "en ocaciones"),
+      type: DataTypes.ENUM("si", "no", "en ocasiones"),
       allowNull: true,
     },
     priorizar_trabajo_sobre_vida: {
-      type: DataTypes.ENUM("si", "no", "en ocaciones"),
+      type: DataTypes.ENUM("si", "no", "en ocasiones"),
       allowNull: true,
     },
     first_time_completed: {

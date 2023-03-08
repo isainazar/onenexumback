@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         "no me interesa",
         "si, pero me cuesta conseguirlo",
         "si, esta en mis planes",
-        "actualmente estoy en una relacion"
+        "actualmente estoy en una relación"
       ),
       allowNull: true,
     },
@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
       allowNull: true,
     },
     mas_aprecia_en_personas: {
-      type: DataTypes.ENUM("su lealtad", "su amistad", "su dispocision"),
+      type: DataTypes.ENUM("su lealtad", "su amistad", "su disposición"),
       allowNull: true,
     },
     first_time_completed: {
