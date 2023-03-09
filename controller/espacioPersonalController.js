@@ -1,3 +1,5 @@
+const toDate = require("../utilities/fecha");
+
 const {
   Vidayrelaciones,
   Trabajo,
@@ -21,22 +23,20 @@ const getVidayrelaciones = async (req, res) => {
         id_user: usuario.dataValues.id_user,
       },
     });
-    if (!post) {
-      return res
-        .status(404)
-        .json({ message: "No se encuentra post asociado a este usuario" });
+    let data = {};
+    if (post) {
+      data = {
+        opt1: post.dataValues.estado_civil,
+        opt2: post.dataValues.amantes_o_dos_parejas,
+        opt3: post.dataValues.relacion_con_personas,
+        opt4: post.dataValues.mas_aprecia_en_personas,
+        opt5: post.dataValues.acutalmente_relacion,
+        opt6: post.dataValues.descripcion_relacion,
+        opt7: post.dataValues.esta_en_tus_planes_relacion,
+        opt8: post.dataValues.relacion_familia,
+        opt9: post.dataValues.tienes_amistades,
+      };
     }
-    const data = {
-      opt1: post.dataValues.estado_civil,
-      opt2: post.dataValues.amantes_o_dos_parejas,
-      opt3: post.dataValues.relacion_con_personas,
-      opt4: post.dataValues.mas_aprecia_en_personas,
-      opt5: post.dataValues.acutalmente_relacion,
-      opt6: post.dataValues.descripcion_relacion,
-      opt7: post.dataValues.esta_en_tus_planes_relacion,
-      opt8: post.dataValues.relacion_familia,
-      opt9: post.dataValues.tienes_amistades,
-    };
     return res.status(200).json({ message: data });
   } catch (err) {
     return res.status(500).json({ message: "Error inesperado" });
@@ -57,17 +57,16 @@ const getGustoseintereses = async (req, res) => {
         id_user: usuario.dataValues.id_user,
       },
     });
-    if (!post) {
-      return res
-        .status(404)
-        .json({ message: "No se encuentra post asociado a este usuario" });
+    let data = {};
+    if (post) {
+      data = {
+        opt1: post.dataValues.generos_musica,
+        opt2: post.dataValues.arte_y_diseño,
+        opt3: post.dataValues.aprecio_gusto_artistico,
+        opt4: post.dataValues.identificado_e_intereses,
+      };
     }
-    const data = {
-      opt1: post.dataValues.generos_musica,
-      opt2: post.dataValues.arte_y_diseño,
-      opt3: post.dataValues.aprecio_gusto_artistico,
-      opt4: post.dataValues.identificado_e_intereses,
-    };
+
     return res.status(200).json({ message: data });
   } catch (err) {
     return res.status(500).json({ message: "Error inesperado" });
@@ -179,6 +178,7 @@ const getTrabajo = async (req, res) => {
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
+
   try {
     const post = await Trabajo.findOne({
       where: {
@@ -213,59 +213,107 @@ const getDiario = async (req, res) => {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   try {
-    const posts = await Diariovirtual.findAll({
-      where: {
-        user_id: usuario.dataValues.user_id,
-      },
-      include: {
-        association: "diariovirtual_by_user",
-        through: {
-          attributes: [],
-        },
-      },
-    });
-    return res.status(200).json(posts || []);
+    const posts = await Diariovirtual.findAll();
+    const data = [];
+    if (posts) {
+      for (const post of posts) {
+        const single = {
+          id: post.dataValues.id,
+          q1: post.dataValues.que_sientes_que_te_preocupa,
+          q2: post.dataValues.algo_genera_inseguridad,
+          q3: post.dataValues.te_sientes_usado_o_manipulado,
+          q4: post.dataValues.cosas_que_te_cuesta_empezar,
+          q5: post.dataValues.sueños_por_cumplir,
+          q6: post.dataValues.con_quien_cuesta_comunicarse,
+          q7: post.dataValues.que_cosa_quieres_y_como_conseguirla,
+          q8: post.dataValues.nota,
+          date: toDate(post.dataValues.createdAt),
+        };
+        data.push(single);
+      }
+    }
+    return res.status(200).json({ message: data });
   } catch (err) {
     return res.status(500).json({ message: err });
   }
 };
+
+const getNota = async (req, res) => {
+  const { user } = req.params;
+  const { idNote } = req.query;
+
+  if (!user || !idNote) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  try {
+    console.log(idNote);
+
+    const post = await Diariovirtual.findOne({
+      where: {
+        id_user: user,
+        id: idNote,
+      },
+    });
+    if (!post) {
+      return res.status(404).json({ message: "No se encontraron posts" });
+    }
+    const single = {
+      id: post.dataValues.id,
+      q1: post.dataValues.que_sientes_que_te_preocupa,
+      q2: post.dataValues.algo_genera_inseguridad,
+      q3: post.dataValues.te_sientes_usado_o_manipulado,
+      q4: post.dataValues.cosas_que_te_cuesta_empezar,
+      q5: post.dataValues.sueños_por_cumplir,
+      q6: post.dataValues.con_quien_cuesta_comunicarse,
+      q7: post.dataValues.que_cosa_quieres_y_como_conseguirla,
+      q8: post.dataValues.nota,
+      date: toDate(post.dataValues.createdAt),
+    };
+    return res.status(200).json({ message: single });
+  } catch (err) {
+    return res.status(500).json({ message: "Error inesperado" });
+  }
+};
 const postDiarioVirtual = async (req, res) => {
   const {
-    que_sientes_que_te_preocupa,
-    algo_genera_inseguridad,
-    te_sientes_usado_o_manipulado,
-    cosas_que_te_cuesta_empezar,
-    sueños_por_cumplir,
-    con_quien_cuesta_comunicarse,
-    que_cosa_quieres_y_como_conseguirla,
-    nota,
+    journal1,
+    journal2,
+    journal3,
+    journal4,
+    journal5,
+    journal6,
+    journal7,
+    journal8,
     user,
   } = req.body;
 
   if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const usuario = await User.findByPk(user.id_user);
+  const usuario = await User.findByPk(user);
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   const nuevoDiarioVirtual = await Diariovirtual.create({
-    que_sientes_que_te_preocupa,
-    algo_genera_inseguridad,
-    te_sientes_usado_o_manipulado,
-    cosas_que_te_cuesta_empezar,
-    sueños_por_cumplir,
-    con_quien_cuesta_comunicarse,
-    que_cosa_quieres_y_como_conseguirla,
-    nota,
+    que_sientes_que_te_preocupa: journal1,
+    algo_genera_inseguridad: journal2,
+    te_sientes_usado_o_manipulado: journal3,
+    cosas_que_te_cuesta_empezar: journal4,
+    sueños_por_cumplir: journal5,
+    con_quien_cuesta_comunicarse: journal6,
+    que_cosa_quieres_y_como_conseguirla: journal7,
+    nota: journal8,
+    id_user: user,
   });
-  const diarioDef = await Promise.all(
-    await nuevoDiarioVirtual.addUser(usuario)
-  );
-  if (diarioDef) {
+  if (nuevoDiarioVirtual) {
     return res.status(200).json({
       message: "Diario creado correctamente",
-      data: diarioDef,
+      data: nuevoDiarioVirtual,
     });
   } else {
     return res.status(500).json({ message: "Error al crear Diario" });
@@ -393,4 +441,5 @@ module.exports = {
   getGustoseintereses,
   getTrabajo,
   getDiario,
+  getNota,
 };

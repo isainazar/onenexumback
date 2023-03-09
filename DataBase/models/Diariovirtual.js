@@ -55,9 +55,8 @@ module.exports = (sequelize) => {
   );
 
   Diariovirtual.associate = (models) => {
-    Diariovirtual.belongsToMany(models.User, {
-      through: "diariovirtual_by_user",
-      timestamps: false,
+    Diariovirtual.belongsTo(models.User, {
+      foreingKey: "id_user"
     });
   };
 

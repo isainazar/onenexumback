@@ -3,11 +3,6 @@ const {
   Login,
   Secciona,
   Seccionb,
-  Testpersonalidad1,
-  Testpersonalidad2,
-  Testpersonalidad3,
-  Testpersonalidad4,
-  Testpersonalidad5,
   Valoracion_seccion_A,
   Valoracion_seccion_B,
 } = require("../DataBase/index.js");
@@ -57,10 +52,6 @@ const createUser = async (req, res, next) => {
     }
     const nombreE = encrypt(name);
     const apellidoE = encrypt(lastname);
-    //  const dateE = encrypt(date);
-    //  const countryE = encrypt(country);
-    //   const regionE = encrypt(region);
-    //   const genderE = encrypt(gender);
 
     // Creamos el nuevo usuario y lo guardamos en la DB
     const user = await User.create({
@@ -68,10 +59,6 @@ const createUser = async (req, res, next) => {
       lastname: apellidoE,
       email,
       password,
-      //   date_birth: dateE,
-      //   country: countryE,
-      //   region: regionE,
-      //   gender: genderE,
       user_type,
     });
     // generamos el payload/body para generar el token
@@ -568,7 +555,6 @@ const resetPassword = async (req, res) => {
 };
 const updateTerminos = async (req, res) => {
   const { id_user } = req.body;
-  console.log(id_user);
   if (!id_user) {
     return res.status(500).json({ message: "Faltan campos" });
   }
@@ -624,9 +610,6 @@ const updateMailAccepted = async (req, res) => {
 
 const updateUser = async (req, res, next) => {
   const { name, gender, dob, country, region, user } = req.body;
-
-  //const { user } = req.session;
-
   if (!user) {
     return res.status(500).json({ message: "Debes llenar todos los campos" });
   }
@@ -693,7 +676,9 @@ const updatePayment = async (req, res) => {
 
 const getUserData = async (req, res) => {
   const { id_user } = req.params;
-
+  if(!id_user) {
+    return res.status(404).json({message:"Falta información"})
+  }
   const usuario = await User.findByPk(id_user);
   if (!usuario) {
     return res.status(404).json({ message: "Usuario no encontrado" });
@@ -716,10 +701,10 @@ const getUserData = async (req, res) => {
       email: usuario.dataValues.email,
       status: usuario.dataValues.status,
       id_payment: usuario.dataValues.idPayment,
-      gender: usuario.dataValues.gender,
-      dob: usuario.dataValues.dob,
-      country: usuario.dataValues.country,
-      region: usuario.dataValues.region,
+      gender: usuario.dataValues.gender===null? usuario.dataValues.gender : decrypt(usuario.dataValues.gender),
+      dob: usuario.dataValues.date_birth===null? usuario.dataValues.date_birth : decrypt(usuario.dataValues.date_birth),
+      country: usuario.dataValues.country ===null? usuario.dataValues.country : decrypt(usuario.dataValues.country),
+      region: usuario.dataValues.region ===null? usuario.dataValues.region : decrypt(usuario.dataValues.region),
       section_a: section_a,
       section_b: section_b,
     };
@@ -1176,8 +1161,6 @@ const putSeccion_B = async (req, res) => {
     }
   }
 };
-
-
 
 // USER TEST
 const getTest = async (req, res) => {

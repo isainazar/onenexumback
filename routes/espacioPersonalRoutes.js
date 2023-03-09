@@ -14,7 +14,8 @@ const {
   getVidayrelaciones,
   getGustoseintereses,
   getTrabajo,
-  getDiario
+  getDiario,
+  getNota
 } = require("../controller/espacioPersonalController");
 
 router.get("/getVyR/:user", getVidayrelaciones);
@@ -30,6 +31,7 @@ router.post("/postTrabajo", postTrabajo);
 router.put("/putTrabajo", putTrabajo);
 
 router.get("/getJournal/:user", getDiario);
+router.get("/getNote/:user", getNota);
 router.post("/postDiario", postDiarioVirtual);
 
 module.exports = router;

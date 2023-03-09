@@ -168,9 +168,9 @@ module.exports = (sequelize) => {
       through: "daily_by_user",
       timestamps: false,
     });
-    User.belongsToMany(models.Diariovirtual, {
-      through: "diariovirtual_by_user",
-      timestamps: false,
+    User.hasMany(models.Diariovirtual, {
+      foreignKey: "id_user",
+      as: "posts"
     });
   };
 

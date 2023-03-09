@@ -2,6 +2,7 @@ const Stripe = require("stripe");
 const KEY_PRIVATE_STRIPE = process.env.KEY_PRIVATE_STRIPE;
 const PRICE_ID = process.env.PRICE_ID;
 const URL = process.env.URL;
+const URL3 = process.env.URL3;
 
 const { User } = require("../DataBase/index");
 const stripe = new Stripe(KEY_PRIVATE_STRIPE);
@@ -27,8 +28,8 @@ const paymentStripe = async (req, res) => {
       id_user: id_user,
     },
     mode: "payment",
-    success_url: `${URL}/payment/success`,
-    cancel_url: `${URL}/home`,
+    success_url: `${URL3}/payment/success`,
+    cancel_url: `${URL3}/home`,
   });
   if (!session) {
     return res.status(404).json({ message: "Error al crear pago" });
