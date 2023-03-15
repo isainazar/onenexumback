@@ -172,6 +172,10 @@ module.exports = (sequelize) => {
       foreignKey: "id_user",
       as: "posts"
     });
+    User.belongsToMany(models.Favorito, {
+      through: "favs_by_user",
+      timestamps: false,
+    });
   };
 
   return User;

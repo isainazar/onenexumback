@@ -20,6 +20,7 @@ const {
   postSeccion_B,
   putValoracion_A,
   putValoracion_B,
+  getValoracionA,
   getTest,
   postTest,
   getAllTest,
@@ -59,7 +60,9 @@ router.post("/create-seccion-b", postSeccion_B);
 
 router.put("/put-section-a", putSeccion_A);
 router.put("/put-section-b", putSeccion_B);
-router.put("/put-valoracion-a", putSeccion_A);
-router.put("/put-valoracion-b", putSeccion_B);
+router.put("/put-valoracion-a", putValoracion_A);
+router.put("/put-valoracion-b", putValoracion_B);
+
+router.get("/get-val-a/:user", getValoracionA)
 
 module.exports = router;

@@ -22,7 +22,7 @@ const verifyToken = async (req, res) => {
 };
 const verifyStatus = async (req, res) => {
   const { user } = req.session;
-  if (!user.id_user) {
+  if (!user) {
     return res.status(403).json({
       status: 501,
       message: "Falta el id_user",

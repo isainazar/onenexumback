@@ -1,0 +1,38 @@
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
+  const favorito = {
+    id_favorito: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
+    },
+    respuesta: {
+      type: DataTypes.STRING(),
+      allowNull: true,
+    },
+    url: {
+      type: DataTypes.STRING(),
+      allowNull: false,
+    },
+  
+  };
+
+  const config = {
+    tableName: "favoritos",
+    timestamps: true,
+    paranoid: true,
+  };
+
+  const Favorito = sequelize.define("favorito", favorito, config);
+
+  Favorito.associate = (models) => {
+    Favorito.belongsToMany(models.User, {
+      through: "favs_by_user",
+      timestamps: false,
+    });
+  };
+
+  return Favorito;
+};

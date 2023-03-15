@@ -3,8 +3,8 @@ const {
   Login,
   Secciona,
   Seccionb,
-  Valoracion_seccion_A,
-  Valoracion_seccion_B,
+  Valoracionsecciona,
+  Valoracionseccionb,
 } = require("../DataBase/index.js");
 models = require("../DataBase/index.js");
 const Stripe = require("stripe");
@@ -155,8 +155,14 @@ const login = async (req, res) => {
       const newSeccion_B = await Seccionb.create({
         id_user: user.dataValues.id_user,
       });
+      const newValoracion_A = await Valoracionsecciona.create({
+        id_user: user.dataValues.id_user,
+      });
+      const newValoracion_B = await Valoracionseccionb.create({
+        id_user: user.dataValues.id_user,
+      });
 
-      if (usuarioCambiado && newSeccion_A && newSeccion_B) {
+      if (usuarioCambiado && newSeccion_A && newSeccion_B && newValoracion_A && newValoracion_B) {
         try {
           const section_a = await Secciona.findOne({
             where: {
@@ -247,10 +253,10 @@ const login = async (req, res) => {
       const newSeccion_B = await Seccion_B.create({
         id_user: user.dataValues.id_user,
       });
-      const newValoracion_A = await Valoracion_seccion_A.create({
+      const newValoracion_A = await Valoracionsecciona.create({
         id_user: user.dataValues.id_user,
       });
-      const newValoracion_B = await Valoracion_seccion_B.create({
+      const newValoracion_B = await Valoracionseccionb.create({
         id_user: user.dataValues.id_user,
       });
       if (
@@ -676,8 +682,8 @@ const updatePayment = async (req, res) => {
 
 const getUserData = async (req, res) => {
   const { id_user } = req.params;
-  if(!id_user) {
-    return res.status(404).json({message:"Falta información"})
+  if (!id_user) {
+    return res.status(404).json({ message: "Falta información" });
   }
   const usuario = await User.findByPk(id_user);
   if (!usuario) {
@@ -701,10 +707,22 @@ const getUserData = async (req, res) => {
       email: usuario.dataValues.email,
       status: usuario.dataValues.status,
       id_payment: usuario.dataValues.idPayment,
-      gender: usuario.dataValues.gender===null? usuario.dataValues.gender : decrypt(usuario.dataValues.gender),
-      dob: usuario.dataValues.date_birth===null? usuario.dataValues.date_birth : decrypt(usuario.dataValues.date_birth),
-      country: usuario.dataValues.country ===null? usuario.dataValues.country : decrypt(usuario.dataValues.country),
-      region: usuario.dataValues.region ===null? usuario.dataValues.region : decrypt(usuario.dataValues.region),
+      gender:
+        usuario.dataValues.gender === null
+          ? usuario.dataValues.gender
+          : decrypt(usuario.dataValues.gender),
+      dob:
+        usuario.dataValues.date_birth === null
+          ? usuario.dataValues.date_birth
+          : decrypt(usuario.dataValues.date_birth),
+      country:
+        usuario.dataValues.country === null
+          ? usuario.dataValues.country
+          : decrypt(usuario.dataValues.country),
+      region:
+        usuario.dataValues.region === null
+          ? usuario.dataValues.region
+          : decrypt(usuario.dataValues.region),
       section_a: section_a,
       section_b: section_b,
     };
@@ -976,7 +994,7 @@ const putSeccion_B = async (req, res) => {
   if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const usuario = await User.findByPk(user.id_user);
+  const usuario = await User.findByPk(user);
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
@@ -1313,24 +1331,60 @@ const putTest = async (req, res) => {
 
 // VALORACION DE EJERCICIOS
 
+const getValoracionA = async (req, res) => {
+  const { user } = req.params;
+  if (!user) {
+    return res.status(501).json({ message: "Falta informacion" });
+  }
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
+    return res.status(501).json({ message: "No existe el usuario" });
+  }
+  try {
+    const valoracion = await Valoracionsecciona.findOne({
+      where: { id_user: usuario.dataValues.id_user },
+    });
+    return res.status(200).json({ message: valoracion || [] });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+const getValoracionB = async (req, res) => {
+  const { user } = req.params;
+  if (!user) {
+    return res.status(501).json({ message: "Falta informacion" });
+  }
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
+    return res.status(501).json({ message: "No existe el usuario" });
+  }
+  try {
+    const valoracion = await Valoracionseccionb.findOne({
+      where: { id_user: usuario.dataValues.id_user },
+    });
+    return res.status(200).json({ message: valoracion || [] });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
 const putValoracion_A = async (req, res) => {
   const {
     valoracion_exercise_1,
     valoracion_exercise_2,
     valoracion_exercise_3,
     valoracion_bonus,
-    colore,
   } = req.body;
   const { user } = req.body;
-  if (!user.id_user) {
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  const userr = await User.findByPk(user.id_user);
+  const userr = await User.findByPk(user);
   if (!userr) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   if (valoracion_exercise_1) {
-    const newValoracionA = await Valoracion_seccion_A.update(
+    const newValoracionA = await Valoracionsecciona.update(
       {
         valoracion_exercise_1: valoracion_exercise_1,
       },
@@ -1350,7 +1404,7 @@ const putValoracion_A = async (req, res) => {
     }
   }
   if (valoracion_exercise_2) {
-    const newValoracionA = await Valoracion_seccion_A.update(
+    const newValoracionA = await Valoracionsecciona.update(
       {
         valoracion_exercise_2: valoracion_exercise_2,
       },
@@ -1370,7 +1424,7 @@ const putValoracion_A = async (req, res) => {
     }
   }
   if (valoracion_exercise_3) {
-    const newValoracionA = await Valoracion_seccion_A.update(
+    const newValoracionA = await Valoracionsecciona.update(
       {
         valoracion_exercise_3: valoracion_exercise_3,
       },
@@ -1390,7 +1444,7 @@ const putValoracion_A = async (req, res) => {
     }
   }
   if (valoracion_bonus) {
-    const newValoracionA = await Valoracion_seccion_A.update(
+    const newValoracionA = await Valoracionsecciona.update(
       {
         valoracion_bonus: valoracion_bonus,
       },
@@ -1418,7 +1472,7 @@ const putValoracion_B = async (req, res) => {
     valoracion_bonus,
   } = req.body;
   const { user } = req.body;
-  if (!user.id_user) {
+  if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   const userr = await User.findByPk(user.id_user);
@@ -1426,7 +1480,7 @@ const putValoracion_B = async (req, res) => {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
   if (valoracion_exercise_1) {
-    const newValoracionA = await Valoracion_seccion_B.update(
+    const newValoracionA = await Valoracionseccionb.update(
       {
         valoracion_exercise_1: valoracion_exercise_1,
       },
@@ -1446,7 +1500,7 @@ const putValoracion_B = async (req, res) => {
     }
   }
   if (valoracion_exercise_2) {
-    const newValoracionA = await Valoracion_seccion_B.update(
+    const newValoracionA = await Valoracionseccionb.update(
       {
         valoracion_exercise_2: valoracion_exercise_2,
       },
@@ -1466,7 +1520,7 @@ const putValoracion_B = async (req, res) => {
     }
   }
   if (valoracion_exercise_3) {
-    const newValoracionA = await Valoracion_seccion_B.update(
+    const newValoracionA = await Valoracionseccionb.update(
       {
         valoracion_exercise_3: valoracion_exercise_3,
       },
@@ -1486,7 +1540,7 @@ const putValoracion_B = async (req, res) => {
     }
   }
   if (valoracion_bonus) {
-    const newValoracionA = await Valoracion_seccion_B.update(
+    const newValoracionA = await Valoracionseccionb.update(
       {
         valoracion_bonus: valoracion_bonus,
       },
@@ -1527,4 +1581,6 @@ module.exports = {
   getTest,
   putTest,
   getAllTest,
+  getValoracionA,
+  getValoracionB,
 };

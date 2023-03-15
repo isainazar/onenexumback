@@ -25,6 +25,7 @@ const progressRouter = require("./routes/progressRoutes");
 const stripeRouter = require("./routes/stripeRouter");
 const analyticsRouter = require("./routes/analyticsRouter");
 const espacioPersonalRouter = require("./routes/espacioPersonalRoutes");
+const favsRoutes = require("./routes/favRoutes");
 
 var app = express();
 
@@ -105,6 +106,7 @@ app.get(
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/user", userRouter);
+app.use("/api/favs", favsRoutes);
 app.use("/api/verify", verifyRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/daily", dailyRouter);
