@@ -11,7 +11,7 @@ postFav
 
 
 router.get("/getFav/:user", getFavs);
-router.get("/getFavs", getAllFavs);
+router.get("/getFavs/:user", getAllFavs);
 router.post("/postFav", postFav);
 
 module.exports = router;

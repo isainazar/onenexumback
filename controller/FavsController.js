@@ -12,7 +12,7 @@ const postFav = async (req, res) => {
 
   //verificar si ya existe la url para no duplicarla
 
-  const favs = await User.findByPk(user, {
+/*   const favs = await User.findByPk(user, {
     include: [
       {
         model: Favorito,
@@ -31,17 +31,17 @@ const postFav = async (req, res) => {
           .json({ message: "Ya se había agregado el favorito" });
       }
     }
-  }
+  } */
 
   //si no existe, la crea
 
   try {
-    const newFav = await Favorito.create({ url });
-    const favPost = await Promise.all(await newFav.addUser(usuario));
-    if (favPost) {
+    const newFav = await Favorito.create({ id_user: usuario.dataValues.id_user, url });
+   
+    if (newFav) {
       return res.status(200).json({
         message: "Favorito agregado",
-        data: favPost,
+        data: newFav,
       });
     } else {
       return res.status(500).json({ message: "Error al agregarfavorito" });
@@ -50,24 +50,19 @@ const postFav = async (req, res) => {
     return res.status(500).json({ message: err });
   }
 };
-
+//obtener todos los favs de un usuario
 const getFavs = async (req, res) => {
   const { user } = req.params;
   if (!user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
   try {
-    const favs = await User.findByPk(user, {
-      include: [
-        {
-          model: Favorito,
-          through: {
-            attributes: [],
-          },
-        },
-      ],
+    const favs = await Favorito.findAll({
+      where:{
+        id_user: user,
+      }
     });
-    return res.status(200).json({ message: favs.dataValues.favoritos || [] });
+    return res.status(200).json({ message: favs || [] });
   } catch (err) {
     return res.status(500).json({ message: err });
   }

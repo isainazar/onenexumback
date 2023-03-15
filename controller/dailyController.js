@@ -77,6 +77,7 @@ const getDailyConfirm = async (req, res) => {
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
+  
   try {
     const today = toDate(new Date());
     const daily = await Daily.findAll({
@@ -87,7 +88,10 @@ const getDailyConfirm = async (req, res) => {
         },
       ],
     });
-
+  
+    if(daily.length===0){
+      return res.status(200).json({message: false});
+    }
     return res
       .status(200)
       .json({ message: toDate(daily[daily.length - 1].createdAt) === today });
