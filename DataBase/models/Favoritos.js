@@ -28,9 +28,8 @@ module.exports = (sequelize) => {
   const Favorito = sequelize.define("favorito", favorito, config);
 
   Favorito.associate = (models) => {
-    Favorito.belongsToMany(models.User, {
-      through: "favs_by_user",
-      timestamps: false,
+    Favorito.belongsTo(models.User, {
+      foreingKey: "id_user"
     });
   };
 

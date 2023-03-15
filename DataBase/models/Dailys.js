@@ -8,8 +8,12 @@ module.exports = (sequelize) => {
       primaryKey: true,
       allowNull: false,
     },
-    respuesta: {
-      type: DataTypes.ENUM("muy mal", "mal", "regular", "bien", "muy bien"),
+    primary: {
+      type: DataTypes.ENUM("bad", "iddle", "good"),
+      allowNull: false,
+    },
+    secondary: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   };

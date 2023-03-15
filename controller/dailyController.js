@@ -1,4 +1,5 @@
 const { User, Daily } = require("../DataBase/index.js");
+const toDate = require("../utilities/fecha");
 
 function getValuePercentages(arr) {
   // Use the reduce() method to count the number of times each value appears in the array
@@ -38,25 +39,20 @@ function removeDuplicates(arr) {
 }
 
 const postDaily = async (req, res) => {
-  console.log(req.session);
-  const { respuesta } = req.body;
-  const { user } = req.session;
-  if (!respuesta || !user.id_user) {
+  const { primary, secondary } = req.body;
+  const { user } = req.body;
+  if (!primary || !secondary || !user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
-  if (
-    respuesta === "muy mal" ||
-    respuesta === "mal" ||
-    respuesta === "regular" ||
-    respuesta === "bien" ||
-    respuesta === "muy bien"
-  ) {
-    const userr = await User.findByPk(user.id_user);
-    if (!userr) {
-      return res.status(403).json({ message: "Usuario inexistente" });
-    }
+
+  const userr = await User.findByPk(user);
+  if (!userr) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  try {
     const nuevaDaily = await Daily.create({
-      respuesta,
+      primary,
+      secondary,
     });
     const dailyDef = await Promise.all(await nuevaDaily.addUser(userr));
     if (dailyDef) {
@@ -67,12 +63,41 @@ const postDaily = async (req, res) => {
     } else {
       return res.status(500).json({ message: "Error al crear la Daily" });
     }
-  } else {
-    return res.status(500).json({
-      message: "Error al crear la Daily, se necesita una respuesta valida",
-    });
+  } catch (err) {
+    return res.status(500).json({ message: err });
   }
 };
+
+const getDailyConfirm = async (req, res) => {
+  const { user } = req.params;
+  if (!user) {
+    return res.status(403).json({ message: "Falta informacion" });
+  }
+  const usuario = await User.findByPk(user);
+  if (!usuario) {
+    return res.status(403).json({ message: "Usuario inexistente" });
+  }
+  try {
+    const today = toDate(new Date());
+    const daily = await Daily.findAll({
+      include: [
+        {
+          model: User,
+          where: { id_user: usuario.dataValues.id_user },
+        },
+      ],
+    });
+
+    return res
+      .status(200)
+      .json({ message: toDate(daily[daily.length - 1].createdAt) === today });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
+
+
 const dailyProgress = async (req, res) => {
   const { id_user } = req.body;
   if (!id_user) {
@@ -269,4 +294,5 @@ module.exports = {
   postDaily,
   dailyProgress,
   dailyTotal,
+  getDailyConfirm,
 };
