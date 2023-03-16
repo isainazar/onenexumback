@@ -12,6 +12,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(),
       allowNull: false,
     },
+    favId:{
+      type: DataTypes.STRING(),
+      allowNull: false,
+    }
   
   };
 

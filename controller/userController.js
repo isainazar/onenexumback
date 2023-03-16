@@ -162,7 +162,13 @@ const login = async (req, res) => {
         id_user: user.dataValues.id_user,
       });
 
-      if (usuarioCambiado && newSeccion_A && newSeccion_B && newValoracion_A && newValoracion_B) {
+      if (
+        usuarioCambiado &&
+        newSeccion_A &&
+        newSeccion_B &&
+        newValoracion_A &&
+        newValoracion_B
+      ) {
         try {
           const section_a = await Secciona.findOne({
             where: {
@@ -426,7 +432,7 @@ const forgotPassword = async (req, res, next) => {
 
   if (!email) {
     return res.status(500).json({
-      message: "Email is required",
+      message: "Es necesario el email",
     });
   }
 
@@ -469,7 +475,7 @@ const forgotPassword = async (req, res, next) => {
           "",
           false,
           user.dataValues.email,
-          `<h2>Contraseña temporal para su usuario en One Nexum</h2><div>${nombre}, su contraseña temporal es: <code>${temporalPassword}</code><br>Cambiela lo antes posible. Para cambiar su contraseña aprete el sigiuiente link <a href=${process.env.LINK_RESET_PASSWORD}>Apriete aqui</a></div>`
+          `<h2>Contraseña temporal para su usuario de One Nexum</h2><div>${nombre}, su contraseña temporal es: <code>${temporalPassword}</code><br>Para cambiar su contraseña por favor haz click <a href=${process.env.LINK_RESET_PASSWORD}>AQUI</a></div>`
         );
         return res.status(200).json({
           message:
@@ -493,12 +499,13 @@ const forgotPassword = async (req, res, next) => {
 };
 const resetPassword = async (req, res) => {
   const { oldPassword, newPassword, email } = req.body;
+
   if (!oldPassword || !newPassword || !email) {
     return res.status(500).json({ message: "Todos los campos son requeridos" });
   }
   if (newPassword === oldPassword) {
     return res.status(404).json({
-      message: "Las contraseñas deben ser diferentes",
+      message: "Las contraseña nueva debe ser diferente a la anterior",
     });
   }
 
@@ -518,7 +525,7 @@ const resetPassword = async (req, res) => {
 
     if (!isMatch) {
       return res.status(400).json({
-        message: "Contraseña incorrecta",
+        message: "La contraseña actual es incorrecta",
       });
     }
 
@@ -535,7 +542,6 @@ const resetPassword = async (req, res) => {
     if (contraseñaNueva) {
       const nombre = decrypt(user.dataValues.name);
 
-      /* req.session.password = newPassword; */
       await sendEmail(
         "Cambio de contraseña",
         "",
@@ -624,6 +630,7 @@ const updateUser = async (req, res, next) => {
     return res.status(501).json({ message: "Ingresa un email válido" });
   } */
 
+  console.log(name, gender, dob, country, region, user);
   try {
     const nombreE = encrypt(name);
     const dateE = encrypt(dob);
@@ -644,6 +651,7 @@ const updateUser = async (req, res, next) => {
         },
       }
     );
+
     if (userr) {
       return res.status(200).json({ message: "Usuario actualizado" });
     } else {

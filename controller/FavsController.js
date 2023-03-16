@@ -1,7 +1,7 @@
 const { User, Favorito } = require("../DataBase/index.js");
 
 const postFav = async (req, res) => {
-  const { user, url } = req.body;
+  const { user, url,favId } = req.body;
   if (!url || !user) {
     return res.status(403).json({ message: "Falta informacion" });
   }
@@ -36,7 +36,7 @@ const postFav = async (req, res) => {
   //si no existe, la crea
 
   try {
-    const newFav = await Favorito.create({ id_user: usuario.dataValues.id_user, url });
+    const newFav = await Favorito.create({ id_user: usuario.dataValues.id_user, url, favId });
    
     if (newFav) {
       return res.status(200).json({
