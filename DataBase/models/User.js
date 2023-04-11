@@ -47,11 +47,11 @@ module.exports = (sequelize) => {
     },
     relationship: {
       type: DataTypes.ENUM(
-        "Soltero",
-        "Saliendo",
+        "Soltero/a",
+        "Casado/a",
+        "Viudo/a",
+        "Divorciado/a", 
         "En una relacion",
-        "Casado",
-        "Otro"
       ),
       allowNull: true,
     },

@@ -201,6 +201,7 @@ const login = async (req, res) => {
             user_type: user.dataValues.user_type,
             status: user.dataValues.status,
             gender: user.dataValues.gender,
+            relationship: user.dataValues.relationship,
             dob: user.dataValues.dob,
             country: user.dataValues.country,
             region: user.dataValues.region,
@@ -382,6 +383,7 @@ const login = async (req, res) => {
           status: user.dataValues.status,
           gender: user.dataValues.gender,
           dob: user.dataValues.date_birth,
+          relationship: user.dataValues.relationship,
           country: user.dataValues.country,
           region: user.dataValues.region,
           section_a: section_a,
@@ -390,6 +392,7 @@ const login = async (req, res) => {
           section_a: section_a,
           section_b: section_b,
         };
+      
         req.session.user = usu;
         const payload = {
           user: {
@@ -621,7 +624,7 @@ const updateMailAccepted = async (req, res) => {
 };
 
 const updateUser = async (req, res, next) => {
-  const { name, gender, dob, country, region, user } = req.body;
+  const { name, gender, dob, country, region, user,relationship } = req.body;
   if (!user) {
     return res.status(500).json({ message: "Debes llenar todos los campos" });
   }
@@ -644,6 +647,7 @@ const updateUser = async (req, res, next) => {
         country: countryE,
         region: regionE,
         gender: genderE,
+        relationship:relationship,
       },
       {
         where: {
@@ -715,6 +719,7 @@ const getUserData = async (req, res) => {
       email: usuario.dataValues.email,
       status: usuario.dataValues.status,
       id_payment: usuario.dataValues.idPayment,
+      relationship:usuario.dataValues.relationship,
       gender:
         usuario.dataValues.gender === null
           ? usuario.dataValues.gender
