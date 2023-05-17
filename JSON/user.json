@@ -1,12 +1,12 @@
 [
   {
-    "id_user": "100",
+    "id_user": "0",
     "user_type": "ADMIN",
     "firstLogin": false,
     "status": true,
     "terminos": true,
-    "email": "nano@ieschub.com",
-    "password": "adminNexum",
+    "email": "isai@onenexum.com",
+    "password": "OneNexunAdmin2023.!",
     "name": "admin",
     "lastname": "nexum"
   }

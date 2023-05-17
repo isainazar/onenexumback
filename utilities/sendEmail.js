@@ -10,18 +10,31 @@ const sendEmail = async (
   html = false
 ) => {
   const transporter = nodemailer.createTransport({
-    host: "51.159.93.245", // hostname
+    service: "gmail",
+    host: "smtp.gmail.com", // hostname
     port: 465, // port for secure SMTP
+    secure: true,
+   // tls: { rejectUnauthorized: false },
+    auth: {
+      user: "isai@onenexum.com",
+      pass: "kjyvvxukqvsdtean",
+    },
+  });
+/*   const transporter = nodemailer.createTransport({
+    sendmail: true,
+    host: "200.45.208.245", // hostname
+    port: 587, // port for secure SMTP
     secure: true,
     tls: { rejectUnauthorized: false },
     auth: {
-      user: "newsletter@onenexum.com",
-      pass: "IESChub2022.!",
+      user: "signin@onenexum.com",
+      pass: "&4G99ony3",
     },
-  });
+  }); */
+  
   let mailOptions = {
-    from: emailFrom || "newsletter@onenexum.com", // dirección del remitente
-    to: emailTo || "newsletter@onenexum.com", // receptor
+    from: emailFrom || "isai@onenexum.com", // dirección del remitente
+    to: emailTo, // receptor
     subject: subject,
   };
   html ? (mailOptions.html = html) : (mailOptions.text = message);

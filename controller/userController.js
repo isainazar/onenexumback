@@ -33,7 +33,6 @@ function validarEmail(valor) {
 
 const createUser = async (req, res, next) => {
   const { name, lastname, password, email, user_type } = req.body;
-
   if (!name || !lastname || !email || !password || !user_type) {
     return res.status(500).json({ message: "Se requieren todos los campos" });
   }
@@ -50,10 +49,12 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "Ya existe un usuario con este email" });
     }
+
     const nombreE = encrypt(name);
     const apellidoE = encrypt(lastname);
 
     // Creamos el nuevo usuario y lo guardamos en la DB
+
     const user = await User.create({
       name: nombreE,
       lastname: apellidoE,
@@ -68,14 +69,15 @@ const createUser = async (req, res, next) => {
         .json({ message: "No se pudo crear el usuario en la db" });
     }
     var aleatorio = Math.floor(Math.random() * 900000) + 100000;
-
+   
     const mail = await sendEmail(
       "Verificacion de usuario",
       "",
       false,
       user.dataValues.email,
-      `<h2>Creaste un usuario!</h2><div>${name}, necesitamos que verifiques tu usuario. Para lograrlo, necesitas utilizar el codigo:${aleatorio}.`
+      `<h2>Hola</h2><div>${name}, tu código de verificación para la cuenta de One Nexum es:${aleatorio}.`
     );
+    console.log(mail)
     if (!mail) {
       return res
         .status(500)
@@ -626,20 +628,19 @@ const updateMailAccepted = async (req, res) => {
 const updateUser = async (req, res, next) => {
   const { name, gender, dob, country, region, user,relationship } = req.body;
   if (!user) {
-    return res.status(500).json({ message: "Debes llenar todos los campos" });
+    return res.status(204).json({ message: "Debes llenar todos los campos" });
   }
-
   /*  if (validarEmail(email) === "This email is incorrect") {
     return res.status(501).json({ message: "Ingresa un email válido" });
   } */
 
-  console.log(name, gender, dob, country, region, user);
   try {
     const nombreE = encrypt(name);
     const dateE = encrypt(dob);
     const countryE = encrypt(country);
     const regionE = encrypt(region);
     const genderE = encrypt(gender);
+    
     const userr = await User.update(
       {
         name: nombreE,
@@ -653,9 +654,8 @@ const updateUser = async (req, res, next) => {
         where: {
           id_user: user,
         },
-      }
+      } 
     );
-
     if (userr) {
       return res.status(200).json({ message: "Usuario actualizado" });
     } else {
