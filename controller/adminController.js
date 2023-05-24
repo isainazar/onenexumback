@@ -14,6 +14,7 @@ const { encrypt, decrypt } = require("../utilities/cifrado");
 require("dotenv").config();
 
 const getAllUsers = async (req, res) => {
+  
   try {
     const users = await User.findAll({
       where: {
@@ -31,7 +32,7 @@ const getAllUsers = async (req, res) => {
           through: {
             attributes: [],
           },
-        },
+        }/* ,
         {
           model: Quiz,
         },
@@ -44,16 +45,10 @@ const getAllUsers = async (req, res) => {
         },
         {
           model: Trabajo,
-        },
-        {
-          model: Gustoseintereses,
-        },
-        {
-          model: Vidayrelaciones,
-        },
-      ],
+        }, */
+        
+      ], 
     });
-
     if (users.length !== 0) {
       const usuarios = users.map((u) => {
         let date;
@@ -134,21 +129,21 @@ const getUserById = async (req, res) => {
         {
           model: Quiz,
         },
-        {
+      /*   {
           association: "diariovirtual",
           through: {
             attributes: [],
           },
-        },
+        }, */
         {
           model: Trabajo,
         },
         {
           model: Gustoseintereses,
         },
-        {
+       /*  {
           model: Vidayrelaciones,
-        },
+        }, */
       ],
     });
     if (userDb) {
@@ -181,10 +176,11 @@ const getUserById = async (req, res) => {
         logins: userDb.dataValues.logins,
         quiz: userDb.dataValues.quiz,
         trabajo: userDb.dataValues.trabajo,
-        vidayrelaciones: userDb.dataValues.vidayrelaciones,
+     //   vidayrelaciones: userDb.dataValues.vidayrelaciones,
         gustoseintereses: userDb.dataValues.gustoseintereses,
         diariovirtual: userDb.dataValues.diariovirtual,
       };
+      console.log(usu.logins)
       return res.status(200).json(usu);
     } else {
       return res.status(204).json({ message: "User not found" });

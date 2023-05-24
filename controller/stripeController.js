@@ -78,6 +78,7 @@ const checkUserPayment = async (req, res) => {
 };
 
 const getPayments = async (req, res) => {
+
   const transfers = await stripe.checkout.sessions.list();
   if (!transfers || transfers.length === 0) {
     return res
