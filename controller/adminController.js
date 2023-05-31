@@ -6,6 +6,8 @@ const {
   Vidayrelaciones,
   Quiz,
   Newsletter,
+  Secciona,
+  Seccionb,
 } = require("../DataBase/index.js");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
@@ -14,7 +16,6 @@ const { encrypt, decrypt } = require("../utilities/cifrado");
 require("dotenv").config();
 
 const getAllUsers = async (req, res) => {
-  
   try {
     const users = await User.findAll({
       where: {
@@ -32,7 +33,7 @@ const getAllUsers = async (req, res) => {
           through: {
             attributes: [],
           },
-        }/* ,
+        } /* ,
         {
           model: Quiz,
         },
@@ -45,9 +46,8 @@ const getAllUsers = async (req, res) => {
         },
         {
           model: Trabajo,
-        }, */
-        
-      ], 
+        }, */,
+      ],
     });
     if (users.length !== 0) {
       const usuarios = users.map((u) => {
@@ -101,6 +101,87 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const countObjects = async (users) => {
+  const result = {
+    usuarios_totales: users.length,
+    ex1s: 0,
+    ex1c: 0,
+    ex2s: 0,
+    ex2c: 0,
+    ex3s: 0,
+    ex3c: 0,
+  };
+
+  users.forEach((item) => {
+    if (item.exercise1_started) {
+      result.ex1s++;
+    }
+    if (item.exercise1_completed) {
+      result.ex1c++;
+    }
+    if (item.exercise2_started) {
+      result.ex2s++;
+    }
+    if (item.exercise2_completed) {
+      result.ex2c++;
+    }
+    if (item.exercise3_started) {
+      result.ex3s++;
+    }
+    if (item.exercise3_completed) {
+      result.ex3c++;
+    }
+  });
+  return result;
+};
+
+
+const getSectionA = async (req, res) => {
+  try {
+    const users = await Secciona.findAll();
+    if (users.length !== 0) {
+      const data = await countObjects(users);
+      return res.status(200).json(data);
+    } else {
+      return res.status(204).json({ message: "No hay usuarios en la db" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error });
+  }
+};
+const getSectionB = async (req, res) => {
+  try {
+    const users = await Seccionb.findAll();
+    if (users.length !== 0) {
+      const data = await countObjects(users);
+      return res.status(200).json(data);
+    } else {
+      return res.status(204).json({ message: "No hay usuarios en la db" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error });
+  }
+};
+
+const getAllSections = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      include: [{ model: Secciona }, { model: Seccionb }],
+    });
+
+    const secciones = users.map((user) => {
+      return {
+        user: user,
+        secciona: Secciona,
+        seccionb: Seccionb,
+      };
+    });
+    return res.status(200).json(secciones);
+  } catch (error) {
+    return res.status(500).json({ error: error });
+  }
+};
+
 const getUserById = async (req, res) => {
   const { id_user } = req.params;
   if (!id_user) {
@@ -129,7 +210,7 @@ const getUserById = async (req, res) => {
         {
           model: Quiz,
         },
-      /*   {
+        /*   {
           association: "diariovirtual",
           through: {
             attributes: [],
@@ -141,7 +222,10 @@ const getUserById = async (req, res) => {
         {
           model: Gustoseintereses,
         },
-       /*  {
+        {
+          model: Secciona,
+        },
+        /*  {
           model: Vidayrelaciones,
         }, */
       ],
@@ -168,7 +252,7 @@ const getUserById = async (req, res) => {
         user_type: userDb.dataValues.user_type,
         status: userDb.dataValues.status,
         terminos: userDb.dataValues.terminos,
-        progress: userDb.dataValues.progress,
+        //  progress: userDb.dataValues.progress,
         firstLogin: userDb.dataValues.firstLogin,
         createdAt: userDb.dataValues.createdAt,
         updatedAt: userDb.dataValues.updatedAt,
@@ -176,11 +260,12 @@ const getUserById = async (req, res) => {
         logins: userDb.dataValues.logins,
         quiz: userDb.dataValues.quiz,
         trabajo: userDb.dataValues.trabajo,
-     //   vidayrelaciones: userDb.dataValues.vidayrelaciones,
+        //   vidayrelaciones: userDb.dataValues.vidayrelaciones,
         gustoseintereses: userDb.dataValues.gustoseintereses,
         diariovirtual: userDb.dataValues.diariovirtual,
+        hola: userDb.dataValues.secciona,
       };
-      console.log(usu.logins)
+      console.log(usu.logins);
       return res.status(200).json(usu);
     } else {
       return res.status(204).json({ message: "User not found" });
@@ -261,4 +346,7 @@ module.exports = {
   getUserById,
   getNewsletter,
   loginAdmin,
+  getSectionA,
+  getSectionB,
+  getAllSections,
 };

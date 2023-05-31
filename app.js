@@ -74,7 +74,7 @@ app.use(
       maxAge: oneDay,
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
     },
   })
 );

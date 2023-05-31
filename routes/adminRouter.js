@@ -8,9 +8,15 @@ const {
   getUserById,
   getNewsletter,
   loginAdmin,
+  getSectionA,
+  getAllSections,
+  getSectionB
 } = require("../controller/adminController");
 
 router.get("/getUsers", auth, getAllUsers);
+router.get("/getA", getSectionA);
+router.get("/getB", getSectionB);
+router.get("/getSections", getAllSections);
 router.get("/getUser/:id_user", auth, getUserById);
 router.get("/getNewsletter", auth, getNewsletter);
 router.post("/login", loginAdmin);

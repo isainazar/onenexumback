@@ -16,8 +16,8 @@ const sendEmail = async (
     secure: true,
    // tls: { rejectUnauthorized: false },
     auth: {
-      user: "isai@onenexum.com",
-      pass: "kjyvvxukqvsdtean",
+      user: "onenexum.mail@gmail.com",
+      pass: "adecmbhplkfbgrfu",
     },
   });
 /*   const transporter = nodemailer.createTransport({
