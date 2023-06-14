@@ -7,7 +7,7 @@ const sendEmail = async (
   message,
   emailFrom,
   emailTo,
-  html = false
+  html 
 ) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -16,8 +16,8 @@ const sendEmail = async (
     secure: true,
    // tls: { rejectUnauthorized: false },
     auth: {
-      user: "onenexum.mail@gmail.com",
-      pass: "adecmbhplkfbgrfu",
+      user: "isai@onenexum.com",
+      pass: "dsbbqptcfqjsmieu",
     },
   });
 /*   const transporter = nodemailer.createTransport({
@@ -33,7 +33,7 @@ const sendEmail = async (
   }); */
   
   let mailOptions = {
-    from: emailFrom || "isai@onenexum.com", // dirección del remitente
+    from: "hello@onenexum.com", // dirección del remitente
     to: emailTo, // receptor
     subject: subject,
   };

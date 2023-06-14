@@ -34,7 +34,7 @@ const paymentStripe = async (req, res) => {
   if (!session) {
     return res.status(404).json({ message: "Error al crear pago" });
   }
-  const usuarioPago = await User.update(
+  const updateUserPaymentId = await User.update(
     {
       idPayment: session.id,
     },
@@ -44,7 +44,7 @@ const paymentStripe = async (req, res) => {
       },
     }
   );
-  if (!usuarioPago) {
+  if (!updateUserPaymentId) {
     return res
       .status(500)
       .json({ message: "El usuario no se pudo actualizar con éxito" });
@@ -52,7 +52,34 @@ const paymentStripe = async (req, res) => {
   return res.json({ url: session.url , id:session.id });
 };
 
+
+const checkUserPaymentStatus = async (idPayment, id_user) => {
+
+const usuario = await User.findByPk(id_user);
+  
+  if (!usuario) {
+    return { payment_status: false, message: "Usuario inválido" };
+  }
+  if (!idPayment) {
+    return { payment_status: false, message: "No se ha generado un link de pago" };
+  }
+  
+
+  const session = await stripe.checkout.sessions.retrieve(idPayment);
+ 
+   if (!session) {
+    return { payment_status: false, message: "No se han encontrado ordenes activas" };
+  } 
+
+   if (session.payment_status === "unpaid") {
+    return { payment_status:false, message: "No se ha realizado el pago correctamente" };
+  }
+
+  return { payment_status:true, message: "Compra exitosa" }  
+};
+
 const checkUserPayment = async (req, res) => {
+
   const { idPayment, id_user } = req.body;
 
   const usuario = await User.findByPk(id_user);
@@ -107,5 +134,6 @@ module.exports = {
   paymentStripe,
   getPayments,
   checkUserPayment,
+  checkUserPaymentStatus,
   getPaymentsEarns,
 };

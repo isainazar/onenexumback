@@ -3,6 +3,7 @@ const { User } = require("../DataBase/index.js");
 const { JWT_SECRET } = process.env;
 
 const verifyToken = async (req, res) => {
+  console.log(req.body.token)
   let tokenIsValid = true;
   jwt.verify(req.body.token, JWT_SECRET, (err, decoded) => {
     if (err) {

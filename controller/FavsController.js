@@ -2,6 +2,7 @@ const { User, Favorito } = require("../DataBase/index.js");
 
 const postFav = async (req, res) => {
   const { user, url,favId } = req.body;
+  console.log(user,url,favId)
   if (!url || !user) {
     return res.status(403).json({ message: "Falta informacion" });
   }

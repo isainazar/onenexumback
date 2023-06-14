@@ -25,6 +25,7 @@ const {
   postTest,
   getAllTest,
   putTest,
+  resendEmail
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -34,6 +35,7 @@ router.post("/forgot-password", forgotPassword);
 //Usuario
 
 router.post("/sing-in", createUser);
+router.post("/resend", resendEmail);
 router.post("/login", login);
 router.get("/usuario/:id_user", getUserData);
 
