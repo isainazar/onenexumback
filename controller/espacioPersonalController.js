@@ -124,7 +124,7 @@ const postGustoseintereses = async (req, res) => {
     aprecio_gusto_artistico: opt3.toLowerCase(),
     identificado_e_intereses: opt4,
     id_user: userr.dataValues.id_user,
-    first_time_completed: false,
+    first_time_completed: true,
   });
 
   if (gei) {
@@ -155,7 +155,7 @@ const postTrabajo = async (req, res) => {
     buen_ambiente_laboral: opt4.toLowerCase(),
     priorizar_trabajo_sobre_vida: opt5.toLowerCase(),
     id_user: usuario.dataValues.id_user,
-    first_time_completed: false,
+    first_time_completed: true,
   });
 
   if (t) {
@@ -410,6 +410,7 @@ const putTrabajo = async (req, res) => {
       cumples_objetivos_y_obligaciones: opt3.toLowerCase(),
       buen_ambiente_laboral: opt4.toLowerCase(),
       priorizar_trabajo_sobre_vida: opt5.toLowerCase(),
+      first_time_completed:true
     },
     {
       where: {

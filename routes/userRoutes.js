@@ -25,7 +25,8 @@ const {
   postTest,
   getAllTest,
   putTest,
-  resendEmail
+  resendEmail,
+  didCompleteProfile
 } = require("../controller/userController");
 
 /* GET users listing. */
@@ -38,7 +39,7 @@ router.post("/sing-in", createUser);
 router.post("/resend", resendEmail);
 router.post("/login", login);
 router.get("/usuario/:id_user", getUserData);
-
+router.get("/profile/:id_user", didCompleteProfile)
 
 //Test de personalidad
 

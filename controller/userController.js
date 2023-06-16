@@ -5,6 +5,8 @@ const {
   Seccionb,
   Valoracionsecciona,
   Valoracionseccionb,
+  Trabajo,
+  Gustoseintereses,
 } = require("../DataBase/index.js");
 models = require("../DataBase/index.js");
 const Stripe = require("stripe");
@@ -952,6 +954,38 @@ const didUserPaid = async (idPayment, id_user) => {
     }
   }
 };
+
+const didCompleteProfile = async (id_user) => {
+  if (!id_user) {
+    return false;
+  }
+  const usuario = await User.findByPk(id_user);
+  if (!usuario) {
+    return false;
+  }
+
+
+  const trabajo = await Trabajo.findOne({
+    where: {
+      id_user: usuario.dataValues.id_user,
+    },
+  });
+  const gustos = await Gustoseintereses.findOne({
+    where: {
+      id_user: usuario.dataValues.id_user,
+    },
+  });
+ 
+  if (
+    !trabajo ||
+    !gustos ||
+    !trabajo.first_time_completed ||
+    !gustos.first_time_completed
+  ) {
+    return false;
+  }
+  return true;
+};
 const getUserData = async (req, res) => {
   const { id_user } = req.params;
   if (!id_user) {
@@ -972,6 +1006,7 @@ const getUserData = async (req, res) => {
         id_user: usuario.dataValues.id_user,
       },
     });
+    const profile = await didCompleteProfile(id_user);
 
     if (!usuario.dataValues.status) {
       if (usuario.dataValues.idPayment !== null) {
@@ -1017,6 +1052,7 @@ const getUserData = async (req, res) => {
           : decrypt(usuario.dataValues.region),
       section_a: section_a,
       section_b: section_b,
+      profile: profile,
     };
     return res.status(200).json({ usuario: returnedUser });
   } catch (err) {
@@ -1089,10 +1125,11 @@ const putSeccion_A = async (req, res) => {
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  if (completed) {
+  if (exercise3_completed && completed) {
     const newSeccionA = await Secciona.update(
       {
         completed: true,
+        exercise3_completed: true,
       },
       {
         where: {
@@ -1100,6 +1137,7 @@ const putSeccion_A = async (req, res) => {
         },
       }
     );
+
     if (newSeccionA) {
       return res.status(200).json({
         message: "Seccion A modificada correctamente",
@@ -1290,10 +1328,11 @@ const putSeccion_B = async (req, res) => {
   if (!usuario) {
     return res.status(403).json({ message: "Usuario inexistente" });
   }
-  if (completed) {
+  if (completed && exercise3_completed) {
     const newSeccionB = await Seccionb.update(
       {
         completed: true,
+        exercise3_completed: true,
       },
       {
         where: {
@@ -1307,7 +1346,7 @@ const putSeccion_B = async (req, res) => {
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise1_started) {
@@ -1323,11 +1362,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise1_completed) {
@@ -1343,11 +1382,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise2_started) {
@@ -1363,11 +1402,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise2_completed) {
@@ -1383,11 +1422,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise3_started) {
@@ -1403,11 +1442,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (exercise3_completed) {
@@ -1423,11 +1462,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (bonus_started) {
@@ -1443,11 +1482,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
   if (bonus_completed) {
@@ -1463,11 +1502,11 @@ const putSeccion_B = async (req, res) => {
     );
     if (newSeccionB) {
       return res.status(200).json({
-        message: "Seccion A modificada correctamente",
+        message: "Seccion B modificada correctamente",
         data: newSeccionB,
       });
     } else {
-      return res.status(500).json({ message: "Error al modificar Seccion A" });
+      return res.status(500).json({ message: "Error al modificar Seccion B" });
     }
   }
 };
@@ -1898,4 +1937,5 @@ module.exports = {
   getValoracionA,
   getValoracionB,
   resendEmail,
+  didCompleteProfile,
 };
