@@ -20,6 +20,7 @@ const generateRandomPassword = require("../utilities/generateRandomPassword");
 const { sendEmail } = require("../utilities/sendEmail");
 const { encrypt, decrypt } = require("../utilities/cifrado");
 const { checkUserPaymentStatus } = require("./stripeController.js");
+const { verificationCode, resetPassCode, successPassChange } = require("../utilities/mailTemplates.js");
 require("dotenv").config();
 function validarEmail(valor) {
   if (
@@ -34,7 +35,9 @@ function validarEmail(valor) {
 }
 
 const createUser = async (req, res, next) => {
-  const { name, lastname, password, email, user_type } = req.body;
+
+  const { name, lastname, password, email, user_type, quiz } = req.body;
+
   if (!name || !lastname || !email || !password || !user_type) {
     return res.status(500).json({ message: "Se requieren todos los campos" });
   }
@@ -73,253 +76,15 @@ const createUser = async (req, res, next) => {
         .status(500)
         .json({ message: "No se pudo crear el usuario en la db" });
     }
-    var aleatorio = Math.floor(Math.random() * 900000) + 100000;
 
+
+    var aleatorio = Math.floor(Math.random() * 900000) + 100000;
     const mail = await sendEmail(
       "Verificacion de usuario",
       "",
       false,
       user.dataValues.email,
-      `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="font-family:arial, 'helvetica neue', helvetica, sans-serif">
-      <head>
-      <meta charset="UTF-8">
-      <meta content="width=device-width, initial-scale=1" name="viewport">
-      <meta name="x-apple-disable-message-reformatting">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta content="telephone=no" name="format-detection">
-      <title>Nuevo mensaje</title><!--[if (mso 16)]>
-      <style type="text/css">
-      a {text-decoration: none;}
-      </style>
-      <![endif]--><!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--><!--[if gte mso 9]>
-      <xml>
-      <o:OfficeDocumentSettings>
-      <o:AllowPNG></o:AllowPNG>
-      <o:PixelsPerInch>96</o:PixelsPerInch>
-      </o:OfficeDocumentSettings>
-      </xml>
-      <![endif]--><!--[if !mso]><!-- -->
-      <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"><!--<![endif]-->
-      <style type="text/css">
-      #outlook a {
-      padding:0;
-      }
-      .es-button {
-      mso-style-priority:100!important;
-      text-decoration:none!important;
-      }
-      a[x-apple-data-detectors] {
-      color:inherit!important;
-      text-decoration:none!important;
-      font-size:inherit!important;
-      font-family:inherit!important;
-      font-weight:inherit!important;
-      line-height:inherit!important;
-      }
-      .es-desk-hidden {
-      display:none;
-      float:left;
-      overflow:hidden;
-      width:0;
-      max-height:0;
-      line-height:0;
-      mso-hide:all;
-      }
-      @media only screen and (max-width:600px) {p, ul li, ol li, a { line-height:150%!important } h1, h2, h3, h1 a, h2 a, h3 a { line-height:120% } h1 { font-size:30px!important; text-align:center!important } h2 { font-size:24px!important; text-align:center!important } h3 { font-size:20px!important; text-align:center!important } .es-header-body h1 a, .es-content-body h1 a, .es-footer-body h1 a { font-size:30px!important; text-align:center!important } .es-header-body h2 a, .es-content-body h2 a, .es-footer-body h2 a { font-size:24px!important; text-align:center!important } .es-header-body h3 a, .es-content-body h3 a, .es-footer-body h3 a { font-size:20px!important; text-align:center!important } .es-menu td a { font-size:14px!important } .es-header-body p, .es-header-body ul li, .es-header-body ol li, .es-header-body a { font-size:14px!important } .es-content-body p, .es-content-body ul li, .es-content-body ol li, .es-content-body a { font-size:14px!important } .es-footer-body p, .es-footer-body ul li, .es-footer-body ol li, .es-footer-body a { font-size:14px!important } .es-infoblock p, .es-infoblock ul li, .es-infoblock ol li, .es-infoblock a { font-size:12px!important } *[class="gmail-fix"] { display:none!important } .es-m-txt-c, .es-m-txt-c h1, .es-m-txt-c h2, .es-m-txt-c h3 { text-align:center!important } .es-m-txt-r, .es-m-txt-r h1, .es-m-txt-r h2, .es-m-txt-r h3 { text-align:right!important } .es-m-txt-l, .es-m-txt-l h1, .es-m-txt-l h2, .es-m-txt-l h3 { text-align:left!important } .es-m-txt-r img, .es-m-txt-c img, .es-m-txt-l img { display:inline!important } .es-button-border { display:inline-block!important } a.es-button, button.es-button { font-size:18px!important; display:inline-block!important } .es-adaptive table, .es-left, .es-right { width:100%!important } .es-content table, .es-header table, .es-footer table, .es-content, .es-footer, .es-header { width:100%!important; max-width:600px!important } .es-adapt-td { display:block!important; width:100%!important } .adapt-img { width:100%!important; height:auto!important } .es-m-p0 { padding:0px!important } .es-m-p0r { padding-right:0px!important } .es-m-p0l { padding-left:0px!important } .es-m-p0t { padding-top:0px!important } .es-m-p0b { padding-bottom:0!important } .es-m-p20b { padding-bottom:20px!important } .es-mobile-hidden, .es-hidden { display:none!important } tr.es-desk-hidden, td.es-desk-hidden, table.es-desk-hidden { width:auto!important; overflow:visible!important; float:none!important; max-height:inherit!important; line-height:inherit!important } tr.es-desk-hidden { display:table-row!important } table.es-desk-hidden { display:table!important } td.es-desk-menu-hidden { display:table-cell!important } .es-menu td { width:1%!important } table.es-table-not-adapt, .esd-block-html table { width:auto!important } table.es-social { display:inline-block!important } table.es-social td { display:inline-block!important } .es-desk-hidden { display:table-row!important; width:auto!important; overflow:visible!important; max-height:inherit!important } }
-      </style>
-      </head>
-      <body style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
-      <div class="es-wrapper-color" style="background-color:#FFFFFF"><!--[if gte mso 9]>
-      <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
-      <v:fill type="tile" color="#ffffff"></v:fill>
-      </v:background>
-      <![endif]-->
-      <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top;background-color:#FFFFFF">
-      <tr>
-      <td valign="top" style="padding:0;Margin:0">
-      <table cellpadding="0" cellspacing="0" class="es-header" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table bgcolor="#fad939" class="es-header-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:510px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" height="40" style="padding:0;Margin:0"></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table class="es-content" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table class="es-content-body" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:510px" cellspacing="0" cellpadding="0" align="center" bgcolor="#FAD939">
-      <tr>
-      <td align="left" style="padding:0;Margin:0">
-      <table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td class="es-m-p0r" valign="top" align="center" style="padding:0;Margin:0;width:510px">
-      <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" style="padding:0;Margin:0;position:relative"><img class="adapt-img" src="https://xeowno.stripocdn.email/content/guids/bannerImgGuid/images/image16867684218386147.png" alt title width="510" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table cellpadding="0" cellspacing="0" class="es-content" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FAD939;border-radius:0 0 50px 50px;width:510px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" style="padding:0;Margin:0"><h1 style="Margin:0;line-height:46px;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;font-size:38px;font-style:normal;font-weight:bold;color:#5d541d">Please confirm<br>your email address</h1></td>
-      </tr>
-      <tr>
-      <td align="center" style="padding:0;Margin:0;padding-top:40px;padding-bottom:40px"><h3 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;font-size:20px;font-style:normal;font-weight:bold;color:#5D541D">Thanks for joining ${name}!</h3><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;line-height:27px;color:#5D541D;font-size:18px"><br></p><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;line-height:27px;color:#5D541D;font-size:18px">To finish signing up, please confirm your email address. This ensures we have the right email in case we need to contact you.</p></td>
-      </tr>
-      <tr>
-      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;line-height:42px;color:#5D541D;font-size:28px">${aleatorio}</p></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      <tr>
-      <td align="left" style="Margin:0;padding-top:20px;padding-left:20px;padding-right:20px;padding-bottom:40px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" style="padding:0;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;line-height:21px;color:#5D541D;font-size:14px">Thanks,<br>One Nexum Team</p></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table cellpadding="0" cellspacing="0" class="es-header" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table bgcolor="#fad939" class="es-header-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:510px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" height="40" style="padding:0;Margin:0"></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table cellpadding="0" cellspacing="0" class="es-footer" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table bgcolor="#ffffff" class="es-footer-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#333333;border-radius:50px;width:510px">
-      <tr>
-      <td align="left" style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px"><!--[if mso]><table style="width:470px" cellpadding="0"
-      cellspacing="0"><tr><td style="width:225px" valign="top"><![endif]-->
-      <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-      <tr>
-      <td class="es-m-p20b" align="left" style="padding:0;Margin:0;width:225px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="left" class="es-m-txt-c" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#FFFFFF;font-size:14px"><img src="https://xeowno.stripocdn.email/content/guids/CABINET_1bfc4ac6dddc4ae38edeae5cbef32bf9ff4e576d845736df126fd766dd798e9a/images/group_4076195_Ni6.png" alt="Logo" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" height="30" title="Logo"></a></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table><!--[if mso]></td><td style="width:20px"></td><td style="width:225px" valign="top"><![endif]-->
-      <table cellpadding="0" cellspacing="0" class="es-right" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;width:225px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="right" class="es-m-txt-c" style="padding:0;Margin:0;padding-top:5px;font-size:0">
-      <table cellpadding="0" cellspacing="0" class="es-table-not-adapt es-social" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;padding-right:10px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#FFFFFF;font-size:14px"><img src="https://xeowno.stripocdn.email/content/assets/img/social-icons/circle-white/facebook-circle-white.png" alt="Fb" title="Facebook" height="24" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
-      <td align="center" valign="top" style="padding:0;Margin:0;padding-right:10px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#FFFFFF;font-size:14px"><img src="https://xeowno.stripocdn.email/content/assets/img/social-icons/circle-white/twitter-circle-white.png" alt="Tw" title="Twitter" height="24" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
-      <td align="center" valign="top" style="padding:0;Margin:0;padding-right:10px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#FFFFFF;font-size:14px"><img src="https://xeowno.stripocdn.email/content/assets/img/social-icons/circle-white/instagram-circle-white.png" alt="Ig" title="Instagram" height="24" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
-      <td align="center" valign="top" style="padding:0;Margin:0"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#FFFFFF;font-size:14px"><img src="https://xeowno.stripocdn.email/content/assets/img/social-icons/circle-white/youtube-circle-white.png" alt="Yt" title="Youtube" height="24" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"></a></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table><!--[if mso]></td></tr></table><![endif]--></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table cellpadding="0" cellspacing="0" class="es-content" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-      <tr>
-      <td class="es-info-area" align="center" style="padding:0;Margin:0">
-      <table class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;border-radius:50px;width:510px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" class="es-infoblock" style="padding:0;Margin:0;line-height:14px;font-size:12px;color:#CCCCCC"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:Poppins, sans-serif;line-height:14px;color:#CCCCCC;font-size:12px">Unsubscribe</p></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      <table cellpadding="0" cellspacing="0" class="es-header" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-      <tr>
-      <td align="center" style="padding:0;Margin:0">
-      <table bgcolor="#fad939" class="es-header-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:510px">
-      <tr>
-      <td align="left" style="padding:0;Margin:0;padding-left:20px;padding-right:20px">
-      <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" valign="top" style="padding:0;Margin:0;width:470px">
-      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-      <tr>
-      <td align="center" height="40" style="padding:0;Margin:0"></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table></td>
-      </tr>
-      </table>
-      </div>
-      </body>
-      </html>`
+      await verificationCode(name,aleatorio)
     );
     if (!mail) {
       return res
@@ -716,13 +481,13 @@ const forgotPassword = async (req, res, next) => {
           .json({ message: "El usuario no se pudo actualizar" });
       }
       try {
-        const nombre = decrypt(user.dataValues.name);
+        const name = decrypt(user.dataValues.name);
         await sendEmail(
           "Recuperación de contraseña",
           "",
           false,
           user.dataValues.email,
-          `<h2>Contraseña temporal para su usuario de One Nexum</h2><div>${nombre}, su contraseña temporal es: <code>${temporalPassword}</code><br>Para cambiar su contraseña por favor haz click <a href=${process.env.LINK_RESET_PASSWORD}>AQUI</a></div>`
+          await resetPassCode(name,temporalPassword)
         );
         return res.status(200).json({
           message:
@@ -744,6 +509,7 @@ const forgotPassword = async (req, res, next) => {
     });
   }
 };
+
 const resetPassword = async (req, res) => {
   const { oldPassword, newPassword, email } = req.body;
 
@@ -787,14 +553,14 @@ const resetPassword = async (req, res) => {
       }
     );
     if (contraseñaNueva) {
-      const nombre = decrypt(user.dataValues.name);
+      const name = decrypt(user.dataValues.name);
 
       await sendEmail(
         "Cambio de contraseña",
         "",
         false,
         user.dataValues.email,
-        `<h2>Cambio de contraseña!</h2><div>${nombre}, su contraseña ha sido cambiado con exito.</div>`
+        await successPassChange(name)
       );
 
       return res.status(200).json({
@@ -1904,7 +1670,170 @@ const resendEmail = async (req, res) => {
     "",
     false,
     email,
-    `<h2>Hola</h2><div>${name}, tu código de verificación para la cuenta de One Nexum es:${aleatorio}.`
+    `<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+    <title>Activa tu cuenta One Nexum</title>
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+    #outlook a{padding:0;}body{margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}table,td{border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;}img{border:0;height:auto;line-height:100%;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}p{display:block;margin:0;}
+    </style>
+    <!--[if mso]> <noscript><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
+    <!--[if lte mso 11]>
+    <style type="text/css">
+    .ogf{width:100% !important;}
+    </style>
+    <![endif]-->
+    <!--[if !mso]><!-->
+    <link href="https://fonts.googleapis.com/css?family=Inter:700,400" rel="stylesheet" type="text/css">
+    <style type="text/css">
+    
+    </style>
+    <!--<![endif]-->
+    <style type="text/css">
+    @media only screen and (min-width:599px){.pc100{width:100%!important;max-width:100%;}.pc47-0149{width:47.0149%!important;max-width:47.0149%;}.pc5-9701{width:5.9701%!important;max-width:5.9701%;}.xc568{width:568px!important;max-width:568px;}.xc600{width:600px!important;max-width:600px;}.xc536{width:536px!important;max-width:536px;}}
+    </style>
+    <style media="screen and (min-width:599px)">.moz-text-html .pc100{width:100%!important;max-width:100%;}.moz-text-html .pc47-0149{width:47.0149%!important;max-width:47.0149%;}.moz-text-html .pc5-9701{width:5.9701%!important;max-width:5.9701%;}.moz-text-html .xc568{width:568px!important;max-width:568px;}.moz-text-html .xc600{width:600px!important;max-width:600px;}.moz-text-html .xc536{width:536px!important;max-width:536px;}
+    </style>
+    <style type="text/css">
+    @media only screen and (max-width:598px){table.fwm{width:100%!important;}td.fwm{width:auto!important;}}
+    </style>
+    <style type="text/css">
+    u+.emailify .gs{background:#000;mix-blend-mode:screen;display:inline-block;padding:0;margin:0;}u+.emailify .gd{background:#000;mix-blend-mode:difference;display:inline-block;padding:0;margin:0;}p{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}u+.emailify a,#MessageViewBody a,a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important;}td.b .klaviyo-image-block{display:inline;vertical-align:middle;}
+    @media only screen and (max-width:599px){.emailify{height:100%!important;margin:0!important;padding:0!important;width:100%!important;}u+.emailify .glist{margin-left:1em!important;}td.ico.v>div.il>a.l.m,td.ico.v .mn-label{padding-right:0!important;padding-bottom:16px!important;}td.x{padding-left:0!important;padding-right:0!important;}.fwm img{max-width:100%!important;height:auto!important;}.aw img{width:auto!important;margin-left:auto!important;margin-right:auto!important;}.ah img{height:auto!important;}td.b.nw>table,td.b.nw a{width:auto!important;}td.stk{border:0!important;}td.u{height:auto!important;}br.sb{display:none!important;}.thd-1 .i-thumbnail{display:inline-block!important;height:auto!important;overflow:hidden!important;}.hd-1{display:block!important;height:auto!important;overflow:visible!important;}.ht-1{display:table!important;height:auto!important;overflow:visible!important;}.hr-1{display:table-row!important;height:auto!important;overflow:visible!important;}.hc-1{display:table-cell!important;height:auto!important;overflow:visible!important;}div.r.pr-16>table>tbody>tr>td,div.r.pr-16>div>table>tbody>tr>td{padding-right:16px!important}div.r.pl-16>table>tbody>tr>td,div.r.pl-16>div>table>tbody>tr>td{padding-left:16px!important}}
+    </style>
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <!--[if gte mso 9]>
+    <style>a:link,span.MsoHyperlink{mso-style-priority:99;color:inherit;text-decoration:none;}a:visited,span.MsoHyperlinkFollowed{mso-style-priority:99;color:inherit;text-decoration:none;}
+    </style>
+    <![endif]-->
+    <!--[if gte mso 9]>
+    <style>li{text-indent:-1em;}
+    </style>
+    <![endif]-->
+    </head>
+    <body lang="en" link="#DD0000" vlink="#DD0000" class="emailify" style="mso-line-height-rule:exactly;word-spacing:normal;background-color:#1e1e1e;"><div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">Por favor confirma tu email.</div><div class="bg" style="background-color:#1e1e1e;" lang="en">
+    <!--[if mso | IE]>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" class="r-outlook -outlook pr-16-outlook pl-16-outlook -outlook" role="presentation" style="width:600px;" width="600"><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;">
+    <![endif]--><div class="r  pr-16 pl-16" style="background:#fffffe;background-color:#fffffe;margin:0px auto;max-width:600px;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#fffffe;background-color:#fffffe;width:100%;"><tbody><tr><td style="border:none;direction:ltr;font-size:0;padding:32px 32px 32px 32px;text-align:left;">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="width:536px;">
+    <![endif]--><div class="pc100 ogf" style="font-size:0;line-height:0;text-align:left;display:inline-block;width:100%;direction:ltr;">
+    <!--[if mso | IE]>
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation"><tr><td style="vertical-align:middle;width:251px;">
+    <![endif]--><div class="pc47-0149 ogf m c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:47.0149%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="left" class="i" style="font-size:0;padding:0;word-break:break-word;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0;"><tbody><tr><td style="width:71px;"> <a href="onenexum.com" target="_blank" title> <img alt="One Nexum Logo" src="https://e.hypermatic.com/03b5e4db36a26c12f5c650538938482e.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" title width="71" height="auto"></a>
+    </td></tr></tbody></table>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td><td style="vertical-align:top;width:31px;">
+    <![endif]--><div class="pc5-9701 ogf g" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:5.9701%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tbody><tr><td style="vertical-align:top;padding:0;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style width="100%"><tbody></tbody></table>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td><td style="vertical-align:middle;width:251px;">
+    <![endif]--><div class="pc47-0149 ogf c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:47.0149%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="right" class="x" style="font-size:0;word-break:break-word;"><div style="text-align:right;"><p style="Margin:0;text-align:right;mso-line-height-alt:125%"><span style="font-size:16px;font-family:Inter,Arial,sans-serif;font-weight:700;color:#000000;line-height:125%;">Comienza ahora tu viaje de transformaci&oacute;n.</span></p></div>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]--></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" class="r-outlook -outlook pr-16-outlook pl-16-outlook -outlook" role="presentation" style="width:600px;" width="600"><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;">
+    <![endif]--><div class="r  pr-16 pl-16" style="background:#fffffe;background-color:#fffffe;margin:0px auto;max-width:600px;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#fffffe;background-color:#fffffe;width:100%;"><tbody><tr><td style="border:none;direction:ltr;font-size:0;padding:24px 16px 24px 16px;text-align:left;">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="c-outlook -outlook -outlook" style="vertical-align:middle;width:568px;">
+    <![endif]--><div class="xc568 ogf c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="center" class="x  m" style="font-size:0;padding-bottom:8px;word-break:break-word;"><div style="text-align:center;"><p style="Margin:0;text-align:center;mso-line-height-alt:121%"><span style="font-size:28px;font-family:Inter,Arial,sans-serif;font-weight:700;color:#000000;line-height:121%;">Bienvenido a One Nexum, ${name}</span></p></div>
+    </td></tr><tr><td align="center" class="x  m" style="font-size:0;padding-bottom:8px;word-break:break-word;"><div style="text-align:center;"><p style="Margin:0;text-align:center;mso-line-height-alt:133%"><span style="font-size:18px;font-family:Inter,Arial,sans-serif;font-weight:400;color:#000000;line-height:133%;">Por favor confirma tu correo electr&oacute;nico</span></p></div>
+    </td></tr><tr><td class="s" style="font-size:0;padding:0;padding-bottom:0;word-break:break-word;" aria-hidden="true"><div style="height:4px;line-height:4px;">&#8202;</div>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" class="r-outlook -outlook pr-16-outlook pl-16-outlook -outlook" role="presentation" style="width:600px;" width="600"><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;">
+    <![endif]--><div class="r  pr-16 pl-16" style="background:#fffffe;background-color:#fffffe;margin:0px auto;max-width:600px;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#fffffe;background-color:#fffffe;width:100%;"><tbody><tr><td style="border:none;direction:ltr;font-size:0;padding:0px 0px 3px 0px;text-align:center;">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="c-outlook -outlook -outlook" style="vertical-align:middle;width:600px;">
+    <![endif]--><div class="xc600 ogf c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="center" class="x" style="font-size:0;word-break:break-word;"><div style="text-align:center;"><p style="Margin:0;text-align:center;mso-line-height-alt:114%"><span style="font-size:36px;font-family:Inter,Arial,sans-serif;font-weight:700;color:#000000;line-height:114%;">${aleatorio}</span></p></div>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" class="r-outlook -outlook pr-16-outlook pl-16-outlook -outlook" role="presentation" style="width:600px;" width="600"><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;">
+    <![endif]--><div class="r  pr-16 pl-16" style="background:#fffffe;background-color:#fffffe;margin:0px auto;max-width:600px;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#fffffe;background-color:#fffffe;width:100%;"><tbody><tr><td style="border:none;direction:ltr;font-size:0;padding:32px 32px 32px 32px;text-align:left;">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="c-outlook -outlook -outlook" style="vertical-align:middle;width:536px;">
+    <![endif]--><div class="xc536 ogf c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="center" class="x" style="font-size:0;word-break:break-word;"><div style="text-align:center;"><p style="Margin:0;text-align:center;mso-line-height-alt:150%"><span style="font-size:16px;font-family:Inter,Arial,sans-serif;font-weight:400;color:#777777;line-height:150%;">Para terminar de registrarte, ingresa el c&oacute;digo en la pantalla de verificaci&oacute;n de registro. Esto asegura que tengamos el correo electr&oacute;nico correcto en caso de que necesitemos comunicarnos contigo.</span></p></div>
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" class="r-outlook -outlook pr-16-outlook pl-16-outlook -outlook" role="presentation" style="width:600px;" width="600"><tr><td style="line-height:0;font-size:0;mso-line-height-rule:exactly;">
+    <![endif]--><div class="r  pr-16 pl-16" style="background:#fffffe;background-color:#fffffe;margin:0px auto;max-width:600px;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#fffffe;background-color:#fffffe;width:100%;"><tbody><tr><td style="border:none;direction:ltr;font-size:0;padding:32px 32px 32px 32px;text-align:left;">
+    <!--[if mso | IE]>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="c-outlook -outlook -outlook" style="vertical-align:middle;width:536px;">
+    <![endif]--><div class="xc536 ogf c" style="font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:middle;width:100%;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border:none;vertical-align:middle;" width="100%"><tbody><tr><td align="center" class="i  m" style="font-size:0;padding:0;padding-bottom:16px;word-break:break-word;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0;"><tbody><tr><td style="width:44px;"> <a href="onenexum.com" target="_blank" title> <img alt="One Nexum Logo" src="https://e.hypermatic.com/b59da696d8df6bad00ef5a2d8a2a7c94.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" title width="44" height="auto"></a>
+    </td></tr></tbody></table>
+    </td></tr><tr><td align="center" class="x  m" style="font-size:0;padding-bottom:16px;word-break:break-word;"><div style="text-align:center;"><p style="Margin:0;text-align:center;mso-line-height-alt:123%"><span style="font-size:13px;font-family:Inter,Arial,sans-serif;font-weight:400;color:#4d4d4d;line-height:123%;">One Nexum Team</span></p></div>
+    </td></tr><tr><td align="center" class="o" style="font-size:0;padding:0;padding-bottom:0;word-break:break-word;">
+    <!--[if mso | IE]>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"><tr><td>
+    <![endif]-->
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="float:none;display:inline-table;"><tbody><tr class="e  m"><td style="padding:0 16px 0 0;vertical-align:middle;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:20px;"><tbody><tr><td style="font-size:0;height:20px;vertical-align:middle;width:20px;"> <a href="https://www.instagram.com/onenexum" target="_blank"> <img alt="Instagram" title height="20" src="https://e.hypermatic.com/4e7a16f289bb761c39a1e699e78ed090.png" style="display:block;" width="20"></a>
+    </td></tr></tbody></table>
+    </td></tr></tbody></table>
+    <!--[if mso | IE]>
+    </td><td>
+    <![endif]-->
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="float:none;display:inline-table;"><tbody><tr class="e  "><td style="padding:0;padding-right:0;vertical-align:middle;">
+    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:20px;"><tbody><tr><td style="font-size:0;height:20px;vertical-align:middle;width:20px;"> <a href="onenexum.com" target="_blank"> <img alt="Twitter" title height="20" src="https://e.hypermatic.com/86ac6d6eb7607dbe67ab8b6c85b6434d.png" style="display:block;" width="20"></a>
+    </td></tr></tbody></table>
+    </td></tr></tbody></table>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]-->
+    </td></tr></tbody></table></div>
+    <!--[if mso | IE]>
+    </td></tr></table>
+    <![endif]--></div>
+    </body>
+    </html>`
   );
   if (!mail) {
     return res
