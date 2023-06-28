@@ -33,7 +33,7 @@ const sendEmail = async (
   }); */
   
   let mailOptions = {
-    from: "hello@onenexum.com", // dirección del remitente
+    from: '"One Nexum" <hello@onenexum.com>', // dirección del remitente
     to: emailTo, // receptor
     subject: subject,
   };
