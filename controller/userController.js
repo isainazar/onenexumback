@@ -20,22 +20,16 @@ const generateRandomPassword = require("../utilities/generateRandomPassword");
 const { sendEmail } = require("../utilities/sendEmail");
 const { encrypt, decrypt } = require("../utilities/cifrado");
 const { checkUserPaymentStatus } = require("./stripeController.js");
-const { verificationCode, resetPassCode, successPassChange } = require("../utilities/mailTemplates.js");
+const {
+  verificationCode,
+  resetPassCode,
+  successPassChange,
+} = require("../utilities/mailTemplates.js");
+const validarEmail = require("../utilities/validarEmail.js");
+const { codeIsValid } = require("../utilities/codeIsValid.js");
 require("dotenv").config();
-function validarEmail(valor) {
-  if (
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      valor
-    )
-  ) {
-    return "This email is corect";
-  } else {
-    return "This email is incorrect";
-  }
-}
 
 const createUser = async (req, res, next) => {
-
   const { name, lastname, password, email, user_type, quiz } = req.body;
 
   if (!name || !lastname || !email || !password || !user_type) {
@@ -46,80 +40,56 @@ const createUser = async (req, res, next) => {
     return res.status(501).json({ message: "Este mail no es válido" });
   }
 
-  try {
-    let user1 = await User.findOne({ where: { email } });
-    // Si el correo ya está registrado, devuelvo un error
+  let userExists = await User.findOne({ where: { email } });
+  // Si el correo ya está registrado, devuelvo un error
 
-    if (user1) {
-      if (user1.dataValues.status) {
-        return res
-          .status(500)
-          .json({ message: "Ya existe un usuario con este email" });
-      }
+  if (userExists) {
+    if (userExists.dataValues.email) {
+      return res
+        .status(502)
+        .json({ message: "Ya existe un usuario con este email" });
     }
+  }
 
+  try {
     const nombreE = encrypt(name);
     const apellidoE = encrypt(lastname);
-
-    // Creamos el nuevo usuario y lo guardamos en la DB
-
+    //validation code
+    let aleatorio = Math.floor(Math.random() * 900000) + 100000;
     const user = await User.create({
       name: nombreE,
       lastname: apellidoE,
       email,
       password,
       user_type,
+      verificationCode: aleatorio,
     });
-    // generamos el payload/body para generar el token
     if (!user) {
       return res
         .status(500)
         .json({ message: "No se pudo crear el usuario en la db" });
     }
-
-
-    var aleatorio = Math.floor(Math.random() * 900000) + 100000;
     const mail = await sendEmail(
       "Verificacion de usuario",
       "",
       false,
       user.dataValues.email,
-      await verificationCode(name,aleatorio)
+      await verificationCode(name, aleatorio)
     );
     if (!mail) {
       return res
         .status(500)
         .json({ message: "No se pudo crear el usuario en la db" });
     }
-    const payload = {
-      user: {
-        id: user.dataValues.id_user,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      JWT_SECRET,
-      {
-        expiresIn: "1d",
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.status(201).json({
-          token: token,
-          id_user: user.dataValues.id_user,
-          codigo: aleatorio,
-        });
-      }
-    );
+    const createdUser = await User.findOne({ where: { email } });
+    return res.status(200).json({ id_user: createdUser.dataValues.id_user });
   } catch (err) {
     return res.status(500).json({ error: err });
   }
 };
 const login = async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
+if (!email || !password) {
     return res.status(505).json({
       message: "Se requiere un usuario o contraseña valido",
     });
@@ -146,11 +116,11 @@ const login = async (req, res) => {
       });
     }
     // FIRST LOGIN
-    if (user.dataValues.firstLogin === true) {
+    
+    if (user.dataValues.hasLoggedInFirstTime === false) {
       const usuarioCambiado = await User.update(
         {
-          // status: true,
-          firstLogin: false,
+          hasLoggedInFirstTime: true,
         },
         {
           where: {
@@ -209,7 +179,7 @@ const login = async (req, res) => {
             lastname: apellido,
             email: user.dataValues.email,
             user_type: user.dataValues.user_type,
-            status: user.dataValues.status,
+            status: user.dataValues.hasPremiumPack,
             gender: user.dataValues.gender,
             relationship: user.dataValues.relationship,
             dob: user.dataValues.dob,
@@ -252,112 +222,6 @@ const login = async (req, res) => {
         });
       }
     }
-    /*  if (user.dataValues.firstLogin === true) {
-    
-      const usuarioCambiado = await User.update(
-        {
-          firstLogin: false,
-        },
-        {
-          where: {
-            id_user: user.dataValues.id_user,
-          },
-        }
-      );
-      const newSeccion_A = await Seccion_A.create({
-        id_user: user.dataValues.id_user,
-      });
-      const newSeccion_B = await Seccion_B.create({
-        id_user: user.dataValues.id_user,
-      });
-      const newValoracion_A = await Valoracionsecciona.create({
-        id_user: user.dataValues.id_user,
-      });
-      const newValoracion_B = await Valoracionseccionb.create({
-        id_user: user.dataValues.id_user,
-      });
-      if (
-        usuarioCambiado &&
-        newSeccion_A &&
-        newSeccion_B &&
-        newValoracion_A &&
-        newValoracion_B
-      ) {
-        try {
-          const section_a = await Seccion_A.findOne({
-            where: {
-              id_user: user.dataValues.id_user,
-            },
-          });
-          const section_b = await Seccion_B.findOne({
-            where: {
-              id_user: user.dataValues.id_user,
-            },
-          });
-          const newLogin = await Login.create({
-            id_user: user.dataValues.id_user,
-          });
-
-          const newLoginDef = await Promise.all(await newLogin.addUser(user));
-          if (!newLogin || !newLoginDef) {
-            return res.status(409).json({
-              message: "No se pudo guardar el login",
-            });
-          }
-         console.log(user.dataValues.name)
-
-          const usu = {
-            id_user: user.dataValues.id_user,
-            name: decrypt(user.dataValues.name),
-            lastname: decrypt(user.dataValues.lastname),
-            email: user.dataValues.email,
-            user_type: user.dataValues.user_type,
-            status: user.dataValues.status,
-            gender: decrypt(user.dataValues.gender),
-            dob: decrypt(user.dataValues.date_birth),
-            country: decrypt(user.dataValues.country),
-            region: decrypt(user.dataValues.region),
-            section_a: section_a,
-            section_b: section_b,
-          };
-          
-        //  req.session.user = usu;
-
-          const payload = {
-            user: {
-              id: user.dataValues.id_user,
-            },
-          };
-          jwt.sign(
-            payload,
-            JWT_SECRET,
-            {
-              expiresIn: "1d",
-            },
-            (err, token) => {
-              if (err) throw err;
-              return res.status(200).json({
-                token: token,
-                id_user: user.dataValues.id_user,
-                userLogged: true,
-                usuario: usu,
-              });
-            }
-          );
-        } catch (error) {
-          return res.status(502).json({
-            message:
-              "Error al intentar conectar a la base de datos. Por favor, ponte en contacto con el administrador",
-            error: err,
-          });
-        }
-      } else {
-        return res.status(403).json({
-          message: "No se ha podido actualizar el usuario",
-        });
-      }
-    } */
-
     // SI YA EL USUARIO SE LOGEÓ POR PRIMERA VEZ
     else {
       const newLogin = await Login.create({
@@ -389,7 +253,7 @@ const login = async (req, res) => {
           lastname: apellido,
           email: user.dataValues.email,
           user_type: user.dataValues.user_type,
-          status: user.dataValues.status,
+          status: user.dataValues.hasPremiumPack,
           gender: user.dataValues.gender,
           dob: user.dataValues.date_birth,
           relationship: user.dataValues.relationship,
@@ -439,6 +303,32 @@ const login = async (req, res) => {
     });
   }
 };
+
+const codeValidation = async (req, res) => {
+  const { id_user, code } = req.body;
+  if (!id_user || !code) {
+    return res.status(505).json({
+      message: "Se requiere toda la info",
+    });
+  }
+  console.log(code);
+  const user = await User.findOne({ where: { id_user } });
+  if (!user) {
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+  const isValid = codeIsValid(user.dataValues.verificationCode, code);
+  console.log(user.dataValues.verificationCode)
+
+  if (isValid === false) {
+    return res.status(204).json({ message: "El código es incorrecto" });
+  }
+  try {
+    return res.status(200).json({ message: "Codigo Correcto" });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
 const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
@@ -487,7 +377,7 @@ const forgotPassword = async (req, res, next) => {
           "",
           false,
           user.dataValues.email,
-          await resetPassCode(name,temporalPassword)
+          await resetPassCode(name, temporalPassword)
         );
         return res.status(200).json({
           message:
@@ -686,7 +576,7 @@ const updatePayment = async (req, res) => {
   try {
     const updateUser = await User.update(
       {
-        status: true,
+        hasPremiumPack: true,
       },
       {
         where: {
@@ -706,7 +596,7 @@ const didUserPaid = async (idPayment, id_user) => {
     try {
       const updateUser = await User.update(
         {
-          status: true,
+          hasPremiumPack: true,
         },
         {
           where: {
@@ -730,7 +620,6 @@ const didCompleteProfile = async (id_user) => {
     return false;
   }
 
-
   const trabajo = await Trabajo.findOne({
     where: {
       id_user: usuario.dataValues.id_user,
@@ -741,7 +630,7 @@ const didCompleteProfile = async (id_user) => {
       id_user: usuario.dataValues.id_user,
     },
   });
- 
+
   if (
     !trabajo ||
     !gustos ||
@@ -781,23 +670,13 @@ const getUserData = async (req, res) => {
         await didUserPaid(idPayment, id_user);
       }
     }
-    /*  await User.update(
-      {
-        status: false,
-      },
-      {
-        where: {
-          id_user: usuario.dataValues.id_user,
-        },
-      }
-    );   */
 
     const returnedUser = {
       id_user: usuario.dataValues.id_user,
       name: decrypt(usuario.dataValues.name),
       lastname: decrypt(usuario.dataValues.lastname),
       email: usuario.dataValues.email,
-      status: usuario.dataValues.status,
+      status: usuario.dataValues.hasPremiumPack,
       id_payment: usuario.dataValues.idPayment,
       relationship: usuario.dataValues.relationship,
       gender:
@@ -1661,10 +1540,25 @@ const putValoracion_B = async (req, res) => {
 const resendEmail = async (req, res) => {
   const { email, name } = req.body;
 
-  var aleatorio = Math.floor(Math.random() * 900000) + 100000;
+  let aleatorio = Math.floor(Math.random() * 900000) + 100000;
   if (!email || !name) {
     return res.status(400).json({ message: "Faltan datos" });
   }
+  const user = await User.findOne({ where: {email} });
+  if (!user) {
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+  const updateCode = await User.update(
+    {
+      verificationCode: aleatorio,
+    },
+    { where: {id_user: user.dataValues.id_user} }
+  );
+  if(!updateCode){
+    return res.status(500).json({message:"No se pudo actualizar el código"})
+  }
+  
+
   const mail = await sendEmail(
     "Verificacion de usuario",
     "",
@@ -1867,4 +1761,5 @@ module.exports = {
   getValoracionB,
   resendEmail,
   didCompleteProfile,
+  codeValidation,
 };

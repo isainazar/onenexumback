@@ -11,8 +11,6 @@ const session = require("express-session");
 var cookieSession = require("cookie-session");
 const URL = process.env.URL;
 const URL2 = process.env.URL2;
-const URL3 = process.env.URL3;
-const URL4 = process.env.URL4;
 require("dotenv").config();
 const { conn } = require("./DataBase/index.js");
 const userRouter = require("./routes/userRoutes");

@@ -26,11 +26,13 @@ const {
   getAllTest,
   putTest,
   resendEmail,
-  didCompleteProfile
+  didCompleteProfile,
+  codeValidation
 } = require("../controller/userController");
 
 /* GET users listing. */
 router.put("/reset-password", resetPassword);
+router.put("/code-verification", codeValidation);
 router.post("/forgot-password", forgotPassword);
 
 //Usuario

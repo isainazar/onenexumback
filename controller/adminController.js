@@ -233,26 +233,19 @@ const getUserById = async (req, res) => {
     if (userDb) {
       const nombre = decrypt(userDb.dataValues.name);
       const apellido = decrypt(userDb.dataValues.lastname);
-      //  const date = decrypt(userDb.dataValues.date_birth);
-      //  const countryy = decrypt(userDb.dataValues.country);
-      //  const regionn = decrypt(userDb.dataValues.region);
-      //   const genderr = decrypt(userDb.dataValues.gender);
+     
       const usu = {
         id_user: userDb.dataValues.id_user,
         name: nombre,
         lastname: apellido,
         email: userDb.dataValues.email,
-        //  date_birth: date,
-        //  country: countryy,
-        //   region: regionn,
-        //    gender: genderr,
+      
         relationship: userDb.dataValues.relationship,
         ocupation: userDb.dataValues.ocupation,
         unemployed: userDb.dataValues.unemployed,
         user_type: userDb.dataValues.user_type,
-        status: userDb.dataValues.status,
+        status: userDb.dataValues.hasPremiumPack,
         terminos: userDb.dataValues.terminos,
-        //  progress: userDb.dataValues.progress,
         firstLogin: userDb.dataValues.firstLogin,
         createdAt: userDb.dataValues.createdAt,
         updatedAt: userDb.dataValues.updatedAt,
@@ -260,7 +253,6 @@ const getUserById = async (req, res) => {
         logins: userDb.dataValues.logins,
         quiz: userDb.dataValues.quiz,
         trabajo: userDb.dataValues.trabajo,
-        //   vidayrelaciones: userDb.dataValues.vidayrelaciones,
         gustoseintereses: userDb.dataValues.gustoseintereses,
         diariovirtual: userDb.dataValues.diariovirtual,
         hola: userDb.dataValues.secciona,

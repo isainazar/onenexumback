@@ -67,7 +67,7 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM("1", "2", "ADMIN"),
       allowNull: true,
     },
-    status: {
+    hasPremiumPack: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
@@ -79,10 +79,6 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    firstLogin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
     idPayment: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -90,6 +86,15 @@ module.exports = (sequelize) => {
     mail_accepted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    hasLoggedInFirstTime: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    verificationCode:{
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull:false,
     },
     provider: {
       type: DataTypes.STRING,
