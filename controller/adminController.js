@@ -333,6 +333,41 @@ const loginAdmin = async (req, res) => {
     });
   }
 };
+
+const resetIdPayment = async (req, res)=>{
+ // const { email } = req.body;
+
+  const {id_user} = req.body;
+  if ( !id_user) {
+    return res.status(400).json({
+      message: "Se requiere un usuario o contraseña valido",
+    });
+  }
+  const user = await User.findByPk(id_user);
+  if (!user){
+    return res.status(202).json({message: "No hay usuario"})
+  }
+  try{
+    const updateUser = await User.update(
+      {
+        hasPremiumPack: false,
+        idPayment: null,
+      },
+      {
+        where: {
+          id_user: user.dataValues.id_user,
+        },
+      }
+    );
+    if(!updateUser){
+      return res.status(202).json({message: "No se pudo actualizar"})
+    }
+    return res.status(200).json({message:"Actualizado"})
+
+  }catch(err){
+    return res.status(500).json({message: err})
+  }
+}
 module.exports = {
   getAllUsers,
   getUserById,
@@ -341,4 +376,5 @@ module.exports = {
   getSectionA,
   getSectionB,
   getAllSections,
+  resetIdPayment
 };

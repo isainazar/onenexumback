@@ -10,7 +10,8 @@ const {
   loginAdmin,
   getSectionA,
   getAllSections,
-  getSectionB
+  getSectionB,
+  resetIdPayment
 } = require("../controller/adminController");
 
 router.get("/getUsers", auth, getAllUsers);
@@ -20,5 +21,5 @@ router.get("/getSections", getAllSections);
 router.get("/getUser/:id_user", auth, getUserById);
 router.get("/getNewsletter", auth, getNewsletter);
 router.post("/login", loginAdmin);
-
+router.put("/resetUserData", resetIdPayment);
 module.exports = router;
